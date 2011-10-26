@@ -38,7 +38,7 @@ Stack<VariableSymbol> pOperandos = new Stack<VariableSymbol>();
 Scope actualScope;
 Scope globalScope = new GlobalScope();
 
-LinkedList<string> operadoresRelacionales = new LinkedList<string>(new string[] {">", "<", ">=", "<="});
+LinkedList<string> operadoresRelacionales = new LinkedList<string>(new string[] {"==", "!=", ">", "<", ">=", "<="});
 LinkedList<string> masMenosOr = new LinkedList<string>(new string[] {"+", "-", "or"});
 LinkedList<string> porEntreAnd = new LinkedList<string>(new string[] {"*", "/", "and"});
 
@@ -266,21 +266,6 @@ voidType returns[string tipo]:	t = 'void' {$tipo = $t.text;};
 formalParamType returns[string tipo]:	(t = primitiveType	//char, int
 					| t = referenceType) 	//char[], int[], MiClase
 					{$tipo = $t.tipo;};
-					
-/*
-methods	:	methodsPrototypes methodsDefinitions;
-
-methodsPrototypes
-	:	'methods' 'prototypes' ':' methodPrototype*;
-	
-methodPrototype
-	:	(primitiveType | referenceType | 'void') ID '(' formalParameters? ')' ';';
-	
-methodsDefinitions
-	:	'methods' 'definitions' ':' methodDefinition*;
-
-methodDefinition:	(primitiveType | referenceType | 'void') ID '(' formalParameters? ')' '{' vars? someStatements '}';
-	*/
 
 methods
 	:	'methods' ':' methodDeclaration*;
@@ -320,7 +305,7 @@ assignment	//TODO
 		| 'new' ID '(' ')' {directory.findType($ID.text);}
 		| 'new' primitiveType '[' INT ']'
 		) 
-		';' //TODO verificar que la expresion es asignable al tipo del designat
+		';' //TODO verificar que la expresion, new clase, o new arreglo es asignable al tipo del designat
 	;
 	
 	
