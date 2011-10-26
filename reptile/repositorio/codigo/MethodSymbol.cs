@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-class MethodSymbol : Scope
+public class MethodSymbol : Scope
 {
     public ScopeWithMethods enclosingScope; //puede ser el scope global o una clase
     public ClassSymbol returnType; 
@@ -18,6 +18,32 @@ class MethodSymbol : Scope
         this.enclosingScope = enclosingScope;
         variables = new Dictionary<string, VariableSymbol>();
         parametros = new LinkedList<VariableSymbol>();
+
+    }
+
+    public override string ToString()
+    {
+        StringBuilder res = new StringBuilder();
+        res.Append(returnType.name);
+        res.Append(" ");
+        res.Append(name);
+        res.Append("(");
+        res.Append(parametrosToString());
+        res.Append(") {\n");
+        res.Append(variablesToString());
+        res.Append("}");
+        return res.ToString();
+    }
+
+    private string parametrosToString()
+    {
+        StringBuilder res = new StringBuilder();
+        foreach (VariableSymbol param in parametros)
+        {
+            res.Append(param);
+            res.Append(", ");
+        }
+        return res.ToString();
     }
 
     public bool containsParameter(string variableName) {
@@ -46,10 +72,7 @@ class MethodSymbol : Scope
     public override VariableSymbol getVariableSymbol(string variableName)
     {
         VariableSymbol variableSymbol;
-        if(!variables.TryGetValue(variableName, out variableSymbol))
-        {
-            variableSymbol = enclosingScope.getVariableSymbol(variableName);
-        }
+        variables.TryGetValue(variableName, out variableSymbol);
         return variableSymbol;
     }
 

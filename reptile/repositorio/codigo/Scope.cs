@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-abstract class Scope
+public abstract class Scope
 {
     public string name;
     protected Dictionary<string, VariableSymbol> variables; //tabla de variables de instancia o globales
@@ -22,6 +22,16 @@ abstract class Scope
         }
     }
 
-    
+    public String variablesToString()
+    {
+        StringBuilder res = new StringBuilder();
+        res.Append("variables:\n");
+        foreach(KeyValuePair<String, VariableSymbol> entry in variables)
+        {
+            res.Append(entry.Value);
+            res.Append("\n");
+        }
+        return res.ToString();
+    }
 
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-class ClassSymbol : ScopeWithMethods
+public class ClassSymbol : ScopeWithMethods
 {
     public ClassSymbol superClass;
 
@@ -13,6 +13,16 @@ class ClassSymbol : ScopeWithMethods
         methods = new Dictionary<string, MethodSymbol>();
         variables = new Dictionary<string, VariableSymbol>();
 
+    }
+
+    public bool isArrayType()
+    {
+        return name.Contains("[]");
+    }
+
+    public bool isVoidType()
+    {
+        return name.Equals("void");
     }
 
     public override MethodSymbol getMethodSymbol(string methodName)
@@ -39,6 +49,19 @@ class ClassSymbol : ScopeWithMethods
             }
         }
         return variableSymbol;
+    }
+
+    public bool isChildOf(ClassSymbol sup)
+    {
+        if(name == sup.name)
+        {
+            return true;
+        }
+        if(superClass == null)
+        {
+            return false;
+        }
+        return superClass.isChildOf(sup);
     }
 
 }

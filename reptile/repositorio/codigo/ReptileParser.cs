@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.4 C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g 2011-10-15 17:33:09
+// $ANTLR 3.4 C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g 2011-10-25 20:36:31
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -31,7 +31,7 @@ using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
 public partial class ReptileParser : Antlr.Runtime.Parser
 {
 	internal static readonly string[] tokenNames = new string[] {
-		"<invalid>", "<EOR>", "<DOWN>", "<UP>", "CHAR", "COMMENT", "ESC_SEQ", "EXPONENT", "FLOAT", "HEX_DIGIT", "ID", "INT", "OCTAL_ESC", "UNICODE_ESC", "WS", "'!='", "'('", "')'", "'*'", "'+'", "','", "'-'", "'.'", "'/'", "':'", "';'", "'<'", "'<='", "'='", "'=='", "'>'", "'>='", "'['", "']'", "'char'", "'class'", "'classes'", "'else'", "'extends'", "'if'", "'int'", "'main'", "'methods'", "'new'", "'print'", "'read'", "'return'", "'vars'", "'void'", "'while'", "'{'", "'}'"
+		"<invalid>", "<EOR>", "<DOWN>", "<UP>", "CHAR", "COMMENT", "ESC_SEQ", "EXPONENT", "FLOAT", "HEX_DIGIT", "ID", "INT", "OCTAL_ESC", "UNICODE_ESC", "WS", "'!='", "'('", "')'", "'*'", "'+'", "','", "'-'", "'.'", "'/'", "':'", "';'", "'<'", "'<='", "'='", "'=='", "'>'", "'>='", "'['", "']'", "'and'", "'char'", "'class'", "'classes'", "'double'", "'else'", "'extends'", "'if'", "'int'", "'main'", "'methods'", "'new'", "'or'", "'print'", "'read'", "'return'", "'this'", "'vars'", "'void'", "'while'", "'{'", "'}'"
 	};
 	public const int EOF=-1;
 	public const int T__15=15;
@@ -71,6 +71,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	public const int T__49=49;
 	public const int T__50=50;
 	public const int T__51=51;
+	public const int T__52=52;
+	public const int T__53=53;
+	public const int T__54=54;
+	public const int T__55=55;
 	public const int CHAR=4;
 	public const int COMMENT=5;
 	public const int ESC_SEQ=6;
@@ -90,7 +94,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				false, // invalid decision
 				false, false, false, false, false, false, false, false, false, false, 
 				false, false, false, false, false, false, false, false, false, false, 
-				false, false, false, false, false, false, false, false
+				false, false, false, false, false, false, false, false, false, false
 			};
 	#else
 		private static readonly bool[] decisionCanBacktrack = new bool[0];
@@ -109,10 +113,17 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	public override string GrammarFileName { get { return "C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g"; } }
 
 
-	Dictionary<string, ScopeWithMethods> directory;
-	Dictionary<string, ClassSymbol> typesDirectory;
+
+	SymbolTable directory;
+	Stack<string> pOperadores = new Stack<string>();
+	Stack<VariableSymbol> pOperandos = new Stack<VariableSymbol>();
+
 	Scope actualScope;
 	Scope globalScope = new GlobalScope();
+
+	LinkedList<string> operadoresRelacionales = new LinkedList<string>(new string[] {">", "<", ">=", "<="});
+	LinkedList<string> masMenosOr = new LinkedList<string>(new string[] {"+", "-", "or"});
+	LinkedList<string> porEntreAnd = new LinkedList<string>(new string[] {"*", "/", "and"});
 
 	protected override object RecoverFromMismatchedToken(IIntStream input, int ttype, BitSet follow)
 	{
@@ -124,27 +135,8 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	        throw e;
 	}
 
-	void printDirectory() {
-		Console.WriteLine("Directory:");
-		foreach(KeyValuePair<String,ScopeWithMethods> entry in directory) {
-			Console.WriteLine(entry.Key + " -> " + entry.Value.name);
-		}
-	}
-
-	void printTypesDirectory() {
-		Console.WriteLine("Types Directory:");	
-		foreach(KeyValuePair<String, ClassSymbol> entry in typesDirectory) {
-			Console.Write(entry.Key + " -> " + entry.Value.name);
-			if(entry.Value.superClass != null) {
-				Console.Write( " superClass-> " + entry.Value.superClass.name);
-			}
-			Console.WriteLine();
-		}
-	}
-
 	void createDirectories() {
-		directory = new Dictionary<string, ScopeWithMethods>();
-		typesDirectory = new Dictionary<string, ClassSymbol>();
+		directory = new SymbolTable();
 	}
 
 	void defineScopeGlobal() {
@@ -152,24 +144,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		directory.Add("GlobalScope", (ScopeWithMethods)globalScope);
 	}
 
-	void registerPrimitiveTypes() {
-		ClassSymbol integers = new ClassSymbol("int");
-		typesDirectory.Add(integers.name, integers);
-		ClassSymbol chars = new ClassSymbol("char");
-		typesDirectory.Add(chars.name, chars);
-		ClassSymbol integerArray = new ClassSymbol("int[]");
-		typesDirectory.Add(integerArray.name, integerArray);
-		ClassSymbol charArray = new ClassSymbol("char[]");
-		typesDirectory.Add(charArray.name, charArray); 
-		ClassSymbol tipoVoid = new ClassSymbol("void");
-		typesDirectory.Add(tipoVoid.name, tipoVoid);
-	}
-
 	void registerClass(string className, string superClase) {
 		try {
 			ClassSymbol newClass = new ClassSymbol(className);
 			directory.Add(newClass.name, newClass);
-			typesDirectory.Add(newClass.name, newClass);
 			actualScope = newClass;
 			if(superClase != null) {
 				registerSuperClass(newClass, superClase);
@@ -183,20 +161,12 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	void registerSuperClass(ClassSymbol clase, string superClase) {
 		try {
 			ClassSymbol clasePadre;
-			clasePadre = findType(superClase);
+			clasePadre = directory.findType(superClase);
 			clase.superClass = clasePadre;
 		}
 		catch(Exception exception) {
 			manageException(exception);
 		}
-	}
-
-	ClassSymbol findType(string type) {
-		ClassSymbol classSymbol;
-		if(!typesDirectory.TryGetValue(type, out classSymbol)) {
-			manageException(new Exception("El tipo " + type + " no existe."));
-		}
-		return classSymbol;
 	}
 
 	//usado con metodos y variables
@@ -213,17 +183,134 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	}
 
 	void registerVariableInMethod(string variableName, string tipo) {
-		ClassSymbol tipoParam = findType(tipo);
+		ClassSymbol tipoParam = directory.findType(tipo);
 		VariableSymbol variableSymbol = new VariableSymbol(variableName, tipoParam);
 		registerVariableInScope(variableName, tipoParam);
 		MethodSymbol methodSymbol = (MethodSymbol) actualScope;	//casting para poder llamar a defineParameter(..)
 		methodSymbol.defineParameter(variableName, variableSymbol);
 	}
 
-	public static void manageException(Exception e) {
-		Console.WriteLine(e.ToString());
+	bool verifyVariableIsDefinedInMethod(string variable) {
+		VariableSymbol varSymbol = actualScope.getVariableSymbol(variable);
+		if(varSymbol == null) {
+			generateVariableNotFoundError(variable);
+			return false;
+		}
+		return true;
 	}
 
+	void generateVariableNotFoundError(string variable) {
+			Exception e = new Exception("No se encontro la variable " + variable);
+			manageException(e);
+	}
+
+	VariableSymbol verifyObjectAndInstVariableDefined(string objeto, string instVar) {
+		if(verifyVariableIsDefinedInMethod(objeto)) {
+			VariableSymbol obj = actualScope.getVariableSymbol(objeto);
+			ClassSymbol tipo = obj.type;
+			VariableSymbol varDeInstancia = tipo.getVariableSymbol(instVar);
+			if(varDeInstancia == null) {
+				generateInstanceVariableNotFoundError(tipo.name, instVar);
+			}
+			else {
+				return varDeInstancia;
+			}
+		}
+		return null;
+	}
+
+	void generateInstanceVariableNotFoundError(string clase, string variable) {
+		Exception e = new Exception("No se encontro la variable de instancia " + variable + " en el tipo " + clase);
+		manageException(e);
+	}
+
+	VariableSymbol verifyInstanceVariableDefinedInThis(string var) {
+		ScopeWithMethods enclosingScope = ((MethodSymbol)actualScope).enclosingScope;
+		if(enclosingScope is GlobalScope) {
+			Exception e = new Exception("No se puede usar 'this' si no es dentro de una clase.");
+			manageException(e);
+		}
+		else {
+			ClassSymbol clase = (ClassSymbol)enclosingScope;
+			VariableSymbol instVariable = clase.getVariableSymbol(var);
+			if(instVariable == null) {
+				generateInstanceVariableNotFoundError(clase.name, var);
+			}
+			else {
+				return instVariable;
+			}
+		}
+		return null;
+	}
+
+	void verifyIsArray(string var) {
+		if(verifyVariableIsDefinedInMethod(var)) {
+			VariableSymbol arr = actualScope.getVariableSymbol(var);
+			if(!arr.type.isArrayType()) {
+				generateIsNotArrayError(arr.name);
+			}
+		}
+	}
+
+	void generateIsNotArrayError(string variable) {
+		Exception e = new Exception("La variable " + variable + " no es un arreglo y por tanto no tiene definido el operador [] .");
+		manageException(e);
+	}
+
+	public bool tiposSonCompatiblesEnOperacion() {
+		VariableSymbol right = pOperandos.Pop();
+		VariableSymbol left = pOperandos.Pop();
+		pOperandos.Push(left);
+		pOperandos.Push(right);
+		string operador = pOperadores.Peek();
+		ClassSymbol tipoResultado = directory.resultType(left.type, right.type, operador);
+		if(tipoResultado.isVoidType()) {
+			return false;
+		}
+		return true;
+	}
+
+	public bool isRelationalOperator(string operador) {
+		return operador.Equals(">") || operador.Equals("<") || operador.Equals(">=")
+			|| operador.Equals("<=");
+	}
+
+	public bool isPorEntreAnd(string operador) {
+		return operador.Equals("*") || operador.Equals("/") || operador.Equals("and");
+	}
+
+	public void aplicaOperadorPendienteQueSea(LinkedList<string> operadoresBuscados) {
+		if(pOperadores.Count > 0) {
+			string operador = pOperadores.Peek();
+			if(operadoresBuscados.Contains(operador)) {
+				if(tiposSonCompatiblesEnOperacion()) {
+					pOperadores.Pop();
+					VariableSymbol right = pOperandos.Pop();
+					VariableSymbol left = pOperandos.Pop();
+					ClassSymbol tipoResultado = directory.resultType(left.type, right.type, operador);
+					//TODO el temporal debe obtenerse del avail
+					VariableSymbol temporal = new VariableSymbol("temporal", tipoResultado);
+					 
+					//TODO generar cuadruplo usando operador, left, right y temporal
+					
+					pOperandos.Push(temporal);
+				}
+				else {
+					//TODO accion correctiva: sacar los dos operandos y el operador de sus pilas
+					pOperadores.Pop();
+					VariableSymbol right = pOperandos.Pop();
+					VariableSymbol left = pOperandos.Pop();
+					manageException(new Exception("Operador \"" + operador + "\" no es valido para " + 
+						left.type.name + " " + left.name + ", " + right.type.name + " " + right.name));
+				}
+			}
+		}
+	}
+
+	public static void manageException(Exception e) {
+		Console.WriteLine(e.ToString());
+		throw new RecognitionException("Se encontro Error semantico\n");
+	}
 
 
 	[Conditional("ANTLR_TRACE")]
@@ -241,7 +328,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_program() {}
 
 	// $ANTLR start "program"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:151:8: public program : ( classes )? ( vars )? ( methods )? mainMethod ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:233:8: public program : ( classes )? ( vars )? ( methods )? mainMethod ;
 	[GrammarRule("program")]
 	public void program()
 	{
@@ -249,23 +336,23 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("program", 1);
 		TraceIn("program", 1);
 		try { DebugEnterRule(GrammarFileName, "program");
-		DebugLocation(151, 150);
+		DebugLocation(233, 124);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:151:16: ( ( classes )? ( vars )? ( methods )? mainMethod )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:233:16: ( ( classes )? ( vars )? ( methods )? mainMethod )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:151:18: ( classes )? ( vars )? ( methods )? mainMethod
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:233:18: ( classes )? ( vars )? ( methods )? mainMethod
 			{
-			DebugLocation(151, 18);
-			createDirectories(); defineScopeGlobal(); registerPrimitiveTypes();
-			DebugLocation(151, 88);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:151:88: ( classes )?
+			DebugLocation(233, 18);
+			createDirectories(); defineScopeGlobal();
+			DebugLocation(233, 62);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:233:62: ( classes )?
 			int alt1=2;
 			try { DebugEnterSubRule(1);
 			try { DebugEnterDecision(1, decisionCanBacktrack[1]);
 			int LA1_0 = input.LA(1);
 
-			if ((LA1_0==36))
+			if ((LA1_0==37))
 			{
 				alt1 = 1;
 			}
@@ -274,10 +361,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:151:88: classes
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:233:62: classes
 				{
-				DebugLocation(151, 88);
-				PushFollow(Follow._classes_in_program62);
+				DebugLocation(233, 62);
+				PushFollow(Follow._classes_in_program61);
 				classes();
 				PopFollow();
 
@@ -288,16 +375,16 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(1); }
 
-			DebugLocation(151, 97);
+			DebugLocation(233, 71);
 			actualScope = globalScope;
-			DebugLocation(151, 126);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:151:126: ( vars )?
+			DebugLocation(233, 100);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:233:100: ( vars )?
 			int alt2=2;
 			try { DebugEnterSubRule(2);
 			try { DebugEnterDecision(2, decisionCanBacktrack[2]);
 			int LA2_0 = input.LA(1);
 
-			if ((LA2_0==47))
+			if ((LA2_0==51))
 			{
 				alt2 = 1;
 			}
@@ -306,10 +393,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:151:126: vars
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:233:100: vars
 				{
-				DebugLocation(151, 126);
-				PushFollow(Follow._vars_in_program67);
+				DebugLocation(233, 100);
+				PushFollow(Follow._vars_in_program66);
 				vars();
 				PopFollow();
 
@@ -320,14 +407,14 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(2); }
 
-			DebugLocation(151, 132);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:151:132: ( methods )?
+			DebugLocation(233, 106);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:233:106: ( methods )?
 			int alt3=2;
 			try { DebugEnterSubRule(3);
 			try { DebugEnterDecision(3, decisionCanBacktrack[3]);
 			int LA3_0 = input.LA(1);
 
-			if ((LA3_0==42))
+			if ((LA3_0==44))
 			{
 				alt3 = 1;
 			}
@@ -336,10 +423,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:151:132: methods
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:233:106: methods
 				{
-				DebugLocation(151, 132);
-				PushFollow(Follow._methods_in_program70);
+				DebugLocation(233, 106);
+				PushFollow(Follow._methods_in_program69);
 				methods();
 				PopFollow();
 
@@ -350,8 +437,8 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(3); }
 
-			DebugLocation(151, 141);
-			PushFollow(Follow._mainMethod_in_program73);
+			DebugLocation(233, 115);
+			PushFollow(Follow._mainMethod_in_program72);
 			mainMethod();
 			PopFollow();
 
@@ -370,7 +457,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("program", 1);
 			LeaveRule_program();
 	    }
-	 	DebugLocation(151, 150);
+	 	DebugLocation(233, 124);
 		} finally { DebugExitRule(GrammarFileName, "program"); }
 		return;
 
@@ -384,7 +471,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_mainMethod() {}
 
 	// $ANTLR start "mainMethod"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:153:1: mainMethod : 'void' 'main' '(' ')' '{' ( vars )? someStatements '}' ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:235:1: mainMethod : 'void' 'main' '(' ')' '{' ( vars )? someStatements '}' ;
 	[GrammarRule("mainMethod")]
 	private void mainMethod()
 	{
@@ -392,31 +479,31 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("mainMethod", 2);
 		TraceIn("mainMethod", 2);
 		try { DebugEnterRule(GrammarFileName, "mainMethod");
-		DebugLocation(153, 96);
+		DebugLocation(235, 116);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:154:2: ( 'void' 'main' '(' ')' '{' ( vars )? someStatements '}' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:236:2: ( 'void' 'main' '(' ')' '{' ( vars )? someStatements '}' )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:154:4: 'void' 'main' '(' ')' '{' ( vars )? someStatements '}'
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:236:4: 'void' 'main' '(' ')' '{' ( vars )? someStatements '}'
 			{
-			DebugLocation(154, 4);
-			Match(input,48,Follow._48_in_mainMethod82); 
-			DebugLocation(154, 11);
-			Match(input,41,Follow._41_in_mainMethod84); 
-			DebugLocation(154, 18);
-			Match(input,16,Follow._16_in_mainMethod86); 
-			DebugLocation(154, 22);
-			Match(input,17,Follow._17_in_mainMethod88); 
-			DebugLocation(154, 26);
-			Match(input,50,Follow._50_in_mainMethod90); 
-			DebugLocation(154, 29);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:154:29: ( vars )?
+			DebugLocation(236, 4);
+			Match(input,52,Follow._52_in_mainMethod81); 
+			DebugLocation(236, 11);
+			Match(input,43,Follow._43_in_mainMethod83); 
+			DebugLocation(236, 18);
+			Match(input,16,Follow._16_in_mainMethod85); 
+			DebugLocation(236, 22);
+			Match(input,17,Follow._17_in_mainMethod87); 
+			DebugLocation(236, 26);
+			Match(input,54,Follow._54_in_mainMethod89); 
+			DebugLocation(236, 29);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:236:29: ( vars )?
 			int alt4=2;
 			try { DebugEnterSubRule(4);
 			try { DebugEnterDecision(4, decisionCanBacktrack[4]);
 			int LA4_0 = input.LA(1);
 
-			if ((LA4_0==47))
+			if ((LA4_0==51))
 			{
 				alt4 = 1;
 			}
@@ -425,10 +512,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:154:29: vars
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:236:29: vars
 				{
-				DebugLocation(154, 29);
-				PushFollow(Follow._vars_in_mainMethod91);
+				DebugLocation(236, 29);
+				PushFollow(Follow._vars_in_mainMethod90);
 				vars();
 				PopFollow();
 
@@ -439,15 +526,15 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(4); }
 
-			DebugLocation(154, 35);
-			PushFollow(Follow._someStatements_in_mainMethod94);
+			DebugLocation(236, 35);
+			PushFollow(Follow._someStatements_in_mainMethod93);
 			someStatements();
 			PopFollow();
 
-			DebugLocation(154, 50);
-			Match(input,51,Follow._51_in_mainMethod96); 
-			DebugLocation(154, 54);
-			printDirectory(); printTypesDirectory();
+			DebugLocation(236, 50);
+			Match(input,55,Follow._55_in_mainMethod95); 
+			DebugLocation(236, 54);
+			directory.printDirectory(); directory.printTypesDirectory();
 
 			}
 
@@ -463,7 +550,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("mainMethod", 2);
 			LeaveRule_mainMethod();
 	    }
-	 	DebugLocation(154, 96);
+	 	DebugLocation(236, 116);
 		} finally { DebugExitRule(GrammarFileName, "mainMethod"); }
 		return;
 
@@ -477,7 +564,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_classes() {}
 
 	// $ANTLR start "classes"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:156:1: classes : 'classes' ':' ( classDecl )* ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:238:1: classes : 'classes' ':' ( classDecl )* ;
 	[GrammarRule("classes")]
 	private void classes()
 	{
@@ -485,19 +572,19 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("classes", 3);
 		TraceIn("classes", 3);
 		try { DebugEnterRule(GrammarFileName, "classes");
-		DebugLocation(156, 34);
+		DebugLocation(238, 34);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:156:9: ( 'classes' ':' ( classDecl )* )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:238:9: ( 'classes' ':' ( classDecl )* )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:156:11: 'classes' ':' ( classDecl )*
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:238:11: 'classes' ':' ( classDecl )*
 			{
-			DebugLocation(156, 11);
-			Match(input,36,Follow._36_in_classes107); 
-			DebugLocation(156, 21);
-			Match(input,24,Follow._24_in_classes109); 
-			DebugLocation(156, 25);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:156:25: ( classDecl )*
+			DebugLocation(238, 11);
+			Match(input,37,Follow._37_in_classes106); 
+			DebugLocation(238, 21);
+			Match(input,24,Follow._24_in_classes108); 
+			DebugLocation(238, 25);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:238:25: ( classDecl )*
 			try { DebugEnterSubRule(5);
 			while (true)
 			{
@@ -505,7 +592,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				try { DebugEnterDecision(5, decisionCanBacktrack[5]);
 				int LA5_0 = input.LA(1);
 
-				if ((LA5_0==35))
+				if ((LA5_0==36))
 				{
 					alt5 = 1;
 				}
@@ -516,10 +603,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:156:25: classDecl
+					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:238:25: classDecl
 					{
-					DebugLocation(156, 25);
-					PushFollow(Follow._classDecl_in_classes111);
+					DebugLocation(238, 25);
+					PushFollow(Follow._classDecl_in_classes110);
 					classDecl();
 					PopFollow();
 
@@ -552,7 +639,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("classes", 3);
 			LeaveRule_classes();
 	    }
-	 	DebugLocation(156, 34);
+	 	DebugLocation(238, 34);
 		} finally { DebugExitRule(GrammarFileName, "classes"); }
 		return;
 
@@ -566,7 +653,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_classDecl() {}
 
 	// $ANTLR start "classDecl"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:158:1: classDecl : 'class' clase= ID ( superClass )? '{' ( vars )? ( methods )? '}' ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:240:1: classDecl : 'class' clase= ID ( superClass )? '{' ( vars )? ( methods )? '}' ;
 	[GrammarRule("classDecl")]
 	private void classDecl()
 	{
@@ -577,25 +664,25 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	    string superClass1 = default(string);
 
 		try { DebugEnterRule(GrammarFileName, "classDecl");
-		DebugLocation(158, 117);
+		DebugLocation(240, 117);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:159:5: ( 'class' clase= ID ( superClass )? '{' ( vars )? ( methods )? '}' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:241:5: ( 'class' clase= ID ( superClass )? '{' ( vars )? ( methods )? '}' )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:159:9: 'class' clase= ID ( superClass )? '{' ( vars )? ( methods )? '}'
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:241:9: 'class' clase= ID ( superClass )? '{' ( vars )? ( methods )? '}'
 			{
-			DebugLocation(159, 9);
-			Match(input,35,Follow._35_in_classDecl126); 
-			DebugLocation(159, 23);
-			clase=(IToken)Match(input,ID,Follow._ID_in_classDecl132); 
-			DebugLocation(159, 28);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:159:28: ( superClass )?
+			DebugLocation(241, 9);
+			Match(input,36,Follow._36_in_classDecl125); 
+			DebugLocation(241, 23);
+			clase=(IToken)Match(input,ID,Follow._ID_in_classDecl131); 
+			DebugLocation(241, 28);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:241:28: ( superClass )?
 			int alt6=2;
 			try { DebugEnterSubRule(6);
 			try { DebugEnterDecision(6, decisionCanBacktrack[6]);
 			int LA6_0 = input.LA(1);
 
-			if ((LA6_0==38))
+			if ((LA6_0==40))
 			{
 				alt6 = 1;
 			}
@@ -604,10 +691,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:159:29: superClass
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:241:29: superClass
 				{
-				DebugLocation(159, 29);
-				PushFollow(Follow._superClass_in_classDecl135);
+				DebugLocation(241, 29);
+				PushFollow(Follow._superClass_in_classDecl134);
 				superClass1=superClass();
 				PopFollow();
 
@@ -618,18 +705,18 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(6); }
 
-			DebugLocation(159, 42);
+			DebugLocation(241, 42);
 			registerClass((clase!=null?clase.Text:null), superClass1);
-			DebugLocation(159, 96);
-			Match(input,50,Follow._50_in_classDecl141); 
-			DebugLocation(159, 100);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:159:100: ( vars )?
+			DebugLocation(241, 96);
+			Match(input,54,Follow._54_in_classDecl140); 
+			DebugLocation(241, 100);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:241:100: ( vars )?
 			int alt7=2;
 			try { DebugEnterSubRule(7);
 			try { DebugEnterDecision(7, decisionCanBacktrack[7]);
 			int LA7_0 = input.LA(1);
 
-			if ((LA7_0==47))
+			if ((LA7_0==51))
 			{
 				alt7 = 1;
 			}
@@ -638,10 +725,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:159:100: vars
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:241:100: vars
 				{
-				DebugLocation(159, 100);
-				PushFollow(Follow._vars_in_classDecl143);
+				DebugLocation(241, 100);
+				PushFollow(Follow._vars_in_classDecl142);
 				vars();
 				PopFollow();
 
@@ -652,14 +739,14 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(7); }
 
-			DebugLocation(159, 106);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:159:106: ( methods )?
+			DebugLocation(241, 106);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:241:106: ( methods )?
 			int alt8=2;
 			try { DebugEnterSubRule(8);
 			try { DebugEnterDecision(8, decisionCanBacktrack[8]);
 			int LA8_0 = input.LA(1);
 
-			if ((LA8_0==42))
+			if ((LA8_0==44))
 			{
 				alt8 = 1;
 			}
@@ -668,10 +755,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:159:106: methods
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:241:106: methods
 				{
-				DebugLocation(159, 106);
-				PushFollow(Follow._methods_in_classDecl146);
+				DebugLocation(241, 106);
+				PushFollow(Follow._methods_in_classDecl145);
 				methods();
 				PopFollow();
 
@@ -682,8 +769,8 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(8); }
 
-			DebugLocation(159, 115);
-			Match(input,51,Follow._51_in_classDecl149); 
+			DebugLocation(241, 115);
+			Match(input,55,Follow._55_in_classDecl148); 
 
 			}
 
@@ -699,7 +786,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("classDecl", 4);
 			LeaveRule_classDecl();
 	    }
-	 	DebugLocation(159, 117);
+	 	DebugLocation(241, 117);
 		} finally { DebugExitRule(GrammarFileName, "classDecl"); }
 		return;
 
@@ -713,7 +800,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_superClass() {}
 
 	// $ANTLR start "superClass"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:161:1: superClass returns [string superClase] : 'extends' ID ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:243:1: superClass returns [string superClase] : 'extends' ID ;
 	[GrammarRule("superClass")]
 	private string superClass()
 	{
@@ -726,18 +813,18 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	    IToken ID2 = default(IToken);
 
 		try { DebugEnterRule(GrammarFileName, "superClass");
-		DebugLocation(161, 77);
+		DebugLocation(243, 77);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:161:38: ( 'extends' ID )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:243:38: ( 'extends' ID )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:161:40: 'extends' ID
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:243:40: 'extends' ID
 			{
-			DebugLocation(161, 40);
-			Match(input,38,Follow._38_in_superClass159); 
-			DebugLocation(161, 50);
-			ID2=(IToken)Match(input,ID,Follow._ID_in_superClass161); 
-			DebugLocation(161, 53);
+			DebugLocation(243, 40);
+			Match(input,40,Follow._40_in_superClass158); 
+			DebugLocation(243, 50);
+			ID2=(IToken)Match(input,ID,Follow._ID_in_superClass160); 
+			DebugLocation(243, 53);
 			superClase = (ID2!=null?ID2.Text:null);
 
 			}
@@ -754,7 +841,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("superClass", 5);
 			LeaveRule_superClass();
 	    }
-	 	DebugLocation(161, 77);
+	 	DebugLocation(243, 77);
 		} finally { DebugExitRule(GrammarFileName, "superClass"); }
 		return superClase;
 
@@ -768,7 +855,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_vars() {}
 
 	// $ANTLR start "vars"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:163:1: vars : 'vars' ':' ( varDecl )* ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:245:1: vars : 'vars' ':' ( varDecl )* ;
 	[GrammarRule("vars")]
 	private void vars()
 	{
@@ -776,19 +863,19 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("vars", 6);
 		TraceIn("vars", 6);
 		try { DebugEnterRule(GrammarFileName, "vars");
-		DebugLocation(163, 22);
+		DebugLocation(245, 22);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:164:2: ( 'vars' ':' ( varDecl )* )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:246:2: ( 'vars' ':' ( varDecl )* )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:164:4: 'vars' ':' ( varDecl )*
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:246:4: 'vars' ':' ( varDecl )*
 			{
-			DebugLocation(164, 4);
-			Match(input,47,Follow._47_in_vars172); 
-			DebugLocation(164, 11);
-			Match(input,24,Follow._24_in_vars174); 
-			DebugLocation(164, 15);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:164:15: ( varDecl )*
+			DebugLocation(246, 4);
+			Match(input,51,Follow._51_in_vars171); 
+			DebugLocation(246, 11);
+			Match(input,24,Follow._24_in_vars173); 
+			DebugLocation(246, 15);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:246:15: ( varDecl )*
 			try { DebugEnterSubRule(9);
 			while (true)
 			{
@@ -807,7 +894,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 
 
 				}
-				else if ((LA9_0==34||LA9_0==40))
+				else if ((LA9_0==35||LA9_0==38||LA9_0==42))
 				{
 					alt9 = 1;
 				}
@@ -818,10 +905,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:164:15: varDecl
+					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:246:15: varDecl
 					{
-					DebugLocation(164, 15);
-					PushFollow(Follow._varDecl_in_vars176);
+					DebugLocation(246, 15);
+					PushFollow(Follow._varDecl_in_vars175);
 					varDecl();
 					PopFollow();
 
@@ -854,7 +941,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("vars", 6);
 			LeaveRule_vars();
 	    }
-	 	DebugLocation(164, 22);
+	 	DebugLocation(246, 22);
 		} finally { DebugExitRule(GrammarFileName, "vars"); }
 		return;
 
@@ -868,7 +955,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_varDecl() {}
 
 	// $ANTLR start "varDecl"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:166:1: varDecl : (t= primitiveType |t= referenceType ) ID ';' ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:248:1: varDecl : (t= primitiveType |t= referenceType ) ID ';' ;
 	[GrammarRule("varDecl")]
 	private void varDecl()
 	{
@@ -882,21 +969,21 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	    	ClassSymbol clase;
 
 		try { DebugEnterRule(GrammarFileName, "varDecl");
-		DebugLocation(166, 128);
+		DebugLocation(248, 138);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:170:5: ( (t= primitiveType |t= referenceType ) ID ';' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:252:5: ( (t= primitiveType |t= referenceType ) ID ';' )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:170:9: (t= primitiveType |t= referenceType ) ID ';'
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:252:9: (t= primitiveType |t= referenceType ) ID ';'
 			{
-			DebugLocation(170, 9);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:170:9: (t= primitiveType |t= referenceType )
+			DebugLocation(252, 9);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:252:9: (t= primitiveType |t= referenceType )
 			int alt10=2;
 			try { DebugEnterSubRule(10);
 			try { DebugEnterDecision(10, decisionCanBacktrack[10]);
 			switch (input.LA(1))
 			{
-			case 34:
+			case 35:
 				{
 				int LA10_1 = input.LA(2);
 
@@ -916,7 +1003,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				}
 				}
 				break;
-			case 40:
+			case 42:
 				{
 				int LA10_2 = input.LA(2);
 
@@ -931,6 +1018,26 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 10, 2, input);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+				}
+				break;
+			case 38:
+				{
+				int LA10_3 = input.LA(2);
+
+				if ((LA10_3==32))
+				{
+					alt10 = 2;
+				}
+				else if ((LA10_3==ID))
+				{
+					alt10 = 1;
+				}
+				else
+				{
+					NoViableAltException nvae = new NoViableAltException("", 10, 3, input);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
@@ -954,10 +1061,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:170:10: t= primitiveType
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:252:10: t= primitiveType
 				{
-				DebugLocation(170, 12);
-				PushFollow(Follow._primitiveType_in_varDecl201);
+				DebugLocation(252, 12);
+				PushFollow(Follow._primitiveType_in_varDecl200);
 				t=primitiveType();
 				PopFollow();
 
@@ -966,10 +1073,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:170:30: t= referenceType
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:252:30: t= referenceType
 				{
-				DebugLocation(170, 32);
-				PushFollow(Follow._referenceType_in_varDecl209);
+				DebugLocation(252, 32);
+				PushFollow(Follow._referenceType_in_varDecl208);
 				t=referenceType();
 				PopFollow();
 
@@ -980,14 +1087,14 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(10); }
 
-			DebugLocation(170, 49);
-			clase = findType(t);
-			DebugLocation(170, 78);
-			ID3=(IToken)Match(input,ID,Follow._ID_in_varDecl214); 
-			DebugLocation(170, 81);
+			DebugLocation(252, 49);
+			clase = directory.findType(t);
+			DebugLocation(252, 88);
+			ID3=(IToken)Match(input,ID,Follow._ID_in_varDecl213); 
+			DebugLocation(252, 91);
 			registerVariableInScope((ID3!=null?ID3.Text:null), clase);
-			DebugLocation(170, 125);
-			Match(input,25,Follow._25_in_varDecl218); 
+			DebugLocation(252, 135);
+			Match(input,25,Follow._25_in_varDecl217); 
 
 			}
 
@@ -1003,7 +1110,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("varDecl", 7);
 			LeaveRule_varDecl();
 	    }
-	 	DebugLocation(170, 128);
+	 	DebugLocation(252, 138);
 		} finally { DebugExitRule(GrammarFileName, "varDecl"); }
 		return;
 
@@ -1017,7 +1124,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_primitiveType() {}
 
 	// $ANTLR start "primitiveType"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:173:1: primitiveType returns [string tipo] : t= ( 'int' | 'char' ) ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:255:1: primitiveType returns [string tipo] : t= ( 'int' | 'char' | 'double' ) ;
 	[GrammarRule("primitiveType")]
 	private string primitiveType()
 	{
@@ -1030,17 +1137,17 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	    IToken t = default(IToken);
 
 		try { DebugEnterRule(GrammarFileName, "primitiveType");
-		DebugLocation(173, 73);
+		DebugLocation(255, 84);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:173:35: (t= ( 'int' | 'char' ) )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:255:35: (t= ( 'int' | 'char' | 'double' ) )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:173:37: t= ( 'int' | 'char' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:255:37: t= ( 'int' | 'char' | 'double' )
 			{
-			DebugLocation(173, 39);
+			DebugLocation(255, 39);
 
 			t=(IToken)input.LT(1);
-			if (input.LA(1)==34||input.LA(1)==40)
+			if (input.LA(1)==35||input.LA(1)==38||input.LA(1)==42)
 			{
 				input.Consume();
 				state.errorRecovery=false;
@@ -1052,7 +1159,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				throw mse;
 			}
 
-			DebugLocation(173, 56);
+			DebugLocation(255, 67);
 			tipo = (t!=null?t.Text:null);
 
 			}
@@ -1069,7 +1176,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("primitiveType", 8);
 			LeaveRule_primitiveType();
 	    }
-	 	DebugLocation(173, 73);
+	 	DebugLocation(255, 84);
 		} finally { DebugExitRule(GrammarFileName, "primitiveType"); }
 		return tipo;
 
@@ -1083,7 +1190,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_referenceType() {}
 
 	// $ANTLR start "referenceType"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:175:1: referenceType returns [string tipo] : ( 'char' '[' ']' | 'int' '[' ']' | ID ) ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:257:1: referenceType returns [string tipo] : ( 'char' '[' ']' | 'int' '[' ']' | 'double' '[' ']' | ID ) ;
 	[GrammarRule("referenceType")]
 	private string referenceType()
 	{
@@ -1096,33 +1203,38 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	    IToken ID4 = default(IToken);
 
 		try { DebugEnterRule(GrammarFileName, "referenceType");
-		DebugLocation(175, 4);
+		DebugLocation(257, 4);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:175:35: ( ( 'char' '[' ']' | 'int' '[' ']' | ID ) )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:257:35: ( ( 'char' '[' ']' | 'int' '[' ']' | 'double' '[' ']' | ID ) )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:176:5: ( 'char' '[' ']' | 'int' '[' ']' | ID )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:258:5: ( 'char' '[' ']' | 'int' '[' ']' | 'double' '[' ']' | ID )
 			{
-			DebugLocation(176, 5);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:176:5: ( 'char' '[' ']' | 'int' '[' ']' | ID )
-			int alt11=3;
+			DebugLocation(258, 5);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:258:5: ( 'char' '[' ']' | 'int' '[' ']' | 'double' '[' ']' | ID )
+			int alt11=4;
 			try { DebugEnterSubRule(11);
 			try { DebugEnterDecision(11, decisionCanBacktrack[11]);
 			switch (input.LA(1))
 			{
-			case 34:
+			case 35:
 				{
 				alt11 = 1;
 				}
 				break;
-			case 40:
+			case 42:
 				{
 				alt11 = 2;
 				}
 				break;
-			case ID:
+			case 38:
 				{
 				alt11 = 3;
+				}
+				break;
+			case ID:
+				{
+				alt11 = 4;
 				}
 				break;
 			default:
@@ -1138,41 +1250,56 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:176:6: 'char' '[' ']'
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:258:6: 'char' '[' ']'
 				{
-				DebugLocation(176, 6);
-				Match(input,34,Follow._34_in_referenceType264); 
-				DebugLocation(176, 13);
-				Match(input,32,Follow._32_in_referenceType266); 
-				DebugLocation(176, 17);
-				Match(input,33,Follow._33_in_referenceType268); 
-				DebugLocation(176, 21);
+				DebugLocation(258, 6);
+				Match(input,35,Follow._35_in_referenceType267); 
+				DebugLocation(258, 13);
+				Match(input,32,Follow._32_in_referenceType269); 
+				DebugLocation(258, 17);
+				Match(input,33,Follow._33_in_referenceType271); 
+				DebugLocation(258, 21);
 				tipo = "char[]";
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:177:6: 'int' '[' ']'
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:259:6: 'int' '[' ']'
 				{
-				DebugLocation(177, 6);
-				Match(input,40,Follow._40_in_referenceType278); 
-				DebugLocation(177, 12);
-				Match(input,32,Follow._32_in_referenceType280); 
-				DebugLocation(177, 16);
-				Match(input,33,Follow._33_in_referenceType282); 
-				DebugLocation(177, 20);
+				DebugLocation(259, 6);
+				Match(input,42,Follow._42_in_referenceType281); 
+				DebugLocation(259, 12);
+				Match(input,32,Follow._32_in_referenceType283); 
+				DebugLocation(259, 16);
+				Match(input,33,Follow._33_in_referenceType285); 
+				DebugLocation(259, 20);
 				tipo = "int[]";
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:178:7: ID
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:260:7: 'double' '[' ']'
 				{
-				DebugLocation(178, 7);
-				ID4=(IToken)Match(input,ID,Follow._ID_in_referenceType292); 
-				DebugLocation(178, 10);
+				DebugLocation(260, 7);
+				Match(input,38,Follow._38_in_referenceType295); 
+				DebugLocation(260, 16);
+				Match(input,32,Follow._32_in_referenceType297); 
+				DebugLocation(260, 20);
+				Match(input,33,Follow._33_in_referenceType299); 
+				DebugLocation(260, 24);
+				tipo = "double[]";
+
+				}
+				break;
+			case 4:
+				DebugEnterAlt(4);
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:261:7: ID
+				{
+				DebugLocation(261, 7);
+				ID4=(IToken)Match(input,ID,Follow._ID_in_referenceType309); 
+				DebugLocation(261, 10);
 				tipo = (ID4!=null?ID4.Text:null);
 
 				}
@@ -1196,7 +1323,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("referenceType", 9);
 			LeaveRule_referenceType();
 	    }
-	 	DebugLocation(179, 4);
+	 	DebugLocation(262, 4);
 		} finally { DebugExitRule(GrammarFileName, "referenceType"); }
 		return tipo;
 
@@ -1210,7 +1337,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_voidType() {}
 
 	// $ANTLR start "voidType"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:181:1: voidType returns [string tipo] : t= 'void' ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:264:1: voidType returns [string tipo] : t= 'void' ;
 	[GrammarRule("voidType")]
 	private string voidType()
 	{
@@ -1223,16 +1350,16 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	    IToken t = default(IToken);
 
 		try { DebugEnterRule(GrammarFileName, "voidType");
-		DebugLocation(181, 60);
+		DebugLocation(264, 60);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:181:30: (t= 'void' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:264:30: (t= 'void' )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:181:32: t= 'void'
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:264:32: t= 'void'
 			{
-			DebugLocation(181, 34);
-			t=(IToken)Match(input,48,Follow._48_in_voidType315); 
-			DebugLocation(181, 43);
+			DebugLocation(264, 34);
+			t=(IToken)Match(input,52,Follow._52_in_voidType332); 
+			DebugLocation(264, 43);
 			tipo = (t!=null?t.Text:null);
 
 			}
@@ -1249,7 +1376,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("voidType", 10);
 			LeaveRule_voidType();
 	    }
-	 	DebugLocation(181, 60);
+	 	DebugLocation(264, 60);
 		} finally { DebugExitRule(GrammarFileName, "voidType"); }
 		return tipo;
 
@@ -1263,7 +1390,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_formalParamType() {}
 
 	// $ANTLR start "formalParamType"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:183:1: formalParamType returns [string tipo] : (t= primitiveType |t= referenceType ) ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:266:1: formalParamType returns [string tipo] : (t= primitiveType |t= referenceType ) ;
 	[GrammarRule("formalParamType")]
 	private string formalParamType()
 	{
@@ -1276,21 +1403,21 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	    string t = default(string);
 
 		try { DebugEnterRule(GrammarFileName, "formalParamType");
-		DebugLocation(183, 23);
+		DebugLocation(266, 23);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:183:37: ( (t= primitiveType |t= referenceType ) )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:266:37: ( (t= primitiveType |t= referenceType ) )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:183:39: (t= primitiveType |t= referenceType )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:266:39: (t= primitiveType |t= referenceType )
 			{
-			DebugLocation(183, 39);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:183:39: (t= primitiveType |t= referenceType )
+			DebugLocation(266, 39);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:266:39: (t= primitiveType |t= referenceType )
 			int alt12=2;
 			try { DebugEnterSubRule(12);
 			try { DebugEnterDecision(12, decisionCanBacktrack[12]);
 			switch (input.LA(1))
 			{
-			case 34:
+			case 35:
 				{
 				int LA12_1 = input.LA(2);
 
@@ -1310,7 +1437,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				}
 				}
 				break;
-			case 40:
+			case 42:
 				{
 				int LA12_2 = input.LA(2);
 
@@ -1325,6 +1452,26 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				else
 				{
 					NoViableAltException nvae = new NoViableAltException("", 12, 2, input);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+				}
+				break;
+			case 38:
+				{
+				int LA12_3 = input.LA(2);
+
+				if ((LA12_3==32))
+				{
+					alt12 = 2;
+				}
+				else if ((LA12_3==ID))
+				{
+					alt12 = 1;
+				}
+				else
+				{
+					NoViableAltException nvae = new NoViableAltException("", 12, 3, input);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
@@ -1348,10 +1495,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:183:40: t= primitiveType
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:266:40: t= primitiveType
 				{
-				DebugLocation(183, 42);
-				PushFollow(Follow._primitiveType_in_formalParamType332);
+				DebugLocation(266, 42);
+				PushFollow(Follow._primitiveType_in_formalParamType349);
 				t=primitiveType();
 				PopFollow();
 
@@ -1360,10 +1507,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:184:8: t= referenceType
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:267:8: t= referenceType
 				{
-				DebugLocation(184, 10);
-				PushFollow(Follow._referenceType_in_formalParamType346);
+				DebugLocation(267, 10);
+				PushFollow(Follow._referenceType_in_formalParamType363);
 				t=referenceType();
 				PopFollow();
 
@@ -1374,7 +1521,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(12); }
 
-			DebugLocation(185, 6);
+			DebugLocation(268, 6);
 			tipo = t;
 
 			}
@@ -1391,7 +1538,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("formalParamType", 11);
 			LeaveRule_formalParamType();
 	    }
-	 	DebugLocation(185, 23);
+	 	DebugLocation(268, 23);
 		} finally { DebugExitRule(GrammarFileName, "formalParamType"); }
 		return tipo;
 
@@ -1405,7 +1552,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_methods() {}
 
 	// $ANTLR start "methods"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:202:1: methods : 'methods' ':' ( methodDeclaration )* ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:285:1: methods : 'methods' ':' ( methodDeclaration )* ;
 	[GrammarRule("methods")]
 	private void methods()
 	{
@@ -1413,19 +1560,19 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("methods", 12);
 		TraceIn("methods", 12);
 		try { DebugEnterRule(GrammarFileName, "methods");
-		DebugLocation(202, 35);
+		DebugLocation(285, 35);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:203:2: ( 'methods' ':' ( methodDeclaration )* )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:286:2: ( 'methods' ':' ( methodDeclaration )* )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:203:4: 'methods' ':' ( methodDeclaration )*
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:286:4: 'methods' ':' ( methodDeclaration )*
 			{
-			DebugLocation(203, 4);
-			Match(input,42,Follow._42_in_methods373); 
-			DebugLocation(203, 14);
-			Match(input,24,Follow._24_in_methods375); 
-			DebugLocation(203, 18);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:203:18: ( methodDeclaration )*
+			DebugLocation(286, 4);
+			Match(input,44,Follow._44_in_methods390); 
+			DebugLocation(286, 14);
+			Match(input,24,Follow._24_in_methods392); 
+			DebugLocation(286, 18);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:286:18: ( methodDeclaration )*
 			try { DebugEnterSubRule(13);
 			while (true)
 			{
@@ -1433,7 +1580,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				try { DebugEnterDecision(13, decisionCanBacktrack[13]);
 				int LA13_0 = input.LA(1);
 
-				if ((LA13_0==48))
+				if ((LA13_0==52))
 				{
 					int LA13_1 = input.LA(2);
 
@@ -1444,7 +1591,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 
 
 				}
-				else if ((LA13_0==ID||LA13_0==34||LA13_0==40))
+				else if ((LA13_0==ID||LA13_0==35||LA13_0==38||LA13_0==42))
 				{
 					alt13 = 1;
 				}
@@ -1455,10 +1602,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:203:18: methodDeclaration
+					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:286:18: methodDeclaration
 					{
-					DebugLocation(203, 18);
-					PushFollow(Follow._methodDeclaration_in_methods377);
+					DebugLocation(286, 18);
+					PushFollow(Follow._methodDeclaration_in_methods394);
 					methodDeclaration();
 					PopFollow();
 
@@ -1491,7 +1638,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("methods", 12);
 			LeaveRule_methods();
 	    }
-	 	DebugLocation(203, 35);
+	 	DebugLocation(286, 35);
 		} finally { DebugExitRule(GrammarFileName, "methods"); }
 		return;
 
@@ -1505,7 +1652,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_methodDeclaration() {}
 
 	// $ANTLR start "methodDeclaration"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:205:1: methodDeclaration : (tRet= primitiveType |tRet= referenceType |tRet= voidType ) ID '(' ( formalParameters )? ')' '{' ( vars )? someStatements '}' ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:288:1: methodDeclaration : (tRet= primitiveType |tRet= referenceType |tRet= voidType ) ID '(' ( formalParameters )? ')' '{' ( vars )? someStatements '}' ;
 	[GrammarRule("methodDeclaration")]
 	private void methodDeclaration()
 	{
@@ -1519,21 +1666,21 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	    	ClassSymbol tipoRetorno;
 
 		try { DebugEnterRule(GrammarFileName, "methodDeclaration");
-		DebugLocation(205, 1);
+		DebugLocation(288, 1);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:209:3: ( (tRet= primitiveType |tRet= referenceType |tRet= voidType ) ID '(' ( formalParameters )? ')' '{' ( vars )? someStatements '}' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:292:3: ( (tRet= primitiveType |tRet= referenceType |tRet= voidType ) ID '(' ( formalParameters )? ')' '{' ( vars )? someStatements '}' )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:209:3: (tRet= primitiveType |tRet= referenceType |tRet= voidType ) ID '(' ( formalParameters )? ')' '{' ( vars )? someStatements '}'
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:292:3: (tRet= primitiveType |tRet= referenceType |tRet= voidType ) ID '(' ( formalParameters )? ')' '{' ( vars )? someStatements '}'
 			{
-			DebugLocation(209, 3);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:209:3: (tRet= primitiveType |tRet= referenceType |tRet= voidType )
+			DebugLocation(292, 3);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:292:3: (tRet= primitiveType |tRet= referenceType |tRet= voidType )
 			int alt14=3;
 			try { DebugEnterSubRule(14);
 			try { DebugEnterDecision(14, decisionCanBacktrack[14]);
 			switch (input.LA(1))
 			{
-			case 34:
+			case 35:
 				{
 				int LA14_1 = input.LA(2);
 
@@ -1553,7 +1700,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				}
 				}
 				break;
-			case 40:
+			case 42:
 				{
 				int LA14_2 = input.LA(2);
 
@@ -1573,12 +1720,32 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				}
 				}
 				break;
+			case 38:
+				{
+				int LA14_3 = input.LA(2);
+
+				if ((LA14_3==32))
+				{
+					alt14 = 2;
+				}
+				else if ((LA14_3==ID))
+				{
+					alt14 = 1;
+				}
+				else
+				{
+					NoViableAltException nvae = new NoViableAltException("", 14, 3, input);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+				}
+				break;
 			case ID:
 				{
 				alt14 = 2;
 				}
 				break;
-			case 48:
+			case 52:
 				{
 				alt14 = 3;
 				}
@@ -1596,10 +1763,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:209:4: tRet= primitiveType
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:292:4: tRet= primitiveType
 				{
-				DebugLocation(209, 9);
-				PushFollow(Follow._primitiveType_in_methodDeclaration396);
+				DebugLocation(292, 9);
+				PushFollow(Follow._primitiveType_in_methodDeclaration413);
 				tRet=primitiveType();
 				PopFollow();
 
@@ -1608,10 +1775,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:209:27: tRet= referenceType
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:292:27: tRet= referenceType
 				{
-				DebugLocation(209, 32);
-				PushFollow(Follow._referenceType_in_methodDeclaration404);
+				DebugLocation(292, 32);
+				PushFollow(Follow._referenceType_in_methodDeclaration421);
 				tRet=referenceType();
 				PopFollow();
 
@@ -1620,10 +1787,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:209:50: tRet= voidType
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:292:50: tRet= voidType
 				{
-				DebugLocation(209, 55);
-				PushFollow(Follow._voidType_in_methodDeclaration412);
+				DebugLocation(292, 55);
+				PushFollow(Follow._voidType_in_methodDeclaration429);
 				tRet=voidType();
 				PopFollow();
 
@@ -1634,22 +1801,22 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(14); }
 
-			DebugLocation(209, 67);
-			tipoRetorno = findType(tRet);
-			DebugLocation(210, 2);
-			ID5=(IToken)Match(input,ID,Follow._ID_in_methodDeclaration419); 
-			DebugLocation(210, 5);
+			DebugLocation(292, 67);
+			tipoRetorno = directory.findType(tRet);
+			DebugLocation(293, 2);
+			ID5=(IToken)Match(input,ID,Follow._ID_in_methodDeclaration436); 
+			DebugLocation(293, 5);
 			registrarMetodo(tipoRetorno, (ID5!=null?ID5.Text:null));
-			DebugLocation(211, 2);
-			Match(input,16,Follow._16_in_methodDeclaration425); 
-			DebugLocation(211, 6);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:211:6: ( formalParameters )?
+			DebugLocation(294, 2);
+			Match(input,16,Follow._16_in_methodDeclaration442); 
+			DebugLocation(294, 6);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:294:6: ( formalParameters )?
 			int alt15=2;
 			try { DebugEnterSubRule(15);
 			try { DebugEnterDecision(15, decisionCanBacktrack[15]);
 			int LA15_0 = input.LA(1);
 
-			if ((LA15_0==ID||LA15_0==34||LA15_0==40))
+			if ((LA15_0==ID||LA15_0==35||LA15_0==38||LA15_0==42))
 			{
 				alt15 = 1;
 			}
@@ -1658,10 +1825,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:211:6: formalParameters
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:294:6: formalParameters
 				{
-				DebugLocation(211, 6);
-				PushFollow(Follow._formalParameters_in_methodDeclaration427);
+				DebugLocation(294, 6);
+				PushFollow(Follow._formalParameters_in_methodDeclaration444);
 				formalParameters();
 				PopFollow();
 
@@ -1672,18 +1839,18 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(15); }
 
-			DebugLocation(211, 24);
-			Match(input,17,Follow._17_in_methodDeclaration430); 
-			DebugLocation(212, 2);
-			Match(input,50,Follow._50_in_methodDeclaration434); 
-			DebugLocation(212, 6);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:212:6: ( vars )?
+			DebugLocation(294, 24);
+			Match(input,17,Follow._17_in_methodDeclaration447); 
+			DebugLocation(295, 2);
+			Match(input,54,Follow._54_in_methodDeclaration451); 
+			DebugLocation(295, 6);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:295:6: ( vars )?
 			int alt16=2;
 			try { DebugEnterSubRule(16);
 			try { DebugEnterDecision(16, decisionCanBacktrack[16]);
 			int LA16_0 = input.LA(1);
 
-			if ((LA16_0==47))
+			if ((LA16_0==51))
 			{
 				alt16 = 1;
 			}
@@ -1692,10 +1859,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:212:6: vars
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:295:6: vars
 				{
-				DebugLocation(212, 6);
-				PushFollow(Follow._vars_in_methodDeclaration436);
+				DebugLocation(295, 6);
+				PushFollow(Follow._vars_in_methodDeclaration453);
 				vars();
 				PopFollow();
 
@@ -1706,14 +1873,14 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			}
 			} finally { DebugExitSubRule(16); }
 
-			DebugLocation(212, 12);
-			PushFollow(Follow._someStatements_in_methodDeclaration439);
+			DebugLocation(295, 12);
+			PushFollow(Follow._someStatements_in_methodDeclaration456);
 			someStatements();
 			PopFollow();
 
-			DebugLocation(212, 27);
-			Match(input,51,Follow._51_in_methodDeclaration441); 
-			DebugLocation(213, 2);
+			DebugLocation(295, 27);
+			Match(input,55,Follow._55_in_methodDeclaration458); 
+			DebugLocation(296, 2);
 			actualScope = ((MethodSymbol)actualScope).enclosingScope;
 
 			}
@@ -1730,7 +1897,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("methodDeclaration", 13);
 			LeaveRule_methodDeclaration();
 	    }
-	 	DebugLocation(214, 1);
+	 	DebugLocation(297, 1);
 		} finally { DebugExitRule(GrammarFileName, "methodDeclaration"); }
 		return;
 
@@ -1744,7 +1911,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_formalParam() {}
 
 	// $ANTLR start "formalParam"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:216:1: formalParam : t= formalParamType ID ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:299:1: formalParam : t= formalParamType ID ;
 	[GrammarRule("formalParam")]
 	private void formalParam()
 	{
@@ -1755,21 +1922,21 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	    string t = default(string);
 
 		try { DebugEnterRule(GrammarFileName, "formalParam");
-		DebugLocation(216, 82);
+		DebugLocation(299, 82);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:216:12: (t= formalParamType ID )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:299:12: (t= formalParamType ID )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:216:14: t= formalParamType ID
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:299:14: t= formalParamType ID
 			{
-			DebugLocation(216, 16);
-			PushFollow(Follow._formalParamType_in_formalParam459);
+			DebugLocation(299, 16);
+			PushFollow(Follow._formalParamType_in_formalParam476);
 			t=formalParamType();
 			PopFollow();
 
-			DebugLocation(216, 34);
-			ID6=(IToken)Match(input,ID,Follow._ID_in_formalParam461); 
-			DebugLocation(216, 37);
+			DebugLocation(299, 34);
+			ID6=(IToken)Match(input,ID,Follow._ID_in_formalParam478); 
+			DebugLocation(299, 37);
 			registerVariableInMethod((ID6!=null?ID6.Text:null), t);
 
 			}
@@ -1786,7 +1953,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("formalParam", 14);
 			LeaveRule_formalParam();
 	    }
-	 	DebugLocation(216, 82);
+	 	DebugLocation(299, 82);
 		} finally { DebugExitRule(GrammarFileName, "formalParam"); }
 		return;
 
@@ -1800,7 +1967,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_formalParameters() {}
 
 	// $ANTLR start "formalParameters"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:218:1: formalParameters : t= formalParam ( ',' formalParam )* ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:301:1: formalParameters : t= formalParam ( ',' formalParam )* ;
 	[GrammarRule("formalParameters")]
 	private void formalParameters()
 	{
@@ -1808,20 +1975,20 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("formalParameters", 15);
 		TraceIn("formalParameters", 15);
 		try { DebugEnterRule(GrammarFileName, "formalParameters");
-		DebugLocation(218, 38);
+		DebugLocation(301, 38);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:219:4: (t= formalParam ( ',' formalParam )* )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:302:4: (t= formalParam ( ',' formalParam )* )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:219:4: t= formalParam ( ',' formalParam )*
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:302:4: t= formalParam ( ',' formalParam )*
 			{
-			DebugLocation(219, 6);
-			PushFollow(Follow._formalParam_in_formalParameters477);
+			DebugLocation(302, 6);
+			PushFollow(Follow._formalParam_in_formalParameters494);
 			formalParam();
 			PopFollow();
 
-			DebugLocation(219, 20);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:219:20: ( ',' formalParam )*
+			DebugLocation(302, 20);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:302:20: ( ',' formalParam )*
 			try { DebugEnterSubRule(17);
 			while (true)
 			{
@@ -1840,12 +2007,12 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:219:21: ',' formalParam
+					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:302:21: ',' formalParam
 					{
-					DebugLocation(219, 21);
-					Match(input,20,Follow._20_in_formalParameters480); 
-					DebugLocation(219, 25);
-					PushFollow(Follow._formalParam_in_formalParameters482);
+					DebugLocation(302, 21);
+					Match(input,20,Follow._20_in_formalParameters497); 
+					DebugLocation(302, 25);
+					PushFollow(Follow._formalParam_in_formalParameters499);
 					formalParam();
 					PopFollow();
 
@@ -1878,7 +2045,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("formalParameters", 15);
 			LeaveRule_formalParameters();
 	    }
-	 	DebugLocation(219, 38);
+	 	DebugLocation(302, 38);
 		} finally { DebugExitRule(GrammarFileName, "formalParameters"); }
 		return;
 
@@ -1892,7 +2059,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_someStatements() {}
 
 	// $ANTLR start "someStatements"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:221:1: someStatements : ( statement )* ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:304:1: someStatements : ( statement )* ;
 	[GrammarRule("someStatements")]
 	private void someStatements()
 	{
@@ -1900,15 +2067,15 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("someStatements", 16);
 		TraceIn("someStatements", 16);
 		try { DebugEnterRule(GrammarFileName, "someStatements");
-		DebugLocation(221, 13);
+		DebugLocation(304, 13);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:222:2: ( ( statement )* )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:305:2: ( ( statement )* )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:222:4: ( statement )*
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:305:4: ( statement )*
 			{
-			DebugLocation(222, 4);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:222:4: ( statement )*
+			DebugLocation(305, 4);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:305:4: ( statement )*
 			try { DebugEnterSubRule(18);
 			while (true)
 			{
@@ -1916,7 +2083,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				try { DebugEnterDecision(18, decisionCanBacktrack[18]);
 				int LA18_0 = input.LA(1);
 
-				if ((LA18_0==ID||LA18_0==25||LA18_0==39||(LA18_0>=44 && LA18_0<=46)||LA18_0==49))
+				if ((LA18_0==ID||LA18_0==25||LA18_0==41||(LA18_0>=47 && LA18_0<=50)||LA18_0==53))
 				{
 					alt18 = 1;
 				}
@@ -1927,10 +2094,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				{
 				case 1:
 					DebugEnterAlt(1);
-					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:222:4: statement
+					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:305:4: statement
 					{
-					DebugLocation(222, 4);
-					PushFollow(Follow._statement_in_someStatements494);
+					DebugLocation(305, 4);
+					PushFollow(Follow._statement_in_someStatements511);
 					statement();
 					PopFollow();
 
@@ -1963,7 +2130,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("someStatements", 16);
 			LeaveRule_someStatements();
 	    }
-	 	DebugLocation(222, 13);
+	 	DebugLocation(305, 13);
 		} finally { DebugExitRule(GrammarFileName, "someStatements"); }
 		return;
 
@@ -1977,7 +2144,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_statement() {}
 
 	// $ANTLR start "statement"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:224:1: statement : ( assignment | invoke | if_inst | while_inst | return_inst | read | print | ';' );
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:307:1: statement : ( assignment | invoke ';' | if_inst | while_inst | return_inst | read | print | ';' );
 	[GrammarRule("statement")]
 	private void statement()
 	{
@@ -1985,10 +2152,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("statement", 17);
 		TraceIn("statement", 17);
 		try { DebugEnterRule(GrammarFileName, "statement");
-		DebugLocation(224, 7);
+		DebugLocation(307, 7);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:224:11: ( assignment | invoke | if_inst | while_inst | return_inst | read | print | ';' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:307:11: ( assignment | invoke ';' | if_inst | while_inst | return_inst | read | print | ';' )
 			int alt19=8;
 			try { DebugEnterDecision(19, decisionCanBacktrack[19]);
 			switch (input.LA(1))
@@ -1999,19 +2166,19 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				{
 				case 22:
 					{
-					int LA19_8 = input.LA(3);
+					int LA19_9 = input.LA(3);
 
-					if ((LA19_8==ID))
+					if ((LA19_9==ID))
 					{
 						int LA19_11 = input.LA(4);
 
-						if ((LA19_11==16))
-						{
-							alt19 = 2;
-						}
-						else if ((LA19_11==28))
+						if ((LA19_11==28))
 						{
 							alt19 = 1;
+						}
+						else if ((LA19_11==16))
+						{
+							alt19 = 2;
 						}
 						else
 						{
@@ -2022,7 +2189,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 					}
 					else
 					{
-						NoViableAltException nvae = new NoViableAltException("", 19, 8, input);
+						NoViableAltException nvae = new NoViableAltException("", 19, 9, input);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
@@ -2049,27 +2216,32 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 
 				}
 				break;
-			case 39:
+			case 50:
+				{
+				alt19 = 1;
+				}
+				break;
+			case 41:
 				{
 				alt19 = 3;
 				}
 				break;
-			case 49:
+			case 53:
 				{
 				alt19 = 4;
 				}
 				break;
-			case 46:
+			case 49:
 				{
 				alt19 = 5;
 				}
 				break;
-			case 45:
+			case 48:
 				{
 				alt19 = 6;
 				}
 				break;
-			case 44:
+			case 47:
 				{
 				alt19 = 7;
 				}
@@ -2092,10 +2264,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:224:13: assignment
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:307:13: assignment
 				{
-				DebugLocation(224, 13);
-				PushFollow(Follow._assignment_in_statement503);
+				DebugLocation(307, 13);
+				PushFollow(Follow._assignment_in_statement520);
 				assignment();
 				PopFollow();
 
@@ -2104,22 +2276,24 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:225:5: invoke
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:308:5: invoke ';'
 				{
-				DebugLocation(225, 5);
-				PushFollow(Follow._invoke_in_statement509);
+				DebugLocation(308, 5);
+				PushFollow(Follow._invoke_in_statement526);
 				invoke();
 				PopFollow();
 
+				DebugLocation(308, 12);
+				Match(input,25,Follow._25_in_statement528); 
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:226:5: if_inst
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:309:5: if_inst
 				{
-				DebugLocation(226, 5);
-				PushFollow(Follow._if_inst_in_statement515);
+				DebugLocation(309, 5);
+				PushFollow(Follow._if_inst_in_statement534);
 				if_inst();
 				PopFollow();
 
@@ -2128,10 +2302,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:227:5: while_inst
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:310:5: while_inst
 				{
-				DebugLocation(227, 5);
-				PushFollow(Follow._while_inst_in_statement521);
+				DebugLocation(310, 5);
+				PushFollow(Follow._while_inst_in_statement540);
 				while_inst();
 				PopFollow();
 
@@ -2140,10 +2314,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				break;
 			case 5:
 				DebugEnterAlt(5);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:228:5: return_inst
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:311:5: return_inst
 				{
-				DebugLocation(228, 5);
-				PushFollow(Follow._return_inst_in_statement527);
+				DebugLocation(311, 5);
+				PushFollow(Follow._return_inst_in_statement546);
 				return_inst();
 				PopFollow();
 
@@ -2152,10 +2326,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				break;
 			case 6:
 				DebugEnterAlt(6);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:229:5: read
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:312:5: read
 				{
-				DebugLocation(229, 5);
-				PushFollow(Follow._read_in_statement533);
+				DebugLocation(312, 5);
+				PushFollow(Follow._read_in_statement552);
 				read();
 				PopFollow();
 
@@ -2164,10 +2338,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				break;
 			case 7:
 				DebugEnterAlt(7);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:230:5: print
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:313:5: print
 				{
-				DebugLocation(230, 5);
-				PushFollow(Follow._print_in_statement539);
+				DebugLocation(313, 5);
+				PushFollow(Follow._print_in_statement558);
 				print();
 				PopFollow();
 
@@ -2176,10 +2350,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				break;
 			case 8:
 				DebugEnterAlt(8);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:231:5: ';'
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:314:5: ';'
 				{
-				DebugLocation(231, 5);
-				Match(input,25,Follow._25_in_statement545); 
+				DebugLocation(314, 5);
+				Match(input,25,Follow._25_in_statement564); 
 
 				}
 				break;
@@ -2197,7 +2371,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("statement", 17);
 			LeaveRule_statement();
 	    }
-	 	DebugLocation(231, 7);
+	 	DebugLocation(314, 7);
 		} finally { DebugExitRule(GrammarFileName, "statement"); }
 		return;
 
@@ -2211,95 +2385,56 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_assignment() {}
 
 	// $ANTLR start "assignment"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:233:1: assignment : designator '=' expression ';' ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:316:1: assignment : designator '=' ( expression | 'new' ID '(' ')' | 'new' primitiveType '[' INT ']' ) ';' ;
 	[GrammarRule("assignment")]
 	private void assignment()
 	{
 		EnterRule_assignment();
 		EnterRule("assignment", 18);
 		TraceIn("assignment", 18);
+	    IToken ID7 = default(IToken);
+
 		try { DebugEnterRule(GrammarFileName, "assignment");
-		DebugLocation(233, 32);
+		DebugLocation(316, 1);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:234:2: ( designator '=' expression ';' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:317:2: ( designator '=' ( expression | 'new' ID '(' ')' | 'new' primitiveType '[' INT ']' ) ';' )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:234:4: designator '=' expression ';'
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:317:4: designator '=' ( expression | 'new' ID '(' ')' | 'new' primitiveType '[' INT ']' ) ';'
 			{
-			DebugLocation(234, 4);
-			PushFollow(Follow._designator_in_assignment556);
+			DebugLocation(317, 4);
+			PushFollow(Follow._designator_in_assignment575);
 			designator();
 			PopFollow();
 
-			DebugLocation(234, 15);
-			Match(input,28,Follow._28_in_assignment558); 
-			DebugLocation(234, 19);
-			PushFollow(Follow._expression_in_assignment560);
-			expression();
-			PopFollow();
-
-			DebugLocation(234, 30);
-			Match(input,25,Follow._25_in_assignment562); 
-
-			}
-
-		}
-
-		    catch (RecognitionException ex) {
-		        throw ex;
-		    }
-
-		finally
-		{
-			TraceOut("assignment", 18);
-			LeaveRule("assignment", 18);
-			LeaveRule_assignment();
-	    }
-	 	DebugLocation(234, 32);
-		} finally { DebugExitRule(GrammarFileName, "assignment"); }
-		return;
-
-	}
-	// $ANTLR end "assignment"
-
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_invoke() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_invoke() {}
-
-	// $ANTLR start "invoke"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:236:1: invoke : ( ID actualParameters ';' | ID '.' ID actualParameters ';' );
-	[GrammarRule("invoke")]
-	private void invoke()
-	{
-		EnterRule_invoke();
-		EnterRule("invoke", 19);
-		TraceIn("invoke", 19);
-		try { DebugEnterRule(GrammarFileName, "invoke");
-		DebugLocation(236, 2);
-		try
-		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:236:8: ( ID actualParameters ';' | ID '.' ID actualParameters ';' )
-			int alt20=2;
+			DebugLocation(317, 15);
+			Match(input,28,Follow._28_in_assignment577); 
+			DebugLocation(318, 3);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:318:3: ( expression | 'new' ID '(' ')' | 'new' primitiveType '[' INT ']' )
+			int alt20=3;
+			try { DebugEnterSubRule(20);
 			try { DebugEnterDecision(20, decisionCanBacktrack[20]);
 			int LA20_0 = input.LA(1);
 
-			if ((LA20_0==ID))
+			if ((LA20_0==CHAR||LA20_0==FLOAT||(LA20_0>=ID && LA20_0<=INT)||LA20_0==16||LA20_0==50))
 			{
-				int LA20_1 = input.LA(2);
+				alt20 = 1;
+			}
+			else if ((LA20_0==45))
+			{
+				int LA20_2 = input.LA(2);
 
-				if ((LA20_1==22))
+				if ((LA20_2==ID))
 				{
 					alt20 = 2;
 				}
-				else if ((LA20_1==16))
+				else if ((LA20_2==35||LA20_2==38||LA20_2==42))
 				{
-					alt20 = 1;
+					alt20 = 3;
 				}
 				else
 				{
-					NoViableAltException nvae = new NoViableAltException("", 20, 1, input);
+					NoViableAltException nvae = new NoViableAltException("", 20, 2, input);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
@@ -2315,37 +2450,166 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:236:10: ID actualParameters ';'
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:319:3: expression
 				{
-				DebugLocation(236, 10);
-				Match(input,ID,Follow._ID_in_invoke571); 
-				DebugLocation(236, 13);
-				PushFollow(Follow._actualParameters_in_invoke573);
-				actualParameters();
+				DebugLocation(319, 3);
+				PushFollow(Follow._expression_in_assignment586);
+				expression();
 				PopFollow();
 
-				DebugLocation(236, 30);
-				Match(input,25,Follow._25_in_invoke575); 
+				DebugLocation(320, 3);
+
+						//VariableSymbol right = pOperandos.Pop();
+						
+						
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:237:5: ID '.' ID actualParameters ';'
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:324:5: 'new' ID '(' ')'
 				{
-				DebugLocation(237, 5);
-				Match(input,ID,Follow._ID_in_invoke582); 
-				DebugLocation(237, 8);
-				Match(input,22,Follow._22_in_invoke584); 
-				DebugLocation(237, 12);
-				Match(input,ID,Follow._ID_in_invoke586); 
-				DebugLocation(237, 15);
-				PushFollow(Follow._actualParameters_in_invoke588);
+				DebugLocation(324, 5);
+				Match(input,45,Follow._45_in_assignment596); 
+				DebugLocation(324, 11);
+				ID7=(IToken)Match(input,ID,Follow._ID_in_assignment598); 
+				DebugLocation(324, 14);
+				Match(input,16,Follow._16_in_assignment600); 
+				DebugLocation(324, 18);
+				Match(input,17,Follow._17_in_assignment602); 
+				DebugLocation(324, 22);
+				directory.findType((ID7!=null?ID7.Text:null));
+
+				}
+				break;
+			case 3:
+				DebugEnterAlt(3);
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:325:5: 'new' primitiveType '[' INT ']'
+				{
+				DebugLocation(325, 5);
+				Match(input,45,Follow._45_in_assignment610); 
+				DebugLocation(325, 11);
+				PushFollow(Follow._primitiveType_in_assignment612);
+				primitiveType();
+				PopFollow();
+
+				DebugLocation(325, 25);
+				Match(input,32,Follow._32_in_assignment614); 
+				DebugLocation(325, 29);
+				Match(input,INT,Follow._INT_in_assignment616); 
+				DebugLocation(325, 33);
+				Match(input,33,Follow._33_in_assignment618); 
+
+				}
+				break;
+
+			}
+			} finally { DebugExitSubRule(20); }
+
+			DebugLocation(327, 3);
+			Match(input,25,Follow._25_in_assignment627); 
+
+			}
+
+		}
+
+		    catch (RecognitionException ex) {
+		        throw ex;
+		    }
+
+		finally
+		{
+			TraceOut("assignment", 18);
+			LeaveRule("assignment", 18);
+			LeaveRule_assignment();
+	    }
+	 	DebugLocation(328, 1);
+		} finally { DebugExitRule(GrammarFileName, "assignment"); }
+		return;
+
+	}
+	// $ANTLR end "assignment"
+
+
+	[Conditional("ANTLR_TRACE")]
+	protected virtual void EnterRule_invoke() {}
+	[Conditional("ANTLR_TRACE")]
+	protected virtual void LeaveRule_invoke() {}
+
+	// $ANTLR start "invoke"
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:332:1: invoke : ( ID actualParameters | ID '.' ID actualParameters );
+	[GrammarRule("invoke")]
+	private void invoke()
+	{
+		EnterRule_invoke();
+		EnterRule("invoke", 19);
+		TraceIn("invoke", 19);
+		try { DebugEnterRule(GrammarFileName, "invoke");
+		DebugLocation(332, 2);
+		try
+		{
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:332:8: ( ID actualParameters | ID '.' ID actualParameters )
+			int alt21=2;
+			try { DebugEnterDecision(21, decisionCanBacktrack[21]);
+			int LA21_0 = input.LA(1);
+
+			if ((LA21_0==ID))
+			{
+				int LA21_1 = input.LA(2);
+
+				if ((LA21_1==22))
+				{
+					alt21 = 2;
+				}
+				else if ((LA21_1==16))
+				{
+					alt21 = 1;
+				}
+				else
+				{
+					NoViableAltException nvae = new NoViableAltException("", 21, 1, input);
+					DebugRecognitionException(nvae);
+					throw nvae;
+				}
+			}
+			else
+			{
+				NoViableAltException nvae = new NoViableAltException("", 21, 0, input);
+				DebugRecognitionException(nvae);
+				throw nvae;
+			}
+			} finally { DebugExitDecision(21); }
+			switch (alt21)
+			{
+			case 1:
+				DebugEnterAlt(1);
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:332:10: ID actualParameters
+				{
+				DebugLocation(332, 10);
+				Match(input,ID,Follow._ID_in_invoke644); 
+				DebugLocation(332, 13);
+				PushFollow(Follow._actualParameters_in_invoke646);
 				actualParameters();
 				PopFollow();
 
-				DebugLocation(237, 32);
-				Match(input,25,Follow._25_in_invoke590); 
+
+				}
+				break;
+			case 2:
+				DebugEnterAlt(2);
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:333:5: ID '.' ID actualParameters
+				{
+				DebugLocation(333, 5);
+				Match(input,ID,Follow._ID_in_invoke654); 
+				DebugLocation(333, 8);
+				Match(input,22,Follow._22_in_invoke656); 
+				DebugLocation(333, 12);
+				Match(input,ID,Follow._ID_in_invoke658); 
+				DebugLocation(333, 15);
+				PushFollow(Follow._actualParameters_in_invoke660);
+				actualParameters();
+				PopFollow();
+
 
 				}
 				break;
@@ -2363,7 +2627,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("invoke", 19);
 			LeaveRule_invoke();
 	    }
-	 	DebugLocation(238, 2);
+	 	DebugLocation(334, 2);
 		} finally { DebugExitRule(GrammarFileName, "invoke"); }
 		return;
 
@@ -2377,7 +2641,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_if_inst() {}
 
 	// $ANTLR start "if_inst"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:240:1: if_inst : 'if' '(' condition ')' '{' someStatements '}' ( 'else' '{' someStatements '}' )? ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:336:1: if_inst : 'if' '(' expression ')' '{' someStatements '}' ( 'else' '{' someStatements '}' )? ;
 	[GrammarRule("if_inst")]
 	private void if_inst()
 	{
@@ -2385,68 +2649,68 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("if_inst", 20);
 		TraceIn("if_inst", 20);
 		try { DebugEnterRule(GrammarFileName, "if_inst");
-		DebugLocation(240, 88);
+		DebugLocation(336, 89);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:240:9: ( 'if' '(' condition ')' '{' someStatements '}' ( 'else' '{' someStatements '}' )? )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:336:9: ( 'if' '(' expression ')' '{' someStatements '}' ( 'else' '{' someStatements '}' )? )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:240:11: 'if' '(' condition ')' '{' someStatements '}' ( 'else' '{' someStatements '}' )?
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:336:11: 'if' '(' expression ')' '{' someStatements '}' ( 'else' '{' someStatements '}' )?
 			{
-			DebugLocation(240, 11);
-			Match(input,39,Follow._39_in_if_inst602); 
-			DebugLocation(240, 16);
-			Match(input,16,Follow._16_in_if_inst604); 
-			DebugLocation(240, 20);
-			PushFollow(Follow._condition_in_if_inst606);
-			condition();
+			DebugLocation(336, 11);
+			Match(input,41,Follow._41_in_if_inst673); 
+			DebugLocation(336, 16);
+			Match(input,16,Follow._16_in_if_inst675); 
+			DebugLocation(336, 20);
+			PushFollow(Follow._expression_in_if_inst677);
+			expression();
 			PopFollow();
 
-			DebugLocation(240, 30);
-			Match(input,17,Follow._17_in_if_inst608); 
-			DebugLocation(240, 34);
-			Match(input,50,Follow._50_in_if_inst610); 
-			DebugLocation(240, 38);
-			PushFollow(Follow._someStatements_in_if_inst612);
+			DebugLocation(336, 31);
+			Match(input,17,Follow._17_in_if_inst679); 
+			DebugLocation(336, 35);
+			Match(input,54,Follow._54_in_if_inst681); 
+			DebugLocation(336, 39);
+			PushFollow(Follow._someStatements_in_if_inst683);
 			someStatements();
 			PopFollow();
 
-			DebugLocation(240, 53);
-			Match(input,51,Follow._51_in_if_inst614); 
-			DebugLocation(240, 57);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:240:57: ( 'else' '{' someStatements '}' )?
-			int alt21=2;
-			try { DebugEnterSubRule(21);
-			try { DebugEnterDecision(21, decisionCanBacktrack[21]);
-			int LA21_0 = input.LA(1);
+			DebugLocation(336, 54);
+			Match(input,55,Follow._55_in_if_inst685); 
+			DebugLocation(336, 58);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:336:58: ( 'else' '{' someStatements '}' )?
+			int alt22=2;
+			try { DebugEnterSubRule(22);
+			try { DebugEnterDecision(22, decisionCanBacktrack[22]);
+			int LA22_0 = input.LA(1);
 
-			if ((LA21_0==37))
+			if ((LA22_0==39))
 			{
-				alt21 = 1;
+				alt22 = 1;
 			}
-			} finally { DebugExitDecision(21); }
-			switch (alt21)
+			} finally { DebugExitDecision(22); }
+			switch (alt22)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:240:58: 'else' '{' someStatements '}'
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:336:59: 'else' '{' someStatements '}'
 				{
-				DebugLocation(240, 58);
-				Match(input,37,Follow._37_in_if_inst617); 
-				DebugLocation(240, 65);
-				Match(input,50,Follow._50_in_if_inst619); 
-				DebugLocation(240, 69);
-				PushFollow(Follow._someStatements_in_if_inst621);
+				DebugLocation(336, 59);
+				Match(input,39,Follow._39_in_if_inst688); 
+				DebugLocation(336, 66);
+				Match(input,54,Follow._54_in_if_inst690); 
+				DebugLocation(336, 70);
+				PushFollow(Follow._someStatements_in_if_inst692);
 				someStatements();
 				PopFollow();
 
-				DebugLocation(240, 84);
-				Match(input,51,Follow._51_in_if_inst623); 
+				DebugLocation(336, 85);
+				Match(input,55,Follow._55_in_if_inst694); 
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(21); }
+			} finally { DebugExitSubRule(22); }
 
 
 			}
@@ -2463,7 +2727,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("if_inst", 20);
 			LeaveRule_if_inst();
 	    }
-	 	DebugLocation(240, 88);
+	 	DebugLocation(336, 89);
 		} finally { DebugExitRule(GrammarFileName, "if_inst"); }
 		return;
 
@@ -2477,7 +2741,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_while_inst() {}
 
 	// $ANTLR start "while_inst"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:242:1: while_inst : 'while' '(' condition ')' '{' someStatements '}' ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:338:1: while_inst : 'while' '(' expression ')' '{' someStatements '}' ;
 	[GrammarRule("while_inst")]
 	private void while_inst()
 	{
@@ -2485,33 +2749,33 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("while_inst", 21);
 		TraceIn("while_inst", 21);
 		try { DebugEnterRule(GrammarFileName, "while_inst");
-		DebugLocation(242, 61);
+		DebugLocation(338, 62);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:242:12: ( 'while' '(' condition ')' '{' someStatements '}' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:338:12: ( 'while' '(' expression ')' '{' someStatements '}' )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:242:14: 'while' '(' condition ')' '{' someStatements '}'
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:338:14: 'while' '(' expression ')' '{' someStatements '}'
 			{
-			DebugLocation(242, 14);
-			Match(input,49,Follow._49_in_while_inst633); 
-			DebugLocation(242, 22);
-			Match(input,16,Follow._16_in_while_inst635); 
-			DebugLocation(242, 26);
-			PushFollow(Follow._condition_in_while_inst637);
-			condition();
+			DebugLocation(338, 14);
+			Match(input,53,Follow._53_in_while_inst704); 
+			DebugLocation(338, 22);
+			Match(input,16,Follow._16_in_while_inst706); 
+			DebugLocation(338, 26);
+			PushFollow(Follow._expression_in_while_inst708);
+			expression();
 			PopFollow();
 
-			DebugLocation(242, 36);
-			Match(input,17,Follow._17_in_while_inst639); 
-			DebugLocation(242, 40);
-			Match(input,50,Follow._50_in_while_inst641); 
-			DebugLocation(242, 44);
-			PushFollow(Follow._someStatements_in_while_inst643);
+			DebugLocation(338, 37);
+			Match(input,17,Follow._17_in_while_inst710); 
+			DebugLocation(338, 41);
+			Match(input,54,Follow._54_in_while_inst712); 
+			DebugLocation(338, 45);
+			PushFollow(Follow._someStatements_in_while_inst714);
 			someStatements();
 			PopFollow();
 
-			DebugLocation(242, 59);
-			Match(input,51,Follow._51_in_while_inst645); 
+			DebugLocation(338, 60);
+			Match(input,55,Follow._55_in_while_inst716); 
 
 			}
 
@@ -2527,7 +2791,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("while_inst", 21);
 			LeaveRule_while_inst();
 	    }
-	 	DebugLocation(242, 61);
+	 	DebugLocation(338, 62);
 		} finally { DebugExitRule(GrammarFileName, "while_inst"); }
 		return;
 
@@ -2541,7 +2805,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_return_inst() {}
 
 	// $ANTLR start "return_inst"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:244:1: return_inst : 'return' ( expression )? ';' ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:340:1: return_inst : 'return' ( expression )? ';' ;
 	[GrammarRule("return_inst")]
 	private void return_inst()
 	{
@@ -2549,35 +2813,35 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("return_inst", 22);
 		TraceIn("return_inst", 22);
 		try { DebugEnterRule(GrammarFileName, "return_inst");
-		DebugLocation(244, 38);
+		DebugLocation(340, 38);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:244:13: ( 'return' ( expression )? ';' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:340:13: ( 'return' ( expression )? ';' )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:244:15: 'return' ( expression )? ';'
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:340:15: 'return' ( expression )? ';'
 			{
-			DebugLocation(244, 15);
-			Match(input,46,Follow._46_in_return_inst653); 
-			DebugLocation(244, 24);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:244:24: ( expression )?
-			int alt22=2;
-			try { DebugEnterSubRule(22);
-			try { DebugEnterDecision(22, decisionCanBacktrack[22]);
-			int LA22_0 = input.LA(1);
+			DebugLocation(340, 15);
+			Match(input,49,Follow._49_in_return_inst724); 
+			DebugLocation(340, 24);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:340:24: ( expression )?
+			int alt23=2;
+			try { DebugEnterSubRule(23);
+			try { DebugEnterDecision(23, decisionCanBacktrack[23]);
+			int LA23_0 = input.LA(1);
 
-			if ((LA22_0==CHAR||(LA22_0>=ID && LA22_0<=INT)||LA22_0==16||LA22_0==43))
+			if ((LA23_0==CHAR||LA23_0==FLOAT||(LA23_0>=ID && LA23_0<=INT)||LA23_0==16||LA23_0==50))
 			{
-				alt22 = 1;
+				alt23 = 1;
 			}
-			} finally { DebugExitDecision(22); }
-			switch (alt22)
+			} finally { DebugExitDecision(23); }
+			switch (alt23)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:244:24: expression
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:340:24: expression
 				{
-				DebugLocation(244, 24);
-				PushFollow(Follow._expression_in_return_inst655);
+				DebugLocation(340, 24);
+				PushFollow(Follow._expression_in_return_inst726);
 				expression();
 				PopFollow();
 
@@ -2586,10 +2850,10 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				break;
 
 			}
-			} finally { DebugExitSubRule(22); }
+			} finally { DebugExitSubRule(23); }
 
-			DebugLocation(244, 36);
-			Match(input,25,Follow._25_in_return_inst658); 
+			DebugLocation(340, 36);
+			Match(input,25,Follow._25_in_return_inst729); 
 
 			}
 
@@ -2605,7 +2869,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("return_inst", 22);
 			LeaveRule_return_inst();
 	    }
-	 	DebugLocation(244, 38);
+	 	DebugLocation(340, 38);
 		} finally { DebugExitRule(GrammarFileName, "return_inst"); }
 		return;
 
@@ -2619,7 +2883,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_read() {}
 
 	// $ANTLR start "read"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:246:1: read : 'read' '(' designator ')' ';' ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:342:1: read : 'read' '(' designator ')' ';' ;
 	[GrammarRule("read")]
 	private void read()
 	{
@@ -2627,26 +2891,26 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("read", 23);
 		TraceIn("read", 23);
 		try { DebugEnterRule(GrammarFileName, "read");
-		DebugLocation(246, 36);
+		DebugLocation(342, 36);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:246:6: ( 'read' '(' designator ')' ';' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:342:6: ( 'read' '(' designator ')' ';' )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:246:8: 'read' '(' designator ')' ';'
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:342:8: 'read' '(' designator ')' ';'
 			{
-			DebugLocation(246, 8);
-			Match(input,45,Follow._45_in_read666); 
-			DebugLocation(246, 15);
-			Match(input,16,Follow._16_in_read668); 
-			DebugLocation(246, 19);
-			PushFollow(Follow._designator_in_read670);
+			DebugLocation(342, 8);
+			Match(input,48,Follow._48_in_read737); 
+			DebugLocation(342, 15);
+			Match(input,16,Follow._16_in_read739); 
+			DebugLocation(342, 19);
+			PushFollow(Follow._designator_in_read741);
 			designator();
 			PopFollow();
 
-			DebugLocation(246, 30);
-			Match(input,17,Follow._17_in_read672); 
-			DebugLocation(246, 34);
-			Match(input,25,Follow._25_in_read674); 
+			DebugLocation(342, 30);
+			Match(input,17,Follow._17_in_read743); 
+			DebugLocation(342, 34);
+			Match(input,25,Follow._25_in_read745); 
 
 			}
 
@@ -2662,7 +2926,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("read", 23);
 			LeaveRule_read();
 	    }
-	 	DebugLocation(246, 36);
+	 	DebugLocation(342, 36);
 		} finally { DebugExitRule(GrammarFileName, "read"); }
 		return;
 
@@ -2676,7 +2940,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_print() {}
 
 	// $ANTLR start "print"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:248:1: print : 'print' '(' expression ')' ';' ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:344:1: print : 'print' '(' expression ')' ';' ;
 	[GrammarRule("print")]
 	private void print()
 	{
@@ -2684,26 +2948,26 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("print", 24);
 		TraceIn("print", 24);
 		try { DebugEnterRule(GrammarFileName, "print");
-		DebugLocation(248, 38);
+		DebugLocation(344, 38);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:248:7: ( 'print' '(' expression ')' ';' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:344:7: ( 'print' '(' expression ')' ';' )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:248:9: 'print' '(' expression ')' ';'
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:344:9: 'print' '(' expression ')' ';'
 			{
-			DebugLocation(248, 9);
-			Match(input,44,Follow._44_in_print682); 
-			DebugLocation(248, 17);
-			Match(input,16,Follow._16_in_print684); 
-			DebugLocation(248, 21);
-			PushFollow(Follow._expression_in_print686);
+			DebugLocation(344, 9);
+			Match(input,47,Follow._47_in_print753); 
+			DebugLocation(344, 17);
+			Match(input,16,Follow._16_in_print755); 
+			DebugLocation(344, 21);
+			PushFollow(Follow._expression_in_print757);
 			expression();
 			PopFollow();
 
-			DebugLocation(248, 32);
-			Match(input,17,Follow._17_in_print688); 
-			DebugLocation(248, 36);
-			Match(input,25,Follow._25_in_print690); 
+			DebugLocation(344, 32);
+			Match(input,17,Follow._17_in_print759); 
+			DebugLocation(344, 36);
+			Match(input,25,Follow._25_in_print761); 
 
 			}
 
@@ -2719,7 +2983,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("print", 24);
 			LeaveRule_print();
 	    }
-	 	DebugLocation(248, 38);
+	 	DebugLocation(344, 38);
 		} finally { DebugExitRule(GrammarFileName, "print"); }
 		return;
 
@@ -2733,91 +2997,144 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_designator() {}
 
 	// $ANTLR start "designator"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:250:1: designator : ID ( ( '.' ID ) | ( '[' expression ']' ) )? ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:346:1: designator : (v= ID |obj= ID '.' var= ID | 'this' '.' var= ID | ( ID '[' expression ']' ) );
 	[GrammarRule("designator")]
 	private void designator()
 	{
 		EnterRule_designator();
 		EnterRule("designator", 25);
 		TraceIn("designator", 25);
+	    IToken v = default(IToken);
+	    IToken obj = default(IToken);
+	    IToken var = default(IToken);
+	    IToken ID8 = default(IToken);
+
 		try { DebugEnterRule(GrammarFileName, "designator");
-		DebugLocation(250, 40);
+		DebugLocation(346, 1);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:251:2: ( ID ( ( '.' ID ) | ( '[' expression ']' ) )? )
-			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:251:4: ID ( ( '.' ID ) | ( '[' expression ']' ) )?
-			{
-			DebugLocation(251, 4);
-			Match(input,ID,Follow._ID_in_designator699); 
-			DebugLocation(251, 7);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:251:7: ( ( '.' ID ) | ( '[' expression ']' ) )?
-			int alt23=3;
-			try { DebugEnterSubRule(23);
-			try { DebugEnterDecision(23, decisionCanBacktrack[23]);
-			int LA23_0 = input.LA(1);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:347:2: (v= ID |obj= ID '.' var= ID | 'this' '.' var= ID | ( ID '[' expression ']' ) )
+			int alt24=4;
+			try { DebugEnterDecision(24, decisionCanBacktrack[24]);
+			int LA24_0 = input.LA(1);
 
-			if ((LA23_0==22))
+			if ((LA24_0==ID))
 			{
-				alt23 = 1;
+				switch (input.LA(2))
+				{
+				case 22:
+					{
+					alt24 = 2;
+					}
+					break;
+				case 32:
+					{
+					alt24 = 4;
+					}
+					break;
+				case 17:
+				case 28:
+					{
+					alt24 = 1;
+					}
+					break;
+				default:
+					{
+						NoViableAltException nvae = new NoViableAltException("", 24, 1, input);
+						DebugRecognitionException(nvae);
+						throw nvae;
+					}
+				}
+
 			}
-			else if ((LA23_0==32))
+			else if ((LA24_0==50))
 			{
-				alt23 = 2;
+				alt24 = 3;
 			}
-			} finally { DebugExitDecision(23); }
-			switch (alt23)
+			else
+			{
+				NoViableAltException nvae = new NoViableAltException("", 24, 0, input);
+				DebugRecognitionException(nvae);
+				throw nvae;
+			}
+			} finally { DebugExitDecision(24); }
+			switch (alt24)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:251:8: ( '.' ID )
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:348:3: v= ID
 				{
-				DebugLocation(251, 8);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:251:8: ( '.' ID )
-				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:251:9: '.' ID
-				{
-				DebugLocation(251, 9);
-				Match(input,22,Follow._22_in_designator703); 
-				DebugLocation(251, 13);
-				Match(input,ID,Follow._ID_in_designator705); 
-
-				}
-
+				DebugLocation(348, 5);
+				v=(IToken)Match(input,ID,Follow._ID_in_designator777); 
+				DebugLocation(348, 10);
+				verifyVariableIsDefinedInMethod((v!=null?v.Text:null)); 
 
 				}
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:251:19: ( '[' expression ']' )
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:349:5: obj= ID '.' var= ID
 				{
-				DebugLocation(251, 19);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:251:19: ( '[' expression ']' )
+				DebugLocation(349, 9);
+				obj=(IToken)Match(input,ID,Follow._ID_in_designator790); 
+				DebugLocation(349, 15);
+				Match(input,22,Follow._22_in_designator793); 
+				DebugLocation(349, 23);
+				var=(IToken)Match(input,ID,Follow._ID_in_designator799); 
+				DebugLocation(349, 28);
+				verifyObjectAndInstVariableDefined((obj!=null?obj.Text:null), (var!=null?var.Text:null)); 
+
+				}
+				break;
+			case 3:
+				DebugEnterAlt(3);
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:350:5: 'this' '.' var= ID
+				{
+				DebugLocation(350, 5);
+				Match(input,50,Follow._50_in_designator808); 
+				DebugLocation(350, 12);
+				Match(input,22,Follow._22_in_designator810); 
+				DebugLocation(350, 20);
+				var=(IToken)Match(input,ID,Follow._ID_in_designator816); 
+				DebugLocation(350, 27);
+				verifyInstanceVariableDefinedInThis((var!=null?var.Text:null));
+
+				}
+				break;
+			case 4:
+				DebugEnterAlt(4);
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:351:5: ( ID '[' expression ']' )
+				{
+				DebugLocation(351, 5);
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:351:5: ( ID '[' expression ']' )
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:251:20: '[' expression ']'
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:351:6: ID '[' expression ']'
 				{
-				DebugLocation(251, 20);
-				Match(input,32,Follow._32_in_designator711); 
-				DebugLocation(251, 24);
-				PushFollow(Follow._expression_in_designator713);
+				DebugLocation(351, 6);
+				ID8=(IToken)Match(input,ID,Follow._ID_in_designator831); 
+				DebugLocation(351, 9);
+				Match(input,32,Follow._32_in_designator833); 
+				DebugLocation(351, 13);
+				PushFollow(Follow._expression_in_designator835);
 				expression();
 				PopFollow();
 
-				DebugLocation(251, 35);
-				Match(input,33,Follow._33_in_designator715); 
+				DebugLocation(351, 24);
+				Match(input,33,Follow._33_in_designator837); 
 
 				}
 
+				DebugLocation(352, 3);
+
+						verifyIsArray((ID8!=null?ID8.Text:null));
+
+						//TODO verificar que el resultado de la expresion es un entero
+						
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(23); }
-
-
-			}
-
 		}
 
 		    catch (RecognitionException ex) {
@@ -2830,7 +3147,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("designator", 25);
 			LeaveRule_designator();
 	    }
-	 	DebugLocation(251, 40);
+	 	DebugLocation(357, 1);
 		} finally { DebugExitRule(GrammarFileName, "designator"); }
 		return;
 
@@ -2844,7 +3161,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_actualParameters() {}
 
 	// $ANTLR start "actualParameters"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:253:1: actualParameters : '(' ( expression ( ',' expression )* )? ')' ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:359:1: actualParameters : '(' ( expression ( ',' expression )* )? ')' ;
 	[GrammarRule("actualParameters")]
 	private void actualParameters()
 	{
@@ -2852,64 +3169,64 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		EnterRule("actualParameters", 26);
 		TraceIn("actualParameters", 26);
 		try { DebugEnterRule(GrammarFileName, "actualParameters");
-		DebugLocation(253, 42);
+		DebugLocation(359, 42);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:254:2: ( '(' ( expression ( ',' expression )* )? ')' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:360:2: ( '(' ( expression ( ',' expression )* )? ')' )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:254:4: '(' ( expression ( ',' expression )* )? ')'
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:360:4: '(' ( expression ( ',' expression )* )? ')'
 			{
-			DebugLocation(254, 4);
-			Match(input,16,Follow._16_in_actualParameters728); 
-			DebugLocation(254, 8);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:254:8: ( expression ( ',' expression )* )?
-			int alt25=2;
-			try { DebugEnterSubRule(25);
-			try { DebugEnterDecision(25, decisionCanBacktrack[25]);
-			int LA25_0 = input.LA(1);
+			DebugLocation(360, 4);
+			Match(input,16,Follow._16_in_actualParameters855); 
+			DebugLocation(360, 8);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:360:8: ( expression ( ',' expression )* )?
+			int alt26=2;
+			try { DebugEnterSubRule(26);
+			try { DebugEnterDecision(26, decisionCanBacktrack[26]);
+			int LA26_0 = input.LA(1);
 
-			if ((LA25_0==CHAR||(LA25_0>=ID && LA25_0<=INT)||LA25_0==16||LA25_0==43))
+			if ((LA26_0==CHAR||LA26_0==FLOAT||(LA26_0>=ID && LA26_0<=INT)||LA26_0==16||LA26_0==50))
 			{
-				alt25 = 1;
+				alt26 = 1;
 			}
-			} finally { DebugExitDecision(25); }
-			switch (alt25)
+			} finally { DebugExitDecision(26); }
+			switch (alt26)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:254:9: expression ( ',' expression )*
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:360:9: expression ( ',' expression )*
 				{
-				DebugLocation(254, 9);
-				PushFollow(Follow._expression_in_actualParameters731);
+				DebugLocation(360, 9);
+				PushFollow(Follow._expression_in_actualParameters858);
 				expression();
 				PopFollow();
 
-				DebugLocation(254, 20);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:254:20: ( ',' expression )*
-				try { DebugEnterSubRule(24);
+				DebugLocation(360, 20);
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:360:20: ( ',' expression )*
+				try { DebugEnterSubRule(25);
 				while (true)
 				{
-					int alt24=2;
-					try { DebugEnterDecision(24, decisionCanBacktrack[24]);
-					int LA24_0 = input.LA(1);
+					int alt25=2;
+					try { DebugEnterDecision(25, decisionCanBacktrack[25]);
+					int LA25_0 = input.LA(1);
 
-					if ((LA24_0==20))
+					if ((LA25_0==20))
 					{
-						alt24 = 1;
+						alt25 = 1;
 					}
 
 
-					} finally { DebugExitDecision(24); }
-					switch ( alt24 )
+					} finally { DebugExitDecision(25); }
+					switch ( alt25 )
 					{
 					case 1:
 						DebugEnterAlt(1);
-						// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:254:21: ',' expression
+						// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:360:21: ',' expression
 						{
-						DebugLocation(254, 21);
-						Match(input,20,Follow._20_in_actualParameters734); 
-						DebugLocation(254, 25);
-						PushFollow(Follow._expression_in_actualParameters736);
+						DebugLocation(360, 21);
+						Match(input,20,Follow._20_in_actualParameters861); 
+						DebugLocation(360, 25);
+						PushFollow(Follow._expression_in_actualParameters863);
 						expression();
 						PopFollow();
 
@@ -2918,24 +3235,24 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 						break;
 
 					default:
-						goto loop24;
+						goto loop25;
 					}
 				}
 
-				loop24:
+				loop25:
 					;
 
-				} finally { DebugExitSubRule(24); }
+				} finally { DebugExitSubRule(25); }
 
 
 				}
 				break;
 
 			}
-			} finally { DebugExitSubRule(25); }
+			} finally { DebugExitSubRule(26); }
 
-			DebugLocation(254, 40);
-			Match(input,17,Follow._17_in_actualParameters742); 
+			DebugLocation(360, 40);
+			Match(input,17,Follow._17_in_actualParameters869); 
 
 			}
 
@@ -2951,7 +3268,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("actualParameters", 26);
 			LeaveRule_actualParameters();
 	    }
-	 	DebugLocation(254, 42);
+	 	DebugLocation(360, 42);
 		} finally { DebugExitRule(GrammarFileName, "actualParameters"); }
 		return;
 
@@ -2960,190 +3277,41 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 
 
 	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_condition() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_condition() {}
-
-	// $ANTLR start "condition"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:256:1: condition : expression relOp expression ;
-	[GrammarRule("condition")]
-	private void condition()
-	{
-		EnterRule_condition();
-		EnterRule("condition", 27);
-		TraceIn("condition", 27);
-		try { DebugEnterRule(GrammarFileName, "condition");
-		DebugLocation(256, 30);
-		try
-		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:257:2: ( expression relOp expression )
-			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:257:4: expression relOp expression
-			{
-			DebugLocation(257, 4);
-			PushFollow(Follow._expression_in_condition752);
-			expression();
-			PopFollow();
-
-			DebugLocation(257, 15);
-			PushFollow(Follow._relOp_in_condition754);
-			relOp();
-			PopFollow();
-
-			DebugLocation(257, 21);
-			PushFollow(Follow._expression_in_condition756);
-			expression();
-			PopFollow();
-
-
-			}
-
-		}
-
-		    catch (RecognitionException ex) {
-		        throw ex;
-		    }
-
-		finally
-		{
-			TraceOut("condition", 27);
-			LeaveRule("condition", 27);
-			LeaveRule_condition();
-	    }
-	 	DebugLocation(257, 30);
-		} finally { DebugExitRule(GrammarFileName, "condition"); }
-		return;
-
-	}
-	// $ANTLR end "condition"
-
-
-	[Conditional("ANTLR_TRACE")]
 	protected virtual void EnterRule_expression() {}
 	[Conditional("ANTLR_TRACE")]
 	protected virtual void LeaveRule_expression() {}
 
 	// $ANTLR start "expression"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:259:1: expression : term ( ( '+' | '-' ) term )? ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:362:1: expression : es ( relOp es )? ;
 	[GrammarRule("expression")]
 	private void expression()
 	{
 		EnterRule_expression();
-		EnterRule("expression", 28);
-		TraceIn("expression", 28);
+		EnterRule("expression", 27);
+		TraceIn("expression", 27);
+	    string relOp9 = default(string);
+
 		try { DebugEnterRule(GrammarFileName, "expression");
-		DebugLocation(259, 27);
+		DebugLocation(362, 111);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:260:2: ( term ( ( '+' | '-' ) term )? )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:363:2: ( es ( relOp es )? )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:260:4: term ( ( '+' | '-' ) term )?
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:363:4: es ( relOp es )?
 			{
-			DebugLocation(260, 4);
-			PushFollow(Follow._term_in_expression765);
-			term();
+			DebugLocation(363, 4);
+			PushFollow(Follow._es_in_expression879);
+			es();
 			PopFollow();
 
-			DebugLocation(260, 9);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:260:9: ( ( '+' | '-' ) term )?
-			int alt26=2;
-			try { DebugEnterSubRule(26);
-			try { DebugEnterDecision(26, decisionCanBacktrack[26]);
-			int LA26_0 = input.LA(1);
-
-			if ((LA26_0==19||LA26_0==21))
-			{
-				alt26 = 1;
-			}
-			} finally { DebugExitDecision(26); }
-			switch (alt26)
-			{
-			case 1:
-				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:260:10: ( '+' | '-' ) term
-				{
-				DebugLocation(260, 10);
-				if (input.LA(1)==19||input.LA(1)==21)
-				{
-					input.Consume();
-					state.errorRecovery=false;
-				}
-				else
-				{
-					MismatchedSetException mse = new MismatchedSetException(null,input);
-					DebugRecognitionException(mse);
-					throw mse;
-				}
-
-				DebugLocation(260, 22);
-				PushFollow(Follow._term_in_expression776);
-				term();
-				PopFollow();
-
-
-				}
-				break;
-
-			}
-			} finally { DebugExitSubRule(26); }
-
-
-			}
-
-		}
-
-		    catch (RecognitionException ex) {
-		        throw ex;
-		    }
-
-		finally
-		{
-			TraceOut("expression", 28);
-			LeaveRule("expression", 28);
-			LeaveRule_expression();
-	    }
-	 	DebugLocation(260, 27);
-		} finally { DebugExitRule(GrammarFileName, "expression"); }
-		return;
-
-	}
-	// $ANTLR end "expression"
-
-
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void EnterRule_term() {}
-	[Conditional("ANTLR_TRACE")]
-	protected virtual void LeaveRule_term() {}
-
-	// $ANTLR start "term"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:262:1: term : factor ( ( '*' | '/' ) factor )? ;
-	[GrammarRule("term")]
-	private void term()
-	{
-		EnterRule_term();
-		EnterRule("term", 29);
-		TraceIn("term", 29);
-		try { DebugEnterRule(GrammarFileName, "term");
-		DebugLocation(262, 35);
-		try
-		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:262:6: ( factor ( ( '*' | '/' ) factor )? )
-			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:262:8: factor ( ( '*' | '/' ) factor )?
-			{
-			DebugLocation(262, 8);
-			PushFollow(Follow._factor_in_term787);
-			factor();
-			PopFollow();
-
-			DebugLocation(262, 15);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:262:15: ( ( '*' | '/' ) factor )?
+			DebugLocation(363, 7);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:363:7: ( relOp es )?
 			int alt27=2;
 			try { DebugEnterSubRule(27);
 			try { DebugEnterDecision(27, decisionCanBacktrack[27]);
 			int LA27_0 = input.LA(1);
 
-			if ((LA27_0==18||LA27_0==23))
+			if ((LA27_0==15||(LA27_0>=26 && LA27_0<=27)||(LA27_0>=29 && LA27_0<=31)))
 			{
 				alt27 = 1;
 			}
@@ -3152,26 +3320,22 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:262:16: ( '*' | '/' ) factor
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:363:8: relOp es
 				{
-				DebugLocation(262, 16);
-				if (input.LA(1)==18||input.LA(1)==23)
-				{
-					input.Consume();
-					state.errorRecovery=false;
-				}
-				else
-				{
-					MismatchedSetException mse = new MismatchedSetException(null,input);
-					DebugRecognitionException(mse);
-					throw mse;
-				}
-
-				DebugLocation(262, 28);
-				PushFollow(Follow._factor_in_term798);
-				factor();
+				DebugLocation(363, 8);
+				PushFollow(Follow._relOp_in_expression882);
+				relOp9=relOp();
 				PopFollow();
 
+				DebugLocation(363, 14);
+				pOperadores.Push(relOp9);
+				DebugLocation(363, 51);
+				PushFollow(Follow._es_in_expression886);
+				es();
+				PopFollow();
+
+				DebugLocation(363, 54);
+				aplicaOperadorPendienteQueSea(operadoresRelacionales);
 
 				}
 				break;
@@ -3190,11 +3354,237 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 
 		finally
 		{
+			TraceOut("expression", 27);
+			LeaveRule("expression", 27);
+			LeaveRule_expression();
+	    }
+	 	DebugLocation(363, 111);
+		} finally { DebugExitRule(GrammarFileName, "expression"); }
+		return;
+
+	}
+	// $ANTLR end "expression"
+
+
+	[Conditional("ANTLR_TRACE")]
+	protected virtual void EnterRule_es() {}
+	[Conditional("ANTLR_TRACE")]
+	protected virtual void LeaveRule_es() {}
+
+	// $ANTLR start "es"
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:365:1: es : term (op= ( '+' | '-' | 'or' ) term )* ;
+	[GrammarRule("es")]
+	private void es()
+	{
+		EnterRule_es();
+		EnterRule("es", 28);
+		TraceIn("es", 28);
+	    IToken op = default(IToken);
+
+		try { DebugEnterRule(GrammarFileName, "es");
+		DebugLocation(365, 4);
+		try
+		{
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:366:2: ( term (op= ( '+' | '-' | 'or' ) term )* )
+			DebugEnterAlt(1);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:366:4: term (op= ( '+' | '-' | 'or' ) term )*
+			{
+			DebugLocation(366, 4);
+			PushFollow(Follow._term_in_es899);
+			term();
+			PopFollow();
+
+			DebugLocation(366, 9);
+			aplicaOperadorPendienteQueSea(masMenosOr);
+			DebugLocation(367, 3);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:367:3: (op= ( '+' | '-' | 'or' ) term )*
+			try { DebugEnterSubRule(28);
+			while (true)
+			{
+				int alt28=2;
+				try { DebugEnterDecision(28, decisionCanBacktrack[28]);
+				int LA28_0 = input.LA(1);
+
+				if ((LA28_0==19||LA28_0==21||LA28_0==46))
+				{
+					alt28 = 1;
+				}
+
+
+				} finally { DebugExitDecision(28); }
+				switch ( alt28 )
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:368:4: op= ( '+' | '-' | 'or' ) term
+					{
+					DebugLocation(368, 7);
+
+					op=(IToken)input.LT(1);
+					if (input.LA(1)==19||input.LA(1)==21||input.LA(1)==46)
+					{
+						input.Consume();
+						state.errorRecovery=false;
+					}
+					else
+					{
+						MismatchedSetException mse = new MismatchedSetException(null,input);
+						DebugRecognitionException(mse);
+						throw mse;
+					}
+
+					DebugLocation(368, 28);
+					pOperadores.Push((op!=null?op.Text:null));
+					DebugLocation(369, 4);
+					PushFollow(Follow._term_in_es932);
+					term();
+					PopFollow();
+
+					DebugLocation(369, 9);
+					aplicaOperadorPendienteQueSea(masMenosOr);
+
+					}
+					break;
+
+				default:
+					goto loop28;
+				}
+			}
+
+			loop28:
+				;
+
+			} finally { DebugExitSubRule(28); }
+
+
+			}
+
+		}
+
+		    catch (RecognitionException ex) {
+		        throw ex;
+		    }
+
+		finally
+		{
+			TraceOut("es", 28);
+			LeaveRule("es", 28);
+			LeaveRule_es();
+	    }
+	 	DebugLocation(370, 4);
+		} finally { DebugExitRule(GrammarFileName, "es"); }
+		return;
+
+	}
+	// $ANTLR end "es"
+
+
+	[Conditional("ANTLR_TRACE")]
+	protected virtual void EnterRule_term() {}
+	[Conditional("ANTLR_TRACE")]
+	protected virtual void LeaveRule_term() {}
+
+	// $ANTLR start "term"
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:372:1: term : factor (op= ( '*' | '/' | 'and' ) factor )* ;
+	[GrammarRule("term")]
+	private void term()
+	{
+		EnterRule_term();
+		EnterRule("term", 29);
+		TraceIn("term", 29);
+	    IToken op = default(IToken);
+
+		try { DebugEnterRule(GrammarFileName, "term");
+		DebugLocation(372, 4);
+		try
+		{
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:372:6: ( factor (op= ( '*' | '/' | 'and' ) factor )* )
+			DebugEnterAlt(1);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:372:8: factor (op= ( '*' | '/' | 'and' ) factor )*
+			{
+			DebugLocation(372, 8);
+			PushFollow(Follow._factor_in_term948);
+			factor();
+			PopFollow();
+
+			DebugLocation(372, 15);
+			aplicaOperadorPendienteQueSea(porEntreAnd);
+			DebugLocation(373, 3);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:373:3: (op= ( '*' | '/' | 'and' ) factor )*
+			try { DebugEnterSubRule(29);
+			while (true)
+			{
+				int alt29=2;
+				try { DebugEnterDecision(29, decisionCanBacktrack[29]);
+				int LA29_0 = input.LA(1);
+
+				if ((LA29_0==18||LA29_0==23||LA29_0==34))
+				{
+					alt29 = 1;
+				}
+
+
+				} finally { DebugExitDecision(29); }
+				switch ( alt29 )
+				{
+				case 1:
+					DebugEnterAlt(1);
+					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:374:4: op= ( '*' | '/' | 'and' ) factor
+					{
+					DebugLocation(374, 7);
+
+					op=(IToken)input.LT(1);
+					if (input.LA(1)==18||input.LA(1)==23||input.LA(1)==34)
+					{
+						input.Consume();
+						state.errorRecovery=false;
+					}
+					else
+					{
+						MismatchedSetException mse = new MismatchedSetException(null,input);
+						DebugRecognitionException(mse);
+						throw mse;
+					}
+
+					DebugLocation(374, 29);
+					pOperadores.Push((op!=null?op.Text:null));
+					DebugLocation(375, 4);
+					PushFollow(Follow._factor_in_term981);
+					factor();
+					PopFollow();
+
+					DebugLocation(375, 11);
+					aplicaOperadorPendienteQueSea(porEntreAnd);
+
+					}
+					break;
+
+				default:
+					goto loop29;
+				}
+			}
+
+			loop29:
+				;
+
+			} finally { DebugExitSubRule(29); }
+
+
+			}
+
+		}
+
+		    catch (RecognitionException ex) {
+		        throw ex;
+		    }
+
+		finally
+		{
 			TraceOut("term", 29);
 			LeaveRule("term", 29);
 			LeaveRule_term();
 	    }
-	 	DebugLocation(262, 35);
+	 	DebugLocation(376, 4);
 		} finally { DebugExitRule(GrammarFileName, "term"); }
 		return;
 
@@ -3208,20 +3598,25 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_factor() {}
 
 	// $ANTLR start "factor"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:264:1: factor : ( invoke | ID | ID '.' ID | ID '[' expression ']' | INT | CHAR | 'new' referenceType '(' ')' ';' | '(' expression ')' );
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:378:1: factor : ( invoke |v= ID |obj= ID '.' var= ID | 'this' '.' var= ID | ID '[' expression ']' | INT | CHAR | FLOAT | '(' expression ')' );
 	[GrammarRule("factor")]
 	private void factor()
 	{
 		EnterRule_factor();
 		EnterRule("factor", 30);
 		TraceIn("factor", 30);
+	    IToken v = default(IToken);
+	    IToken obj = default(IToken);
+	    IToken var = default(IToken);
+	    IToken ID10 = default(IToken);
+
 		try { DebugEnterRule(GrammarFileName, "factor");
-		DebugLocation(264, 2);
+		DebugLocation(378, 2);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:264:8: ( invoke | ID | ID '.' ID | ID '[' expression ']' | INT | CHAR | 'new' referenceType '(' ')' ';' | '(' expression ')' )
-			int alt28=8;
-			try { DebugEnterDecision(28, decisionCanBacktrack[28]);
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:378:8: ( invoke |v= ID |obj= ID '.' var= ID | 'this' '.' var= ID | ID '[' expression ']' | INT | CHAR | FLOAT | '(' expression ')' )
+			int alt30=9;
+			try { DebugEnterDecision(30, decisionCanBacktrack[30]);
 			switch (input.LA(1))
 			{
 			case ID:
@@ -3230,30 +3625,30 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				{
 				case 22:
 					{
-					int LA28_6 = input.LA(3);
+					int LA30_7 = input.LA(3);
 
-					if ((LA28_6==ID))
+					if ((LA30_7==ID))
 					{
-						int LA28_10 = input.LA(4);
+						int LA30_11 = input.LA(4);
 
-						if ((LA28_10==16))
+						if ((LA30_11==16))
 						{
-							alt28 = 1;
+							alt30 = 1;
 						}
-						else if ((LA28_10==15||(LA28_10>=17 && LA28_10<=21)||LA28_10==23||(LA28_10>=25 && LA28_10<=27)||(LA28_10>=29 && LA28_10<=31)||LA28_10==33))
+						else if ((LA30_11==15||(LA30_11>=17 && LA30_11<=21)||LA30_11==23||(LA30_11>=25 && LA30_11<=27)||(LA30_11>=29 && LA30_11<=31)||(LA30_11>=33 && LA30_11<=34)||LA30_11==46))
 						{
-							alt28 = 3;
+							alt30 = 3;
 						}
 						else
 						{
-							NoViableAltException nvae = new NoViableAltException("", 28, 10, input);
+							NoViableAltException nvae = new NoViableAltException("", 30, 11, input);
 							DebugRecognitionException(nvae);
 							throw nvae;
 						}
 					}
 					else
 					{
-						NoViableAltException nvae = new NoViableAltException("", 28, 6, input);
+						NoViableAltException nvae = new NoViableAltException("", 30, 7, input);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
@@ -3261,12 +3656,12 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 					break;
 				case 32:
 					{
-					alt28 = 4;
+					alt30 = 5;
 					}
 					break;
 				case 16:
 					{
-					alt28 = 1;
+					alt30 = 1;
 					}
 					break;
 				case 15:
@@ -3283,13 +3678,15 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				case 30:
 				case 31:
 				case 33:
+				case 34:
+				case 46:
 					{
-					alt28 = 2;
+					alt30 = 2;
 					}
 					break;
 				default:
 					{
-						NoViableAltException nvae = new NoViableAltException("", 28, 1, input);
+						NoViableAltException nvae = new NoViableAltException("", 30, 1, input);
 						DebugRecognitionException(nvae);
 						throw nvae;
 					}
@@ -3297,43 +3694,48 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 
 				}
 				break;
+			case 50:
+				{
+				alt30 = 4;
+				}
+				break;
 			case INT:
 				{
-				alt28 = 5;
+				alt30 = 6;
 				}
 				break;
 			case CHAR:
 				{
-				alt28 = 6;
+				alt30 = 7;
 				}
 				break;
-			case 43:
+			case FLOAT:
 				{
-				alt28 = 7;
+				alt30 = 8;
 				}
 				break;
 			case 16:
 				{
-				alt28 = 8;
+				alt30 = 9;
 				}
 				break;
 			default:
 				{
-					NoViableAltException nvae = new NoViableAltException("", 28, 0, input);
+					NoViableAltException nvae = new NoViableAltException("", 30, 0, input);
 					DebugRecognitionException(nvae);
 					throw nvae;
 				}
 			}
 
-			} finally { DebugExitDecision(28); }
-			switch (alt28)
+			} finally { DebugExitDecision(30); }
+			switch (alt30)
 			{
 			case 1:
 				DebugEnterAlt(1);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:264:10: invoke
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:378:10: invoke
 				{
-				DebugLocation(264, 10);
-				PushFollow(Follow._invoke_in_factor808);
+				DebugLocation(378, 10);
+				PushFollow(Follow._invoke_in_factor996);
 				invoke();
 				PopFollow();
 
@@ -3342,95 +3744,145 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				break;
 			case 2:
 				DebugEnterAlt(2);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:265:5: ID
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:379:5: v= ID
 				{
-				DebugLocation(265, 5);
-				Match(input,ID,Follow._ID_in_factor814); 
+				DebugLocation(379, 7);
+				v=(IToken)Match(input,ID,Follow._ID_in_factor1006); 
+				DebugLocation(380, 3);
+
+						if(verifyVariableIsDefinedInMethod((v!=null?v.Text:null))) {
+							VariableSymbol varSymbol = actualScope.getVariableSymbol((v!=null?v.Text:null));
+							pOperandos.Push(varSymbol);
+						}
+						
 
 				}
 				break;
 			case 3:
 				DebugEnterAlt(3);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:266:5: ID '.' ID
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:386:5: obj= ID '.' var= ID
 				{
-				DebugLocation(266, 5);
-				Match(input,ID,Follow._ID_in_factor820); 
-				DebugLocation(266, 8);
-				Match(input,22,Follow._22_in_factor822); 
-				DebugLocation(266, 12);
-				Match(input,ID,Follow._ID_in_factor824); 
+				DebugLocation(386, 9);
+				obj=(IToken)Match(input,ID,Follow._ID_in_factor1021); 
+				DebugLocation(386, 14);
+				Match(input,22,Follow._22_in_factor1023); 
+				DebugLocation(386, 22);
+				var=(IToken)Match(input,ID,Follow._ID_in_factor1029); 
+				DebugLocation(387, 3);
+
+						//TODO checar como va a quedar eso de que cada miembro de cada variable tenga su direccion
+						//al hacer push a la pila de operadores. Creo que aqui primero ponemos el field en una var temporal
+						//y ese temporal es el que pushamos a la pila de operandos
+						VariableSymbol varSymbol = verifyObjectAndInstVariableDefined((obj!=null?obj.Text:null), (var!=null?var.Text:null));
+						if(varSymbol != null) {
+							pOperandos.Push(varSymbol);
+						}
+						
 
 				}
 				break;
 			case 4:
 				DebugEnterAlt(4);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:267:5: ID '[' expression ']'
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:397:5: 'this' '.' var= ID
 				{
-				DebugLocation(267, 5);
-				Match(input,ID,Follow._ID_in_factor830); 
-				DebugLocation(267, 8);
-				Match(input,32,Follow._32_in_factor832); 
-				DebugLocation(267, 12);
-				PushFollow(Follow._expression_in_factor834);
-				expression();
-				PopFollow();
+				DebugLocation(397, 5);
+				Match(input,50,Follow._50_in_factor1043); 
+				DebugLocation(397, 12);
+				Match(input,22,Follow._22_in_factor1045); 
+				DebugLocation(397, 20);
+				var=(IToken)Match(input,ID,Follow._ID_in_factor1051); 
+				DebugLocation(398, 3);
 
-				DebugLocation(267, 23);
-				Match(input,33,Follow._33_in_factor836); 
+						//TODO checar como va a quedar eso de que cada miembro de cada variable tenga su direccion
+						//al hacer push a la pila de operadores. Creo que aqui primero ponemos el field en una var temporal
+						//y ese temporal es el que pushamos a la pila de operandos
+						VariableSymbol varSymbol = verifyInstanceVariableDefinedInThis((var!=null?var.Text:null));
+						if(varSymbol != null) {
+							pOperandos.Push(varSymbol);
+						}
+						
 
 				}
 				break;
 			case 5:
 				DebugEnterAlt(5);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:268:5: INT
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:407:5: ID '[' expression ']'
 				{
-				DebugLocation(268, 5);
-				Match(input,INT,Follow._INT_in_factor842); 
+				DebugLocation(407, 5);
+				ID10=(IToken)Match(input,ID,Follow._ID_in_factor1063); 
+				DebugLocation(407, 8);
+				Match(input,32,Follow._32_in_factor1065); 
+				DebugLocation(407, 12);
+				PushFollow(Follow._expression_in_factor1067);
+				expression();
+				PopFollow();
+
+				DebugLocation(407, 23);
+				Match(input,33,Follow._33_in_factor1069); 
+				DebugLocation(408, 3);
+
+						//TODO estamos metiendo objetos basura solo para verificar su tipo
+						verifyIsArray((ID10!=null?ID10.Text:null));
+						VariableSymbol indice = pOperandos.Pop();
+						if(!indice.type.name.Equals("int")) {
+							manageException(new Exception("El subindice del arreglo " + (ID10!=null?ID10.Text:null) + " debe ser de tipo int."));
+						}
+						else {
+							VariableSymbol basura = actualScope.getVariableSymbol((ID10!=null?ID10.Text:null));
+							string tipo = basura.type.name.Substring(0, basura.type.name.Length - 2);
+							ClassSymbol t = directory.findType(tipo);
+							VariableSymbol basura2 = new VariableSymbol("basura2", t);
+							pOperandos.Push(basura2);
+						}
+						//TODO verificar que el resultado de la expresion es un entero
+						
 
 				}
 				break;
 			case 6:
 				DebugEnterAlt(6);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:269:5: CHAR
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:424:5: INT
 				{
-				DebugLocation(269, 5);
-				Match(input,CHAR,Follow._CHAR_in_factor848); 
+				DebugLocation(424, 5);
+				Match(input,INT,Follow._INT_in_factor1080); 
 
 				}
 				break;
 			case 7:
 				DebugEnterAlt(7);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:270:5: 'new' referenceType '(' ')' ';'
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:425:5: CHAR
 				{
-				DebugLocation(270, 5);
-				Match(input,43,Follow._43_in_factor854); 
-				DebugLocation(270, 11);
-				PushFollow(Follow._referenceType_in_factor856);
-				referenceType();
-				PopFollow();
-
-				DebugLocation(270, 25);
-				Match(input,16,Follow._16_in_factor858); 
-				DebugLocation(270, 29);
-				Match(input,17,Follow._17_in_factor860); 
-				DebugLocation(270, 33);
-				Match(input,25,Follow._25_in_factor862); 
+				DebugLocation(425, 5);
+				Match(input,CHAR,Follow._CHAR_in_factor1087); 
 
 				}
 				break;
 			case 8:
 				DebugEnterAlt(8);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:271:5: '(' expression ')'
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:426:5: FLOAT
 				{
-				DebugLocation(271, 5);
-				Match(input,16,Follow._16_in_factor868); 
-				DebugLocation(271, 9);
-				PushFollow(Follow._expression_in_factor870);
+				DebugLocation(426, 5);
+				Match(input,FLOAT,Follow._FLOAT_in_factor1094); 
+
+				}
+				break;
+			case 9:
+				DebugEnterAlt(9);
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:427:5: '(' expression ')'
+				{
+				DebugLocation(427, 5);
+				Match(input,16,Follow._16_in_factor1101); 
+				DebugLocation(427, 8);
+				pOperadores.Push("(");
+				DebugLocation(427, 33);
+				PushFollow(Follow._expression_in_factor1104);
 				expression();
 				PopFollow();
 
-				DebugLocation(271, 20);
-				Match(input,17,Follow._17_in_factor872); 
+				DebugLocation(427, 44);
+				Match(input,17,Follow._17_in_factor1106); 
+				DebugLocation(427, 48);
+				pOperadores.Pop();
 
 				}
 				break;
@@ -3448,7 +3900,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("factor", 30);
 			LeaveRule_factor();
 	    }
-	 	DebugLocation(272, 2);
+	 	DebugLocation(428, 2);
 		} finally { DebugExitRule(GrammarFileName, "factor"); }
 		return;
 
@@ -3462,22 +3914,29 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_relOp() {}
 
 	// $ANTLR start "relOp"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:274:1: relOp : ( '==' | '!=' | '>' | '>=' | '<' | '<=' );
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:430:1: relOp returns [string operador] : op= ( '==' | '!=' | '>' | '>=' | '<' | '<=' ) ;
 	[GrammarRule("relOp")]
-	private void relOp()
+	private string relOp()
 	{
 		EnterRule_relOp();
 		EnterRule("relOp", 31);
 		TraceIn("relOp", 31);
+	    string operador = default(string);
+
+
+	    IToken op = default(IToken);
+
 		try { DebugEnterRule(GrammarFileName, "relOp");
-		DebugLocation(274, 45);
+		DebugLocation(430, 101);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:274:7: ( '==' | '!=' | '>' | '>=' | '<' | '<=' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:430:31: (op= ( '==' | '!=' | '>' | '>=' | '<' | '<=' ) )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:430:34: op= ( '==' | '!=' | '>' | '>=' | '<' | '<=' )
 			{
-			DebugLocation(274, 7);
+			DebugLocation(430, 37);
+
+			op=(IToken)input.LT(1);
 			if (input.LA(1)==15||(input.LA(1)>=26 && input.LA(1)<=27)||(input.LA(1)>=29 && input.LA(1)<=31))
 			{
 				input.Consume();
@@ -3490,6 +3949,8 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				throw mse;
 			}
 
+			DebugLocation(430, 79);
+			operador = (op!=null?op.Text:null);
 
 			}
 
@@ -3505,9 +3966,9 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("relOp", 31);
 			LeaveRule_relOp();
 	    }
-	 	DebugLocation(274, 45);
+	 	DebugLocation(430, 101);
 		} finally { DebugExitRule(GrammarFileName, "relOp"); }
-		return;
+		return operador;
 
 	}
 	// $ANTLR end "relOp"
@@ -3517,158 +3978,174 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	#region Follow sets
 	private static class Follow
 	{
-		public static readonly BitSet _classes_in_program62 = new BitSet(new ulong[]{0x1840000000000UL});
-		public static readonly BitSet _vars_in_program67 = new BitSet(new ulong[]{0x1040000000000UL});
-		public static readonly BitSet _methods_in_program70 = new BitSet(new ulong[]{0x1000000000000UL});
-		public static readonly BitSet _mainMethod_in_program73 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _48_in_mainMethod82 = new BitSet(new ulong[]{0x20000000000UL});
-		public static readonly BitSet _41_in_mainMethod84 = new BitSet(new ulong[]{0x10000UL});
-		public static readonly BitSet _16_in_mainMethod86 = new BitSet(new ulong[]{0x20000UL});
-		public static readonly BitSet _17_in_mainMethod88 = new BitSet(new ulong[]{0x4000000000000UL});
-		public static readonly BitSet _50_in_mainMethod90 = new BitSet(new ulong[]{0xAF08002000400UL});
-		public static readonly BitSet _vars_in_mainMethod91 = new BitSet(new ulong[]{0xA708002000400UL});
-		public static readonly BitSet _someStatements_in_mainMethod94 = new BitSet(new ulong[]{0x8000000000000UL});
-		public static readonly BitSet _51_in_mainMethod96 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _36_in_classes107 = new BitSet(new ulong[]{0x1000000UL});
-		public static readonly BitSet _24_in_classes109 = new BitSet(new ulong[]{0x800000002UL});
-		public static readonly BitSet _classDecl_in_classes111 = new BitSet(new ulong[]{0x800000002UL});
-		public static readonly BitSet _35_in_classDecl126 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _ID_in_classDecl132 = new BitSet(new ulong[]{0x4004000000000UL});
-		public static readonly BitSet _superClass_in_classDecl135 = new BitSet(new ulong[]{0x4000000000000UL});
-		public static readonly BitSet _50_in_classDecl141 = new BitSet(new ulong[]{0x8840000000000UL});
-		public static readonly BitSet _vars_in_classDecl143 = new BitSet(new ulong[]{0x8040000000000UL});
-		public static readonly BitSet _methods_in_classDecl146 = new BitSet(new ulong[]{0x8000000000000UL});
-		public static readonly BitSet _51_in_classDecl149 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _38_in_superClass159 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _ID_in_superClass161 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _47_in_vars172 = new BitSet(new ulong[]{0x1000000UL});
-		public static readonly BitSet _24_in_vars174 = new BitSet(new ulong[]{0x10400000402UL});
-		public static readonly BitSet _varDecl_in_vars176 = new BitSet(new ulong[]{0x10400000402UL});
-		public static readonly BitSet _primitiveType_in_varDecl201 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _referenceType_in_varDecl209 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _ID_in_varDecl214 = new BitSet(new ulong[]{0x2000000UL});
-		public static readonly BitSet _25_in_varDecl218 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _set_in_primitiveType242 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _34_in_referenceType264 = new BitSet(new ulong[]{0x100000000UL});
-		public static readonly BitSet _32_in_referenceType266 = new BitSet(new ulong[]{0x200000000UL});
-		public static readonly BitSet _33_in_referenceType268 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _40_in_referenceType278 = new BitSet(new ulong[]{0x100000000UL});
-		public static readonly BitSet _32_in_referenceType280 = new BitSet(new ulong[]{0x200000000UL});
-		public static readonly BitSet _33_in_referenceType282 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ID_in_referenceType292 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _48_in_voidType315 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _primitiveType_in_formalParamType332 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _referenceType_in_formalParamType346 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _42_in_methods373 = new BitSet(new ulong[]{0x1000000UL});
-		public static readonly BitSet _24_in_methods375 = new BitSet(new ulong[]{0x1010400000402UL});
-		public static readonly BitSet _methodDeclaration_in_methods377 = new BitSet(new ulong[]{0x1010400000402UL});
-		public static readonly BitSet _primitiveType_in_methodDeclaration396 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _referenceType_in_methodDeclaration404 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _voidType_in_methodDeclaration412 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _ID_in_methodDeclaration419 = new BitSet(new ulong[]{0x10000UL});
-		public static readonly BitSet _16_in_methodDeclaration425 = new BitSet(new ulong[]{0x10400020400UL});
-		public static readonly BitSet _formalParameters_in_methodDeclaration427 = new BitSet(new ulong[]{0x20000UL});
-		public static readonly BitSet _17_in_methodDeclaration430 = new BitSet(new ulong[]{0x4000000000000UL});
-		public static readonly BitSet _50_in_methodDeclaration434 = new BitSet(new ulong[]{0xAF08002000400UL});
-		public static readonly BitSet _vars_in_methodDeclaration436 = new BitSet(new ulong[]{0xA708002000400UL});
-		public static readonly BitSet _someStatements_in_methodDeclaration439 = new BitSet(new ulong[]{0x8000000000000UL});
-		public static readonly BitSet _51_in_methodDeclaration441 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _formalParamType_in_formalParam459 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _ID_in_formalParam461 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _formalParam_in_formalParameters477 = new BitSet(new ulong[]{0x100002UL});
-		public static readonly BitSet _20_in_formalParameters480 = new BitSet(new ulong[]{0x10400000400UL});
-		public static readonly BitSet _formalParam_in_formalParameters482 = new BitSet(new ulong[]{0x100002UL});
-		public static readonly BitSet _statement_in_someStatements494 = new BitSet(new ulong[]{0x2708002000402UL});
-		public static readonly BitSet _assignment_in_statement503 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _invoke_in_statement509 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _if_inst_in_statement515 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _while_inst_in_statement521 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _return_inst_in_statement527 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _read_in_statement533 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _print_in_statement539 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _25_in_statement545 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _designator_in_assignment556 = new BitSet(new ulong[]{0x10000000UL});
-		public static readonly BitSet _28_in_assignment558 = new BitSet(new ulong[]{0x80000010C10UL});
-		public static readonly BitSet _expression_in_assignment560 = new BitSet(new ulong[]{0x2000000UL});
-		public static readonly BitSet _25_in_assignment562 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ID_in_invoke571 = new BitSet(new ulong[]{0x10000UL});
-		public static readonly BitSet _actualParameters_in_invoke573 = new BitSet(new ulong[]{0x2000000UL});
-		public static readonly BitSet _25_in_invoke575 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ID_in_invoke582 = new BitSet(new ulong[]{0x400000UL});
-		public static readonly BitSet _22_in_invoke584 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _ID_in_invoke586 = new BitSet(new ulong[]{0x10000UL});
-		public static readonly BitSet _actualParameters_in_invoke588 = new BitSet(new ulong[]{0x2000000UL});
-		public static readonly BitSet _25_in_invoke590 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _39_in_if_inst602 = new BitSet(new ulong[]{0x10000UL});
-		public static readonly BitSet _16_in_if_inst604 = new BitSet(new ulong[]{0x80000010C10UL});
-		public static readonly BitSet _condition_in_if_inst606 = new BitSet(new ulong[]{0x20000UL});
-		public static readonly BitSet _17_in_if_inst608 = new BitSet(new ulong[]{0x4000000000000UL});
-		public static readonly BitSet _50_in_if_inst610 = new BitSet(new ulong[]{0xA708002000400UL});
-		public static readonly BitSet _someStatements_in_if_inst612 = new BitSet(new ulong[]{0x8000000000000UL});
-		public static readonly BitSet _51_in_if_inst614 = new BitSet(new ulong[]{0x2000000002UL});
-		public static readonly BitSet _37_in_if_inst617 = new BitSet(new ulong[]{0x4000000000000UL});
-		public static readonly BitSet _50_in_if_inst619 = new BitSet(new ulong[]{0xA708002000400UL});
-		public static readonly BitSet _someStatements_in_if_inst621 = new BitSet(new ulong[]{0x8000000000000UL});
-		public static readonly BitSet _51_in_if_inst623 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _49_in_while_inst633 = new BitSet(new ulong[]{0x10000UL});
-		public static readonly BitSet _16_in_while_inst635 = new BitSet(new ulong[]{0x80000010C10UL});
-		public static readonly BitSet _condition_in_while_inst637 = new BitSet(new ulong[]{0x20000UL});
-		public static readonly BitSet _17_in_while_inst639 = new BitSet(new ulong[]{0x4000000000000UL});
-		public static readonly BitSet _50_in_while_inst641 = new BitSet(new ulong[]{0xA708002000400UL});
-		public static readonly BitSet _someStatements_in_while_inst643 = new BitSet(new ulong[]{0x8000000000000UL});
-		public static readonly BitSet _51_in_while_inst645 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _46_in_return_inst653 = new BitSet(new ulong[]{0x80002010C10UL});
-		public static readonly BitSet _expression_in_return_inst655 = new BitSet(new ulong[]{0x2000000UL});
-		public static readonly BitSet _25_in_return_inst658 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _45_in_read666 = new BitSet(new ulong[]{0x10000UL});
-		public static readonly BitSet _16_in_read668 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _designator_in_read670 = new BitSet(new ulong[]{0x20000UL});
-		public static readonly BitSet _17_in_read672 = new BitSet(new ulong[]{0x2000000UL});
-		public static readonly BitSet _25_in_read674 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _44_in_print682 = new BitSet(new ulong[]{0x10000UL});
-		public static readonly BitSet _16_in_print684 = new BitSet(new ulong[]{0x80000010C10UL});
-		public static readonly BitSet _expression_in_print686 = new BitSet(new ulong[]{0x20000UL});
-		public static readonly BitSet _17_in_print688 = new BitSet(new ulong[]{0x2000000UL});
-		public static readonly BitSet _25_in_print690 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ID_in_designator699 = new BitSet(new ulong[]{0x100400002UL});
-		public static readonly BitSet _22_in_designator703 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _ID_in_designator705 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _32_in_designator711 = new BitSet(new ulong[]{0x80000010C10UL});
-		public static readonly BitSet _expression_in_designator713 = new BitSet(new ulong[]{0x200000000UL});
-		public static readonly BitSet _33_in_designator715 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _16_in_actualParameters728 = new BitSet(new ulong[]{0x80000030C10UL});
-		public static readonly BitSet _expression_in_actualParameters731 = new BitSet(new ulong[]{0x120000UL});
-		public static readonly BitSet _20_in_actualParameters734 = new BitSet(new ulong[]{0x80000010C10UL});
-		public static readonly BitSet _expression_in_actualParameters736 = new BitSet(new ulong[]{0x120000UL});
-		public static readonly BitSet _17_in_actualParameters742 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _expression_in_condition752 = new BitSet(new ulong[]{0xEC008000UL});
-		public static readonly BitSet _relOp_in_condition754 = new BitSet(new ulong[]{0x80000010C10UL});
-		public static readonly BitSet _expression_in_condition756 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _term_in_expression765 = new BitSet(new ulong[]{0x280002UL});
-		public static readonly BitSet _set_in_expression768 = new BitSet(new ulong[]{0x80000010C10UL});
-		public static readonly BitSet _term_in_expression776 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _factor_in_term787 = new BitSet(new ulong[]{0x840002UL});
-		public static readonly BitSet _set_in_term790 = new BitSet(new ulong[]{0x80000010C10UL});
-		public static readonly BitSet _factor_in_term798 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _invoke_in_factor808 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ID_in_factor814 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ID_in_factor820 = new BitSet(new ulong[]{0x400000UL});
-		public static readonly BitSet _22_in_factor822 = new BitSet(new ulong[]{0x400UL});
-		public static readonly BitSet _ID_in_factor824 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _ID_in_factor830 = new BitSet(new ulong[]{0x100000000UL});
-		public static readonly BitSet _32_in_factor832 = new BitSet(new ulong[]{0x80000010C10UL});
-		public static readonly BitSet _expression_in_factor834 = new BitSet(new ulong[]{0x200000000UL});
-		public static readonly BitSet _33_in_factor836 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _INT_in_factor842 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _CHAR_in_factor848 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _43_in_factor854 = new BitSet(new ulong[]{0x10400000400UL});
-		public static readonly BitSet _referenceType_in_factor856 = new BitSet(new ulong[]{0x10000UL});
-		public static readonly BitSet _16_in_factor858 = new BitSet(new ulong[]{0x20000UL});
-		public static readonly BitSet _17_in_factor860 = new BitSet(new ulong[]{0x2000000UL});
-		public static readonly BitSet _25_in_factor862 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _16_in_factor868 = new BitSet(new ulong[]{0x80000010C10UL});
-		public static readonly BitSet _expression_in_factor870 = new BitSet(new ulong[]{0x20000UL});
-		public static readonly BitSet _17_in_factor872 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _classes_in_program61 = new BitSet(new ulong[]{0x18100000000000UL});
+		public static readonly BitSet _vars_in_program66 = new BitSet(new ulong[]{0x10100000000000UL});
+		public static readonly BitSet _methods_in_program69 = new BitSet(new ulong[]{0x10000000000000UL});
+		public static readonly BitSet _mainMethod_in_program72 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _52_in_mainMethod81 = new BitSet(new ulong[]{0x80000000000UL});
+		public static readonly BitSet _43_in_mainMethod83 = new BitSet(new ulong[]{0x10000UL});
+		public static readonly BitSet _16_in_mainMethod85 = new BitSet(new ulong[]{0x20000UL});
+		public static readonly BitSet _17_in_mainMethod87 = new BitSet(new ulong[]{0x40000000000000UL});
+		public static readonly BitSet _54_in_mainMethod89 = new BitSet(new ulong[]{0xAF820002000400UL});
+		public static readonly BitSet _vars_in_mainMethod90 = new BitSet(new ulong[]{0xA7820002000400UL});
+		public static readonly BitSet _someStatements_in_mainMethod93 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _55_in_mainMethod95 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _37_in_classes106 = new BitSet(new ulong[]{0x1000000UL});
+		public static readonly BitSet _24_in_classes108 = new BitSet(new ulong[]{0x1000000002UL});
+		public static readonly BitSet _classDecl_in_classes110 = new BitSet(new ulong[]{0x1000000002UL});
+		public static readonly BitSet _36_in_classDecl125 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _ID_in_classDecl131 = new BitSet(new ulong[]{0x40010000000000UL});
+		public static readonly BitSet _superClass_in_classDecl134 = new BitSet(new ulong[]{0x40000000000000UL});
+		public static readonly BitSet _54_in_classDecl140 = new BitSet(new ulong[]{0x88100000000000UL});
+		public static readonly BitSet _vars_in_classDecl142 = new BitSet(new ulong[]{0x80100000000000UL});
+		public static readonly BitSet _methods_in_classDecl145 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _55_in_classDecl148 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _40_in_superClass158 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _ID_in_superClass160 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _51_in_vars171 = new BitSet(new ulong[]{0x1000000UL});
+		public static readonly BitSet _24_in_vars173 = new BitSet(new ulong[]{0x44800000402UL});
+		public static readonly BitSet _varDecl_in_vars175 = new BitSet(new ulong[]{0x44800000402UL});
+		public static readonly BitSet _primitiveType_in_varDecl200 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _referenceType_in_varDecl208 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _ID_in_varDecl213 = new BitSet(new ulong[]{0x2000000UL});
+		public static readonly BitSet _25_in_varDecl217 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _set_in_primitiveType241 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _35_in_referenceType267 = new BitSet(new ulong[]{0x100000000UL});
+		public static readonly BitSet _32_in_referenceType269 = new BitSet(new ulong[]{0x200000000UL});
+		public static readonly BitSet _33_in_referenceType271 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _42_in_referenceType281 = new BitSet(new ulong[]{0x100000000UL});
+		public static readonly BitSet _32_in_referenceType283 = new BitSet(new ulong[]{0x200000000UL});
+		public static readonly BitSet _33_in_referenceType285 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _38_in_referenceType295 = new BitSet(new ulong[]{0x100000000UL});
+		public static readonly BitSet _32_in_referenceType297 = new BitSet(new ulong[]{0x200000000UL});
+		public static readonly BitSet _33_in_referenceType299 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ID_in_referenceType309 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _52_in_voidType332 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _primitiveType_in_formalParamType349 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _referenceType_in_formalParamType363 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _44_in_methods390 = new BitSet(new ulong[]{0x1000000UL});
+		public static readonly BitSet _24_in_methods392 = new BitSet(new ulong[]{0x10044800000402UL});
+		public static readonly BitSet _methodDeclaration_in_methods394 = new BitSet(new ulong[]{0x10044800000402UL});
+		public static readonly BitSet _primitiveType_in_methodDeclaration413 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _referenceType_in_methodDeclaration421 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _voidType_in_methodDeclaration429 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _ID_in_methodDeclaration436 = new BitSet(new ulong[]{0x10000UL});
+		public static readonly BitSet _16_in_methodDeclaration442 = new BitSet(new ulong[]{0x44800020400UL});
+		public static readonly BitSet _formalParameters_in_methodDeclaration444 = new BitSet(new ulong[]{0x20000UL});
+		public static readonly BitSet _17_in_methodDeclaration447 = new BitSet(new ulong[]{0x40000000000000UL});
+		public static readonly BitSet _54_in_methodDeclaration451 = new BitSet(new ulong[]{0xAF820002000400UL});
+		public static readonly BitSet _vars_in_methodDeclaration453 = new BitSet(new ulong[]{0xA7820002000400UL});
+		public static readonly BitSet _someStatements_in_methodDeclaration456 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _55_in_methodDeclaration458 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _formalParamType_in_formalParam476 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _ID_in_formalParam478 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _formalParam_in_formalParameters494 = new BitSet(new ulong[]{0x100002UL});
+		public static readonly BitSet _20_in_formalParameters497 = new BitSet(new ulong[]{0x44800000400UL});
+		public static readonly BitSet _formalParam_in_formalParameters499 = new BitSet(new ulong[]{0x100002UL});
+		public static readonly BitSet _statement_in_someStatements511 = new BitSet(new ulong[]{0x27820002000402UL});
+		public static readonly BitSet _assignment_in_statement520 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _invoke_in_statement526 = new BitSet(new ulong[]{0x2000000UL});
+		public static readonly BitSet _25_in_statement528 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _if_inst_in_statement534 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _while_inst_in_statement540 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _return_inst_in_statement546 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _read_in_statement552 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _print_in_statement558 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _25_in_statement564 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _designator_in_assignment575 = new BitSet(new ulong[]{0x10000000UL});
+		public static readonly BitSet _28_in_assignment577 = new BitSet(new ulong[]{0x4200000010D10UL});
+		public static readonly BitSet _expression_in_assignment586 = new BitSet(new ulong[]{0x2000000UL});
+		public static readonly BitSet _45_in_assignment596 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _ID_in_assignment598 = new BitSet(new ulong[]{0x10000UL});
+		public static readonly BitSet _16_in_assignment600 = new BitSet(new ulong[]{0x20000UL});
+		public static readonly BitSet _17_in_assignment602 = new BitSet(new ulong[]{0x2000000UL});
+		public static readonly BitSet _45_in_assignment610 = new BitSet(new ulong[]{0x44800000000UL});
+		public static readonly BitSet _primitiveType_in_assignment612 = new BitSet(new ulong[]{0x100000000UL});
+		public static readonly BitSet _32_in_assignment614 = new BitSet(new ulong[]{0x800UL});
+		public static readonly BitSet _INT_in_assignment616 = new BitSet(new ulong[]{0x200000000UL});
+		public static readonly BitSet _33_in_assignment618 = new BitSet(new ulong[]{0x2000000UL});
+		public static readonly BitSet _25_in_assignment627 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ID_in_invoke644 = new BitSet(new ulong[]{0x10000UL});
+		public static readonly BitSet _actualParameters_in_invoke646 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ID_in_invoke654 = new BitSet(new ulong[]{0x400000UL});
+		public static readonly BitSet _22_in_invoke656 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _ID_in_invoke658 = new BitSet(new ulong[]{0x10000UL});
+		public static readonly BitSet _actualParameters_in_invoke660 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _41_in_if_inst673 = new BitSet(new ulong[]{0x10000UL});
+		public static readonly BitSet _16_in_if_inst675 = new BitSet(new ulong[]{0x4000000010D10UL});
+		public static readonly BitSet _expression_in_if_inst677 = new BitSet(new ulong[]{0x20000UL});
+		public static readonly BitSet _17_in_if_inst679 = new BitSet(new ulong[]{0x40000000000000UL});
+		public static readonly BitSet _54_in_if_inst681 = new BitSet(new ulong[]{0xA7820002000400UL});
+		public static readonly BitSet _someStatements_in_if_inst683 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _55_in_if_inst685 = new BitSet(new ulong[]{0x8000000002UL});
+		public static readonly BitSet _39_in_if_inst688 = new BitSet(new ulong[]{0x40000000000000UL});
+		public static readonly BitSet _54_in_if_inst690 = new BitSet(new ulong[]{0xA7820002000400UL});
+		public static readonly BitSet _someStatements_in_if_inst692 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _55_in_if_inst694 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _53_in_while_inst704 = new BitSet(new ulong[]{0x10000UL});
+		public static readonly BitSet _16_in_while_inst706 = new BitSet(new ulong[]{0x4000000010D10UL});
+		public static readonly BitSet _expression_in_while_inst708 = new BitSet(new ulong[]{0x20000UL});
+		public static readonly BitSet _17_in_while_inst710 = new BitSet(new ulong[]{0x40000000000000UL});
+		public static readonly BitSet _54_in_while_inst712 = new BitSet(new ulong[]{0xA7820002000400UL});
+		public static readonly BitSet _someStatements_in_while_inst714 = new BitSet(new ulong[]{0x80000000000000UL});
+		public static readonly BitSet _55_in_while_inst716 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _49_in_return_inst724 = new BitSet(new ulong[]{0x4000002010D10UL});
+		public static readonly BitSet _expression_in_return_inst726 = new BitSet(new ulong[]{0x2000000UL});
+		public static readonly BitSet _25_in_return_inst729 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _48_in_read737 = new BitSet(new ulong[]{0x10000UL});
+		public static readonly BitSet _16_in_read739 = new BitSet(new ulong[]{0x4000000000400UL});
+		public static readonly BitSet _designator_in_read741 = new BitSet(new ulong[]{0x20000UL});
+		public static readonly BitSet _17_in_read743 = new BitSet(new ulong[]{0x2000000UL});
+		public static readonly BitSet _25_in_read745 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _47_in_print753 = new BitSet(new ulong[]{0x10000UL});
+		public static readonly BitSet _16_in_print755 = new BitSet(new ulong[]{0x4000000010D10UL});
+		public static readonly BitSet _expression_in_print757 = new BitSet(new ulong[]{0x20000UL});
+		public static readonly BitSet _17_in_print759 = new BitSet(new ulong[]{0x2000000UL});
+		public static readonly BitSet _25_in_print761 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ID_in_designator777 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ID_in_designator790 = new BitSet(new ulong[]{0x400000UL});
+		public static readonly BitSet _22_in_designator793 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _ID_in_designator799 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _50_in_designator808 = new BitSet(new ulong[]{0x400000UL});
+		public static readonly BitSet _22_in_designator810 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _ID_in_designator816 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ID_in_designator831 = new BitSet(new ulong[]{0x100000000UL});
+		public static readonly BitSet _32_in_designator833 = new BitSet(new ulong[]{0x4000000010D10UL});
+		public static readonly BitSet _expression_in_designator835 = new BitSet(new ulong[]{0x200000000UL});
+		public static readonly BitSet _33_in_designator837 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _16_in_actualParameters855 = new BitSet(new ulong[]{0x4000000030D10UL});
+		public static readonly BitSet _expression_in_actualParameters858 = new BitSet(new ulong[]{0x120000UL});
+		public static readonly BitSet _20_in_actualParameters861 = new BitSet(new ulong[]{0x4000000010D10UL});
+		public static readonly BitSet _expression_in_actualParameters863 = new BitSet(new ulong[]{0x120000UL});
+		public static readonly BitSet _17_in_actualParameters869 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _es_in_expression879 = new BitSet(new ulong[]{0xEC008002UL});
+		public static readonly BitSet _relOp_in_expression882 = new BitSet(new ulong[]{0x4000000010D10UL});
+		public static readonly BitSet _es_in_expression886 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _term_in_es899 = new BitSet(new ulong[]{0x400000280002UL});
+		public static readonly BitSet _set_in_es914 = new BitSet(new ulong[]{0x4000000010D10UL});
+		public static readonly BitSet _term_in_es932 = new BitSet(new ulong[]{0x400000280002UL});
+		public static readonly BitSet _factor_in_term948 = new BitSet(new ulong[]{0x400840002UL});
+		public static readonly BitSet _set_in_term963 = new BitSet(new ulong[]{0x4000000010D10UL});
+		public static readonly BitSet _factor_in_term981 = new BitSet(new ulong[]{0x400840002UL});
+		public static readonly BitSet _invoke_in_factor996 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ID_in_factor1006 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ID_in_factor1021 = new BitSet(new ulong[]{0x400000UL});
+		public static readonly BitSet _22_in_factor1023 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _ID_in_factor1029 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _50_in_factor1043 = new BitSet(new ulong[]{0x400000UL});
+		public static readonly BitSet _22_in_factor1045 = new BitSet(new ulong[]{0x400UL});
+		public static readonly BitSet _ID_in_factor1051 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _ID_in_factor1063 = new BitSet(new ulong[]{0x100000000UL});
+		public static readonly BitSet _32_in_factor1065 = new BitSet(new ulong[]{0x4000000010D10UL});
+		public static readonly BitSet _expression_in_factor1067 = new BitSet(new ulong[]{0x200000000UL});
+		public static readonly BitSet _33_in_factor1069 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _INT_in_factor1080 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _CHAR_in_factor1087 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _FLOAT_in_factor1094 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _16_in_factor1101 = new BitSet(new ulong[]{0x4000000010D10UL});
+		public static readonly BitSet _expression_in_factor1104 = new BitSet(new ulong[]{0x20000UL});
+		public static readonly BitSet _17_in_factor1106 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _set_in_relOp1127 = new BitSet(new ulong[]{0x2UL});
 	}
 	#endregion Follow sets
 }

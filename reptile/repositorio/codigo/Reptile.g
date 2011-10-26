@@ -1,6 +1,5 @@
 grammar Reptile;
 
-
 options
 {
     language=CSharp2;
@@ -31,10 +30,17 @@ public override void ReportError(RecognitionException e)
 }
 
 @members {
-Dictionary<string, ScopeWithMethods> directory;
-Dictionary<string, ClassSymbol> typesDirectory;
+
+SymbolTable directory;
+Stack<string> pOperadores = new Stack<string>();
+Stack<VariableSymbol> pOperandos = new Stack<VariableSymbol>();
+
 Scope actualScope;
 Scope globalScope = new GlobalScope();
+
+LinkedList<string> operadoresRelacionales = new LinkedList<string>(new string[] {">", "<", ">=", "<="});
+LinkedList<string> masMenosOr = new LinkedList<string>(new string[] {"+", "-", "or"});
+LinkedList<string> porEntreAnd = new LinkedList<string>(new string[] {"*", "/", "and"});
 
 protected override object RecoverFromMismatchedToken(IIntStream input, int ttype, BitSet follow)
 {
@@ -46,27 +52,8 @@ public override object RecoverFromMismatchedSet(IIntStream input, RecognitionExc
         throw e;
 }
 
-void printDirectory() {
-	Console.WriteLine("Directory:");
-	foreach(KeyValuePair<String,ScopeWithMethods> entry in directory) {
-		Console.WriteLine(entry.Key + " -> " + entry.Value.name);
-	}
-}
-
-void printTypesDirectory() {
-	Console.WriteLine("Types Directory:");	
-	foreach(KeyValuePair<String, ClassSymbol> entry in typesDirectory) {
-		Console.Write(entry.Key + " -> " + entry.Value.name);
-		if(entry.Value.superClass != null) {
-			Console.Write( " superClass-> " + entry.Value.superClass.name);
-		}
-		Console.WriteLine();
-	}
-}
-
 void createDirectories() {
-	directory = new Dictionary<string, ScopeWithMethods>();
-	typesDirectory = new Dictionary<string, ClassSymbol>();
+	directory = new SymbolTable();
 }
 
 void defineScopeGlobal() {
@@ -74,24 +61,10 @@ void defineScopeGlobal() {
 	directory.Add("GlobalScope", (ScopeWithMethods)globalScope);
 }
 
-void registerPrimitiveTypes() {
-	ClassSymbol integers = new ClassSymbol("int");
-	typesDirectory.Add(integers.name, integers);
-	ClassSymbol chars = new ClassSymbol("char");
-	typesDirectory.Add(chars.name, chars);
-	ClassSymbol integerArray = new ClassSymbol("int[]");
-	typesDirectory.Add(integerArray.name, integerArray);
-	ClassSymbol charArray = new ClassSymbol("char[]");
-	typesDirectory.Add(charArray.name, charArray); 
-	ClassSymbol tipoVoid = new ClassSymbol("void");
-	typesDirectory.Add(tipoVoid.name, tipoVoid);
-}
-
 void registerClass(string className, string superClase) {
 	try {
 		ClassSymbol newClass = new ClassSymbol(className);
 		directory.Add(newClass.name, newClass);
-		typesDirectory.Add(newClass.name, newClass);
 		actualScope = newClass;
 		if(superClase != null) {
 			registerSuperClass(newClass, superClase);
@@ -105,20 +78,12 @@ void registerClass(string className, string superClase) {
 void registerSuperClass(ClassSymbol clase, string superClase) {
 	try {
 		ClassSymbol clasePadre;
-		clasePadre = findType(superClase);
+		clasePadre = directory.findType(superClase);
 		clase.superClass = clasePadre;
 	}
 	catch(Exception exception) {
 		manageException(exception);
 	}
-}
-
-ClassSymbol findType(string type) {
-	ClassSymbol classSymbol;
-	if(!typesDirectory.TryGetValue(type, out classSymbol)) {
-		manageException(new Exception("El tipo " + type + " no existe."));
-	}
-	return classSymbol;
 }
 
 //usado con metodos y variables
@@ -135,23 +100,140 @@ void registrarMetodo(ClassSymbol tipoRetorno, string methodName) {
 }
 
 void registerVariableInMethod(string variableName, string tipo) {
-	ClassSymbol tipoParam = findType(tipo);
+	ClassSymbol tipoParam = directory.findType(tipo);
 	VariableSymbol variableSymbol = new VariableSymbol(variableName, tipoParam);
 	registerVariableInScope(variableName, tipoParam);
 	MethodSymbol methodSymbol = (MethodSymbol) actualScope;	//casting para poder llamar a defineParameter(..)
 	methodSymbol.defineParameter(variableName, variableSymbol);
 }
 
+bool verifyVariableIsDefinedInMethod(string variable) {
+	VariableSymbol varSymbol = actualScope.getVariableSymbol(variable);
+	if(varSymbol == null) {
+		generateVariableNotFoundError(variable);
+		return false;
+	}
+	return true;
+}
+
+void generateVariableNotFoundError(string variable) {
+		Exception e = new Exception("No se encontro la variable " + variable);
+		manageException(e);
+}
+
+VariableSymbol verifyObjectAndInstVariableDefined(string objeto, string instVar) {
+	if(verifyVariableIsDefinedInMethod(objeto)) {
+		VariableSymbol obj = actualScope.getVariableSymbol(objeto);
+		ClassSymbol tipo = obj.type;
+		VariableSymbol varDeInstancia = tipo.getVariableSymbol(instVar);
+		if(varDeInstancia == null) {
+			generateInstanceVariableNotFoundError(tipo.name, instVar);
+		}
+		else {
+			return varDeInstancia;
+		}
+	}
+	return null;
+}
+
+void generateInstanceVariableNotFoundError(string clase, string variable) {
+	Exception e = new Exception("No se encontro la variable de instancia " + variable + " en el tipo " + clase);
+	manageException(e);
+}
+
+VariableSymbol verifyInstanceVariableDefinedInThis(string var) {
+	ScopeWithMethods enclosingScope = ((MethodSymbol)actualScope).enclosingScope;
+	if(enclosingScope is GlobalScope) {
+		Exception e = new Exception("No se puede usar 'this' si no es dentro de una clase.");
+		manageException(e);
+	}
+	else {
+		ClassSymbol clase = (ClassSymbol)enclosingScope;
+		VariableSymbol instVariable = clase.getVariableSymbol(var);
+		if(instVariable == null) {
+			generateInstanceVariableNotFoundError(clase.name, var);
+		}
+		else {
+			return instVariable;
+		}
+	}
+	return null;
+}
+
+void verifyIsArray(string var) {
+	if(verifyVariableIsDefinedInMethod(var)) {
+		VariableSymbol arr = actualScope.getVariableSymbol(var);
+		if(!arr.type.isArrayType()) {
+			generateIsNotArrayError(arr.name);
+		}
+	}
+}
+
+void generateIsNotArrayError(string variable) {
+	Exception e = new Exception("La variable " + variable + " no es un arreglo y por tanto no tiene definido el operador [] .");
+	manageException(e);
+}
+
+public bool tiposSonCompatiblesEnOperacion() {
+	VariableSymbol right = pOperandos.Pop();
+	VariableSymbol left = pOperandos.Pop();
+	pOperandos.Push(left);
+	pOperandos.Push(right);
+	string operador = pOperadores.Peek();
+	ClassSymbol tipoResultado = directory.resultType(left.type, right.type, operador);
+	if(tipoResultado.isVoidType()) {
+		return false;
+	}
+	return true;
+}
+
+public bool isRelationalOperator(string operador) {
+	return operador.Equals(">") || operador.Equals("<") || operador.Equals(">=")
+		|| operador.Equals("<=");
+}
+
+public bool isPorEntreAnd(string operador) {
+	return operador.Equals("*") || operador.Equals("/") || operador.Equals("and");
+}
+
+public void aplicaOperadorPendienteQueSea(LinkedList<string> operadoresBuscados) {
+	if(pOperadores.Count > 0) {
+		string operador = pOperadores.Peek();
+		if(operadoresBuscados.Contains(operador)) {
+			if(tiposSonCompatiblesEnOperacion()) {
+				pOperadores.Pop();
+				VariableSymbol right = pOperandos.Pop();
+				VariableSymbol left = pOperandos.Pop();
+				ClassSymbol tipoResultado = directory.resultType(left.type, right.type, operador);
+				//TODO el temporal debe obtenerse del avail
+				VariableSymbol temporal = new VariableSymbol("temporal", tipoResultado);
+				 
+				//TODO generar cuadruplo usando operador, left, right y temporal
+				
+				pOperandos.Push(temporal);
+			}
+			else {
+				//TODO accion correctiva: sacar los dos operandos y el operador de sus pilas
+				pOperadores.Pop();
+				VariableSymbol right = pOperandos.Pop();
+				VariableSymbol left = pOperandos.Pop();
+				manageException(new Exception("Operador \"" + operador + "\" no es valido para " + 
+					left.type.name + " " + left.name + ", " + right.type.name + " " + right.name));
+			}
+		}
+	}
+}
+
 public static void manageException(Exception e) {
 	Console.WriteLine(e.ToString());
+	throw new RecognitionException("Se encontro Error semantico\n");
+}
 }
 
-}
-
-public program	:	{createDirectories(); defineScopeGlobal(); registerPrimitiveTypes();} classes? {actualScope = globalScope;} vars? methods? mainMethod;
+public program	:	{createDirectories(); defineScopeGlobal();} classes? {actualScope = globalScope;} vars? methods? mainMethod;
 
 mainMethod
-	:	'void' 'main' '(' ')' '{'vars? someStatements '}' {printDirectory(); printTypesDirectory();} ;
+	:	'void' 'main' '(' ')' '{'vars? someStatements '}' {directory.printDirectory(); directory.printTypesDirectory();} ;
 
 classes	:	'classes' ':' classDecl*;
 
@@ -167,14 +249,15 @@ varDecl
 @init {
 	ClassSymbol clase;
 }
-    :   (t = primitiveType | t = referenceType) {clase = findType($t.tipo);} ID {registerVariableInScope($ID.text, clase);} ';' ;
+    :   (t = primitiveType | t = referenceType) {clase = directory.findType($t.tipo);} ID {registerVariableInScope($ID.text, clase);} ';' ;
     
     
-primitiveType returns[string tipo]:	t = ('int'|'char') {$tipo = $t.text;};
+primitiveType returns[string tipo]:	t = ('int'|'char' | 'double') {$tipo = $t.text;};
 
 referenceType returns[string tipo]:	
 				('char' '[' ']' {$tipo = "char[]";}	//char[]
 				|'int' '[' ']' {$tipo = "int[]";}//int[]
+				| 'double' '[' ']' {$tipo = "double[]";}
 				| ID	{$tipo = $ID.text;}	)//MiClase
 				;
 
@@ -206,7 +289,7 @@ methodDeclaration
 @init {
 	ClassSymbol tipoRetorno;
 }
-:	(tRet = primitiveType | tRet = referenceType | tRet = voidType) {tipoRetorno = findType($tRet.tipo);} 
+:	(tRet = primitiveType | tRet = referenceType | tRet = voidType) {tipoRetorno = directory.findType($tRet.tipo);} 
 	ID {registrarMetodo(tipoRetorno, $ID.text);} 
 	'(' formalParameters? ')' 
 	'{' vars? someStatements '}' 
@@ -222,7 +305,7 @@ someStatements
 	:	statement*;
 
 statement :	assignment
-		|	invoke
+		|	invoke ';'
 		|	if_inst
 		|	while_inst
 		|	return_inst
@@ -230,16 +313,25 @@ statement :	assignment
 		|	print
 		| ';';
 		
-assignment
-	:	designator '=' expression ';';
+assignment	//TODO
+	:	designator '=' 
+		(
+		expression
+		| 'new' ID '(' ')' {directory.findType($ID.text);}
+		| 'new' primitiveType '[' INT ']'
+		) 
+		';' //TODO verificar que la expresion es asignable al tipo del designat
+	;
 	
-invoke	:	ID actualParameters	';' //miObjeto(param1, param2,...);
-		| ID '.' ID actualParameters	';' //miObjeto.attr(param1, param2,...);
+	
+		//TODO verificar semantica en invocaciones
+invoke	:	ID actualParameters	 //miObjeto(param1, param2,...);
+		| ID '.' ID actualParameters	 //miObjeto.attr(param1, param2,...);
 		;
 
-if_inst	:	'if' '(' condition ')' '{' someStatements '}' ('else' '{' someStatements '}')?;
+if_inst	:	'if' '(' expression ')' '{' someStatements '}' ('else' '{' someStatements '}')?;
 
-while_inst	:	'while' '(' condition ')' '{' someStatements '}';
+while_inst	:	'while' '(' expression ')' '{' someStatements '}';
 
 return_inst	:	'return' expression? ';';
 
@@ -248,34 +340,94 @@ read	:	'read' '(' designator ')' ';';
 print	:	'print' '(' expression ')' ';';
 
 designator
-	:	ID (('.' ID) | ('[' expression ']'))?;
+	:	
+		v = ID {verifyVariableIsDefinedInMethod($v.text); } //variable local del metodo
+		| obj = ID  '.' var = ID {verifyObjectAndInstVariableDefined($obj.text, $var.text); } //objeto.variable
+		| 'this' '.' var = ID   {verifyInstanceVariableDefinedInThis($var.text);}    //this.variable
+		| (ID '[' expression ']')	//arreglo[exp]
+		{
+		verifyIsArray($ID.text);
+
+		//TODO verificar que el resultado de la expresion es un entero
+		}
+	;
 	
 actualParameters
 	:	'(' (expression (',' expression)*)? ')';
 	
-condition
-	:	expression relOp expression;
-
 expression
-	:	term (('+' | '-') term)?;
-	
-term	:	factor (('*' | '/') factor)?;
+	:	es (relOp {pOperadores.Push($relOp.operador);} es {aplicaOperadorPendienteQueSea(operadoresRelacionales);})?;
 
-factor	:	invoke
-		| ID
-		| ID '.' ID
-		| ID '[' expression ']'
-		| INT
-		| CHAR
-		| 'new' referenceType '(' ')' ';'
-		| '(' expression ')'
+es
+	:	term {aplicaOperadorPendienteQueSea(masMenosOr);}
+		(
+			op = ('+' | '-' | 'or') {pOperadores.Push($op.text);} 
+			term {aplicaOperadorPendienteQueSea(masMenosOr);}
+		)*;
+	
+term	:	factor {aplicaOperadorPendienteQueSea(porEntreAnd);}
+		(
+			op = ('*' | '/' | 'and') {pOperadores.Push($op.text);} 
+			factor {aplicaOperadorPendienteQueSea(porEntreAnd);}
+		)*;
+
+factor	:	invoke	//TODO verificar semantica y hacer acciones para llamadas a metodos
+		| v = ID 
+		{
+		if(verifyVariableIsDefinedInMethod($v.text)) {
+			VariableSymbol varSymbol = actualScope.getVariableSymbol($v.text);
+			pOperandos.Push(varSymbol);
+		}
+		}
+		| obj = ID '.' var = ID 
+		{
+		//TODO checar como va a quedar eso de que cada miembro de cada variable tenga su direccion
+		//al hacer push a la pila de operadores. Creo que aqui primero ponemos el field en una var temporal
+		//y ese temporal es el que pushamos a la pila de operandos
+		VariableSymbol varSymbol = verifyObjectAndInstVariableDefined($obj.text, $var.text);
+		if(varSymbol != null) {
+			pOperandos.Push(varSymbol);
+		}
+		}
+		
+		| 'this' '.' var = ID 
+		{
+		//TODO checar como va a quedar eso de que cada miembro de cada variable tenga su direccion
+		//al hacer push a la pila de operadores. Creo que aqui primero ponemos el field en una var temporal
+		//y ese temporal es el que pushamos a la pila de operandos
+		VariableSymbol varSymbol = verifyInstanceVariableDefinedInThis($var.text);
+		if(varSymbol != null) {
+			pOperandos.Push(varSymbol);
+		}
+		} 
+		| ID '[' expression ']' 
+		{
+		//TODO estamos metiendo objetos basura solo para verificar su tipo
+		verifyIsArray($ID.text);
+		VariableSymbol indice = pOperandos.Pop();
+		if(!indice.type.name.Equals("int")) {
+			manageException(new Exception("El subindice del arreglo " + $ID.text + " debe ser de tipo int."));
+		}
+		else {
+			VariableSymbol basura = actualScope.getVariableSymbol($ID.text);
+			string tipo = basura.type.name.Substring(0, basura.type.name.Length - 2);
+			ClassSymbol t = directory.findType(tipo);
+			VariableSymbol basura2 = new VariableSymbol("basura2", t);
+			pOperandos.Push(basura2);
+		}
+		//TODO verificar que el resultado de la expresion es un entero
+		}
+		| INT	//TODO hacer push
+		| CHAR	//TODO hacer push
+		| FLOAT	//TODO hacer push
+		| '('{pOperadores.Push("(");} expression ')' {pOperadores.Pop();}
 		;
 	
-relOp	:	'==' | '!=' | '>' | '>=' | '<' | '<=';
+relOp returns[string operador]:	 op = ('==' | '!=' | '>' | '>=' | '<' | '<=') {$operador = $op.text;};
 
 ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     ;
-
+    
 INT 	:	('0'..'9')+;
 
 FLOAT
@@ -303,6 +455,7 @@ EXPONENT : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
 
 fragment
 HEX_DIGIT : ('0'..'9'|'a'..'f'|'A'..'F') ;
+
 
 fragment
 ESC_SEQ
