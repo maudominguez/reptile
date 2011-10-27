@@ -60,14 +60,9 @@ public class MethodSymbol : Scope
 
     public void defineParameter(string variableName, VariableSymbol variableSymbol)
     {
-        if (containsParameter(variableName))
-        {
-            ReptileParser.manageException(new Exception("Parametro " + variableName + " ya definido en " + this.name));
-        }
-        else
-        {
-            parametros.AddLast(variableSymbol);
-        }
+        verifyVariableIsNotDefined(variableName);
+        defineVariable(variableName, variableSymbol);
+        parametros.AddLast(variableSymbol);
     }
 
     public override VariableSymbol getVariableSymbol(string variableName)

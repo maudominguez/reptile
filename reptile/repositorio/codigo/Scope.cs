@@ -13,15 +13,9 @@ public abstract class Scope
     
     public void defineVariable(string variableName, VariableSymbol variableSymbol) 
     {
-        if (variables.ContainsKey(variableName))
-        {
-            ReptileParser.manageException(new Exception("Variable " + variableName + " ya declarada."));
-        }
-        else
-        {
-            variableSymbol.address = memory.nextAddress();
-            variables.Add(variableName, variableSymbol);
-        }
+        verifyVariableIsNotDefined(variableName);
+        variableSymbol.address = memory.nextAddress();
+        variables.Add(variableName, variableSymbol);
     }
 
     public String variablesToString()
@@ -36,7 +30,13 @@ public abstract class Scope
         return res.ToString();
     }
 
-    
+    public void verifyVariableIsNotDefined(string variableName)
+    {
+        if (variables.ContainsKey(variableName))
+        {
+            ReptileParser.manageException(new Exception("Variable " + variableName + " ya declarada."));
+        }
+    }
 
 
 }

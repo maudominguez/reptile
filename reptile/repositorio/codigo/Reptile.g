@@ -111,7 +111,7 @@ void registrarMetodo(ClassSymbol tipoRetorno, string methodName) {
 void registerVariableInMethod(string variableName, string tipo) {
 	ClassSymbol tipoParam = directory.findType(tipo);
 	VariableSymbol variableSymbol = new VariableSymbol(variableName, tipoParam);
-	registerVariableInScope(variableName, tipoParam);
+	//registerVariableInScope(variableName, tipoParam);
 	MethodSymbol methodSymbol = (MethodSymbol) actualScope;	//casting para poder llamar a defineParameter(..)
 	methodSymbol.defineParameter(variableName, variableSymbol);
 }

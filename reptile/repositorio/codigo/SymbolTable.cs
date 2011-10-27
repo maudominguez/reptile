@@ -165,9 +165,14 @@ public class SymbolTable
         return (ClassSymbol)scopeWithMethods;
     }
 
-    public void Add(string key, ScopeWithMethods value)
+    public void Add(string scopeName, ScopeWithMethods scopeWithMethods)
     {
-        directory.Add(key, value);
+        if (directory.ContainsKey(scopeName))
+        {
+            ReptileParser.manageException(new Exception("Clase " + scopeName + " ya ha sido definida antes."));
+            return;
+        }
+        directory.Add(scopeName, scopeWithMethods);
     }
 
 }

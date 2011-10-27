@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.4 C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g 2011-10-26 20:00:20
+// $ANTLR 3.4 C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g 2011-10-27 09:42:20
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -194,7 +194,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	void registerVariableInMethod(string variableName, string tipo) {
 		ClassSymbol tipoParam = directory.findType(tipo);
 		VariableSymbol variableSymbol = new VariableSymbol(variableName, tipoParam);
-		registerVariableInScope(variableName, tipoParam);
+		//registerVariableInScope(variableName, tipoParam);
 		MethodSymbol methodSymbol = (MethodSymbol) actualScope;	//casting para poder llamar a defineParameter(..)
 		methodSymbol.defineParameter(variableName, variableSymbol);
 	}
