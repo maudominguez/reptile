@@ -18,21 +18,21 @@ public class SymbolTable
     public SymbolTable()
     {
         directory = new Dictionary<string, ScopeWithMethods>();
-        ClassSymbol integers = new ClassSymbol(integerName);
+        ClassSymbol integers = new ClassSymbol(integerName, null);
 	    directory.Add(integers.name, integers);
-        ClassSymbol chars = new ClassSymbol(charName);
+        ClassSymbol chars = new ClassSymbol(charName, null);
 	    directory.Add(chars.name, chars);
-        ClassSymbol doubles = new ClassSymbol(doubleName);
+        ClassSymbol doubles = new ClassSymbol(doubleName, null);
 	    directory.Add(doubles.name, doubles);
-        ClassSymbol bools = new ClassSymbol(boolName);
+        ClassSymbol bools = new ClassSymbol(boolName, null);
         directory.Add(bools.name, bools);
-        ClassSymbol integerArray = new ClassSymbol(integerArrayName);
+        ClassSymbol integerArray = new ClassSymbol(integerArrayName, null);
 	    directory.Add(integerArray.name, integerArray);
-        ClassSymbol charArray = new ClassSymbol(charArrayName);
+        ClassSymbol charArray = new ClassSymbol(charArrayName, null);
 	    directory.Add(charArray.name, charArray);
-        ClassSymbol doubleArray = new ClassSymbol(doubleArrayName);
+        ClassSymbol doubleArray = new ClassSymbol(doubleArrayName, null);
 	    directory.Add(doubleArray.name, doubleArray);
-        ClassSymbol tipoVoid = new ClassSymbol(voidName);
+        ClassSymbol tipoVoid = new ClassSymbol(voidName, null);
 	    directory.Add(tipoVoid.name, tipoVoid);
     }
 

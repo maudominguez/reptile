@@ -14,8 +14,6 @@ public class VariableSymbol
         this.name = name;
         this.type = type;
 
-        //Stack<String> pes = new Stack<string>();
-        //pes.ElementAt
     }
 
     public override string ToString()

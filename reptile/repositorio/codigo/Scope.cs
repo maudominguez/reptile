@@ -7,6 +7,7 @@ public abstract class Scope
 {
     public string name;
     protected Dictionary<string, VariableSymbol> variables; //tabla de variables de instancia o globales
+    protected Memory memory = new Memory();
 
     public abstract VariableSymbol getVariableSymbol(string variableName);
     
@@ -18,6 +19,7 @@ public abstract class Scope
         }
         else
         {
+            variableSymbol.address = memory.nextAddress();
             variables.Add(variableName, variableSymbol);
         }
     }
@@ -33,5 +35,8 @@ public abstract class Scope
         }
         return res.ToString();
     }
+
+    
+
 
 }

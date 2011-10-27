@@ -9,6 +9,7 @@ public class MethodSymbol : Scope
     public ClassSymbol returnType; 
     public int cuadruplo;  //numero de cuadruplo donde empieza
 
+
     private LinkedList<VariableSymbol> parametros;
 
     public MethodSymbol(string name, ClassSymbol returnType, ScopeWithMethods enclosingScope)
@@ -76,6 +77,9 @@ public class MethodSymbol : Scope
         return variableSymbol;
     }
 
-    
+    public int nextAddress()
+    {
+        return memory.nextAddress();
+    }
 
 }

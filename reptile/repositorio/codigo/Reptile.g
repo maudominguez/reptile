@@ -30,10 +30,10 @@ public override void ReportError(RecognitionException e)
 }
 
 @members {
-
 SymbolTable directory;
 Stack<string> pOperadores = new Stack<string>();
 Stack<VariableSymbol> pOperandos = new Stack<VariableSymbol>();
+LinkedList<Quadruple> quadruples = new LinkedList<Quadruple>();
 
 Scope actualScope;
 Scope globalScope = new GlobalScope();
@@ -63,18 +63,26 @@ void defineScopeGlobal() {
 
 void registerClass(string className, string superClase) {
 	try {
-		ClassSymbol newClass = new ClassSymbol(className);
+		ClassSymbol clasePadre = null;
+		if(superClase != null) {
+			try {
+				clasePadre = directory.findType(superClase);
+			}
+			catch(Exception exception) {
+				manageException(exception);
+			}
+		}
+		
+		ClassSymbol newClass = new ClassSymbol(className, clasePadre);
 		directory.Add(newClass.name, newClass);
 		actualScope = newClass;
-		if(superClase != null) {
-			registerSuperClass(newClass, superClase);
-		}
 	}
 	catch(Exception exception) {
 		manageException(exception);	//manejarException
 	}
 }
 
+/*
 void registerSuperClass(ClassSymbol clase, string superClase) {
 	try {
 		ClassSymbol clasePadre;
@@ -85,6 +93,7 @@ void registerSuperClass(ClassSymbol clase, string superClase) {
 		manageException(exception);
 	}
 }
+*/
 
 //usado con metodos y variables
 void registerVariableInScope(string variableName, ClassSymbol tipo) {
@@ -303,11 +312,11 @@ assignment	//TODO
 		(
 		expression
 		| 'new' ID '(' ')' {directory.findType($ID.text);}
-		| 'new' primitiveType '[' INT ']'
+		| 'new' primitiveType '[' INT ']'	
+		//TODO generar cuadruplo ILOAD para la constante int leida
 		) 
 		';' //TODO verificar que la expresion, new clase, o new arreglo es asignable al tipo del designat
 	;
-	
 	
 		//TODO verificar semantica en invocaciones
 invoke	:	ID actualParameters	 //miObjeto(param1, param2,...);
@@ -402,9 +411,29 @@ factor	:	invoke	//TODO verificar semantica y hacer acciones para llamadas a meto
 		}
 		//TODO verificar que el resultado de la expresion es un entero
 		}
-		| INT	//TODO hacer push
-		| CHAR	//TODO hacer push
-		| FLOAT	//TODO hacer push
+		| INT	{
+		int addressTemp = ((MethodSymbol)actualScope).nextAddress();
+		VariableSymbol temp = new VariableSymbol("@_" + addressTemp, directory.findType("int"));
+		temp.address = addressTemp;
+		pOperandos.Push(temp);
+		//TODO GENERAR CUADRUPLO ILOAD constanteInt address
+		}
+		| CHAR
+		{
+		int addressTemp = ((MethodSymbol)actualScope).nextAddress();
+		VariableSymbol temp = new VariableSymbol("@_" + addressTemp, directory.findType("char"));
+		temp.address = addressTemp;
+		pOperandos.Push(temp);
+		//TODO GENERAR CUADRUPLO CLOAD constanteChar address
+		}
+		| DOUBLE
+		{
+		int addressTemp = ((MethodSymbol)actualScope).nextAddress();
+		VariableSymbol temp = new VariableSymbol("@_" + addressTemp, directory.findType("double"));
+		temp.address = addressTemp;
+		pOperandos.Push(temp);
+		//TODO GENERAR CUADRUPLO DLOAD constanteDouble address
+		}
 		| '('{pOperadores.Push("(");} expression ')' {pOperadores.Pop();}
 		;
 	
@@ -415,7 +444,7 @@ ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     
 INT 	:	('0'..'9')+;
 
-FLOAT
+DOUBLE
     :   INT '.' INT*
     |   '.' INT+
     ;

@@ -7,12 +7,28 @@ public class ClassSymbol : ScopeWithMethods
 {
     public ClassSymbol superClass;
 
-    public ClassSymbol(string name)
+    public ClassSymbol(string name, ClassSymbol superClass)
     {
         this.name = name;
         methods = new Dictionary<string, MethodSymbol>();
         variables = new Dictionary<string, VariableSymbol>();
+        this.superClass = superClass;
+        if(superClass != null)
+        {
+            for (int i = 1; i <= superClass.countVariables(); i++ )
+            {
+                this.memory.nextAddress();
+            }
+        }
+    }
 
+    public int countVariables()
+    {
+        if(superClass == null) 
+        {
+            return variables.Count;
+        }
+        return superClass.countVariables() + variables.Count;
     }
 
     public bool isArrayType()
@@ -63,5 +79,7 @@ public class ClassSymbol : ScopeWithMethods
         }
         return superClass.isChildOf(sup);
     }
+
+
 
 }

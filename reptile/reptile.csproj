@@ -50,19 +50,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="repositorio\codigo\ClassSymbol.cs" />
-    <Compile Include="repositorio\codigo\ConstantsMemory.cs" />
-    <Compile Include="repositorio\codigo\GlobalMemory.cs" />
     <Compile Include="repositorio\codigo\GlobalScope.cs" />
-    <Compile Include="repositorio\codigo\LocalMemory.cs" />
+    <Compile Include="repositorio\codigo\Memory.cs" />
     <Compile Include="repositorio\codigo\MethodSymbol.cs" />
     <Compile Include="repositorio\codigo\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="repositorio\codigo\Quadruple.cs" />
     <Compile Include="repositorio\codigo\ReptileLexer.cs" />
     <Compile Include="repositorio\codigo\ReptileParser.cs" />
     <Compile Include="repositorio\codigo\Scope.cs" />
     <Compile Include="repositorio\codigo\ScopeWithMethods.cs" />
     <Compile Include="repositorio\codigo\SymbolTable.cs" />
-    <Compile Include="repositorio\codigo\TemporalMemory.cs" />
     <Compile Include="repositorio\codigo\VariableSymbol.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
