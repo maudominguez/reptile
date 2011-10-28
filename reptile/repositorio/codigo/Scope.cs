@@ -7,14 +7,20 @@ public abstract class Scope
 {
     public string name;
     protected Dictionary<string, VariableSymbol> variables; //tabla de variables de instancia o globales
-    protected Memory memory = new Memory();
+    protected Memory memory;
 
     public abstract VariableSymbol getVariableSymbol(string variableName);
     
     public void defineVariable(string variableName, VariableSymbol variableSymbol) 
     {
         verifyVariableIsNotDefined(variableName);
-        variableSymbol.address = memory.nextAddress();
+        try
+        {
+            variableSymbol.address = memory.nextAddress();
+        }
+        catch(Exception e) {
+            ReptileParser.manageException(e);
+        }
         variables.Add(variableName, variableSymbol);
     }
 

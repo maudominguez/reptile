@@ -6,12 +6,15 @@ using System.Text;
 public class ClassSymbol : ScopeWithMethods
 {
     public ClassSymbol superClass;
+    private static int START_ADDRESS = 0;
+    private static int MAX_ADDRESS = 9999;
 
     public ClassSymbol(string name, ClassSymbol superClass)
     {
         this.name = name;
         methods = new Dictionary<string, MethodSymbol>();
         variables = new Dictionary<string, VariableSymbol>();
+        this.memory = new Memory(START_ADDRESS, MAX_ADDRESS);
         this.superClass = superClass;
         if(superClass != null)
         {

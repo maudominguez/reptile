@@ -8,7 +8,8 @@ public class MethodSymbol : Scope
     public ScopeWithMethods enclosingScope; //puede ser el scope global o una clase
     public ClassSymbol returnType; 
     public int cuadruplo;  //numero de cuadruplo donde empieza
-
+    private static int START_ADDRESS = 10000;
+    private static int MAX_ADDRESS = 19999;
 
     private LinkedList<VariableSymbol> parametros;
 
@@ -17,9 +18,19 @@ public class MethodSymbol : Scope
         this.name = name;
         this.returnType = returnType;
         this.enclosingScope = enclosingScope;
+        this.memory = new Memory(START_ADDRESS, MAX_ADDRESS);
         variables = new Dictionary<string, VariableSymbol>();
         parametros = new LinkedList<VariableSymbol>();
+    }
 
+    public VariableSymbol getNewTemporal(ClassSymbol type)
+    {
+        int addressTemp = memory.nextAddress();
+        VariableSymbol temp = new VariableSymbol("@_" + addressTemp, type);
+        temp.address = addressTemp;
+        return temp;
+        //al parecer no sera necesario definir (registrar) la var temporal en el metodo
+        //push a la pila en el lugar donde se llamo a este metodo
     }
 
     public override string ToString()
@@ -69,12 +80,11 @@ public class MethodSymbol : Scope
     {
         VariableSymbol variableSymbol;
         variables.TryGetValue(variableName, out variableSymbol);
+        if(variableSymbol == null) {
+            variableSymbol = enclosingScope.getVariableSymbol(variableName);
+        }
         return variableSymbol;
     }
 
-    public int nextAddress()
-    {
-        return memory.nextAddress();
-    }
 
 }

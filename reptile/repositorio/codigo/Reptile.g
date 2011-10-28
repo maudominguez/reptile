@@ -33,7 +33,7 @@ public override void ReportError(RecognitionException e)
 SymbolTable directory;
 Stack<string> pOperadores = new Stack<string>();
 Stack<VariableSymbol> pOperandos = new Stack<VariableSymbol>();
-LinkedList<Quadruple> quadruples = new LinkedList<Quadruple>();
+QuadruplesList quadruplesList = new QuadruplesList();
 
 Scope actualScope;
 Scope globalScope = new GlobalScope();
@@ -82,19 +82,6 @@ void registerClass(string className, string superClase) {
 	}
 }
 
-/*
-void registerSuperClass(ClassSymbol clase, string superClase) {
-	try {
-		ClassSymbol clasePadre;
-		clasePadre = directory.findType(superClase);
-		clase.superClass = clasePadre;
-	}
-	catch(Exception exception) {
-		manageException(exception);
-	}
-}
-*/
-
 //usado con metodos y variables
 void registerVariableInScope(string variableName, ClassSymbol tipo) {
 	VariableSymbol variable = new VariableSymbol(variableName, tipo);
@@ -130,19 +117,27 @@ void generateVariableNotFoundError(string variable) {
 		manageException(e);
 }
 
-VariableSymbol verifyObjectAndInstVariableDefined(string objeto, string instVar) {
-	if(verifyVariableIsDefinedInMethod(objeto)) {
-		VariableSymbol obj = actualScope.getVariableSymbol(objeto);
-		ClassSymbol tipo = obj.type;
-		VariableSymbol varDeInstancia = tipo.getVariableSymbol(instVar);
-		if(varDeInstancia == null) {
-			generateInstanceVariableNotFoundError(tipo.name, instVar);
-		}
-		else {
-			return varDeInstancia;
-		}
+void verifyObjectAndInstVariableDefined(string objeto, string instVar) {
+	verifyVariableIsDefinedInMethod(objeto);
+	VariableSymbol obj = actualScope.getVariableSymbol(objeto);
+	ClassSymbol tipo = obj.type;
+	VariableSymbol varDeInstancia = tipo.getVariableSymbol(instVar);
+	if(varDeInstancia == null) {
+		generateInstanceVariableNotFoundError(tipo.name, instVar);
 	}
-	return null;
+}
+
+VariableSymbol getVariable(string variable) {
+	verifyVariableIsDefinedInMethod(variable);
+	return actualScope.getVariableSymbol(variable);
+}
+
+VariableSymbol getField(string objeto, string instVar) {
+	verifyObjectAndInstVariableDefined(objeto, instVar);
+	VariableSymbol obj = actualScope.getVariableSymbol(objeto);
+	ClassSymbol tipo = obj.type;
+	VariableSymbol varDeInstancia = tipo.getVariableSymbol(instVar);
+	return varDeInstancia;
 }
 
 void generateInstanceVariableNotFoundError(string clase, string variable) {
@@ -233,6 +228,16 @@ public void aplicaOperadorPendienteQueSea(LinkedList<string> operadoresBuscados)
 	}
 }
 
+public VariableSymbol getNewTemporalVarOfType(string type) {
+	ClassSymbol tipo = directory.findType(type);
+	VariableSymbol temp = ((MethodSymbol)actualScope).getNewTemporal(tipo);
+	return temp;
+}
+
+public void printQuadruplesList() {
+	Console.WriteLine(quadruplesList.ToString());
+}
+
 public static void manageException(Exception e) {
 	Console.WriteLine(e.ToString());
 	throw new RecognitionException("Se encontro Error semantico\n");
@@ -242,7 +247,7 @@ public static void manageException(Exception e) {
 public program	:	{createDirectories(); defineScopeGlobal();} classes? {actualScope = globalScope;} vars? methods? mainMethod;
 
 mainMethod
-	:	'void' 'main' '(' ')' '{'vars? someStatements '}' {directory.printDirectory(); directory.printTypesDirectory();} ;
+	:	'void' 'main' '(' ')' '{'vars? someStatements '}' {directory.printDirectory(); directory.printTypesDirectory(); printQuadruplesList();} ;
 
 classes	:	'classes' ':' classDecl*;
 
@@ -368,20 +373,16 @@ term	:	factor {aplicaOperadorPendienteQueSea(porEntreAnd);}
 factor	:	invoke	//TODO verificar semantica y hacer acciones para llamadas a metodos
 		| v = ID 
 		{
-		if(verifyVariableIsDefinedInMethod($v.text)) {
-			VariableSymbol varSymbol = actualScope.getVariableSymbol($v.text);
-			pOperandos.Push(varSymbol);
-		}
+		VariableSymbol varSymbol = getVariable($v.text);
+		pOperandos.Push(varSymbol);
 		}
 		| obj = ID '.' var = ID 
 		{
-		//TODO checar como va a quedar eso de que cada miembro de cada variable tenga su direccion
-		//al hacer push a la pila de operadores. Creo que aqui primero ponemos el field en una var temporal
-		//y ese temporal es el que pushamos a la pila de operandos
-		VariableSymbol varSymbol = verifyObjectAndInstVariableDefined($obj.text, $var.text);
-		if(varSymbol != null) {
-			pOperandos.Push(varSymbol);
-		}
+		VariableSymbol objeto = getVariable($obj.text);
+		VariableSymbol field = getField($obj.text, $var.text);
+		VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
+		pOperandos.Push(temp);
+		quadruplesList.addGETFIELD(temp.address.ToString(), objeto.address.ToString(), field.address.ToString());
 		}
 		
 		| 'this' '.' var = ID 
@@ -412,27 +413,21 @@ factor	:	invoke	//TODO verificar semantica y hacer acciones para llamadas a meto
 		//TODO verificar que el resultado de la expresion es un entero
 		}
 		| INT	{
-		int addressTemp = ((MethodSymbol)actualScope).nextAddress();
-		VariableSymbol temp = new VariableSymbol("@_" + addressTemp, directory.findType("int"));
-		temp.address = addressTemp;
+		VariableSymbol temp = getNewTemporalVarOfType("int");
 		pOperandos.Push(temp);
-		//TODO GENERAR CUADRUPLO ILOAD constanteInt address
+		quadruplesList.addILOAD($INT.text, temp.address.ToString());
 		}
 		| CHAR
 		{
-		int addressTemp = ((MethodSymbol)actualScope).nextAddress();
-		VariableSymbol temp = new VariableSymbol("@_" + addressTemp, directory.findType("char"));
-		temp.address = addressTemp;
+		VariableSymbol temp = getNewTemporalVarOfType("char");
 		pOperandos.Push(temp);
-		//TODO GENERAR CUADRUPLO CLOAD constanteChar address
+		quadruplesList.addCLOAD($CHAR.text, temp.address.ToString());
 		}
 		| DOUBLE
 		{
-		int addressTemp = ((MethodSymbol)actualScope).nextAddress();
-		VariableSymbol temp = new VariableSymbol("@_" + addressTemp, directory.findType("double"));
-		temp.address = addressTemp;
+		VariableSymbol temp = getNewTemporalVarOfType("double");
 		pOperandos.Push(temp);
-		//TODO GENERAR CUADRUPLO DLOAD constanteDouble address
+		quadruplesList.addDLOAD($DOUBLE.text, temp.address.ToString());
 		}
 		| '('{pOperadores.Push("(");} expression ')' {pOperadores.Pop();}
 		;
