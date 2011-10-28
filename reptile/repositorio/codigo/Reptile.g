@@ -95,15 +95,14 @@ void registrarMetodo(ClassSymbol tipoRetorno, string methodName) {
 	actualScope = methodSymbol;
 }
 
-void registerVariableInMethod(string variableName, string tipo) {
+void registerFormalParameter(string variableName, string tipo) {
 	ClassSymbol tipoParam = directory.findType(tipo);
 	VariableSymbol variableSymbol = new VariableSymbol(variableName, tipoParam);
-	//registerVariableInScope(variableName, tipoParam);
 	MethodSymbol methodSymbol = (MethodSymbol) actualScope;	//casting para poder llamar a defineParameter(..)
 	methodSymbol.defineParameter(variableName, variableSymbol);
 }
 
-bool verifyVariableIsDefinedInMethod(string variable) {
+bool verifyVariableCanBeAccessed(string variable) {
 	VariableSymbol varSymbol = actualScope.getVariableSymbol(variable);
 	if(varSymbol == null) {
 		generateVariableNotFoundError(variable);
@@ -118,7 +117,7 @@ void generateVariableNotFoundError(string variable) {
 }
 
 void verifyObjectAndInstVariableDefined(string objeto, string instVar) {
-	verifyVariableIsDefinedInMethod(objeto);
+	verifyVariableCanBeAccessed(objeto);
 	VariableSymbol obj = actualScope.getVariableSymbol(objeto);
 	ClassSymbol tipo = obj.type;
 	VariableSymbol varDeInstancia = tipo.getVariableSymbol(instVar);
@@ -128,7 +127,7 @@ void verifyObjectAndInstVariableDefined(string objeto, string instVar) {
 }
 
 VariableSymbol getVariable(string variable) {
-	verifyVariableIsDefinedInMethod(variable);
+	verifyVariableCanBeAccessed(variable);
 	return actualScope.getVariableSymbol(variable);
 }
 
@@ -145,11 +144,12 @@ void generateInstanceVariableNotFoundError(string clase, string variable) {
 	manageException(e);
 }
 
-VariableSymbol verifyInstanceVariableDefinedInThis(string var) {
+void verifyInstanceVariableDefinedInThis(string var) {
 	ScopeWithMethods enclosingScope = ((MethodSymbol)actualScope).enclosingScope;
 	if(enclosingScope is GlobalScope) {
 		Exception e = new Exception("No se puede usar 'this' si no es dentro de una clase.");
 		manageException(e);
+		return;
 	}
 	else {
 		ClassSymbol clase = (ClassSymbol)enclosingScope;
@@ -157,15 +157,18 @@ VariableSymbol verifyInstanceVariableDefinedInThis(string var) {
 		if(instVariable == null) {
 			generateInstanceVariableNotFoundError(clase.name, var);
 		}
-		else {
-			return instVariable;
-		}
 	}
-	return null;
+}
+
+VariableSymbol getInstanceVariable(string var) {
+	verifyInstanceVariableDefinedInThis(var);
+	ScopeWithMethods enclosingScope = ((MethodSymbol)actualScope).enclosingScope;
+	ClassSymbol clase = (ClassSymbol)enclosingScope;
+	return clase.getVariableSymbol(var);
 }
 
 void verifyIsArray(string var) {
-	if(verifyVariableIsDefinedInMethod(var)) {
+	if(verifyVariableCanBeAccessed(var)) {
 		VariableSymbol arr = actualScope.getVariableSymbol(var);
 		if(!arr.type.isArrayType()) {
 			generateIsNotArrayError(arr.name);
@@ -295,7 +298,7 @@ methodDeclaration
 	{actualScope = ((MethodSymbol)actualScope).enclosingScope;}
 	;
 	
-formalParam:	t = formalParamType ID {registerVariableInMethod($ID.text, $t.tipo);};
+formalParam:	t = formalParamType ID {registerFormalParameter($ID.text, $t.tipo);};
 	
 formalParameters
 :  t = formalParam (',' formalParam)* ;
@@ -340,7 +343,7 @@ print	:	'print' '(' expression ')' ';';
 
 designator
 	:	
-		v = ID {verifyVariableIsDefinedInMethod($v.text); } //variable local del metodo
+		v = ID {verifyVariableCanBeAccessed($v.text); } //variable local del metodo
 		| obj = ID  '.' var = ID {verifyObjectAndInstVariableDefined($obj.text, $var.text); } //objeto.variable
 		| 'this' '.' var = ID   {verifyInstanceVariableDefinedInThis($var.text);}    //this.variable
 		| (ID '[' expression ']')	//arreglo[exp]
@@ -387,14 +390,12 @@ factor	:	invoke	//TODO verificar semantica y hacer acciones para llamadas a meto
 		
 		| 'this' '.' var = ID 
 		{
-		//TODO checar como va a quedar eso de que cada miembro de cada variable tenga su direccion
-		//al hacer push a la pila de operadores. Creo que aqui primero ponemos el field en una var temporal
-		//y ese temporal es el que pushamos a la pila de operandos
-		VariableSymbol varSymbol = verifyInstanceVariableDefinedInThis($var.text);
-		if(varSymbol != null) {
-			pOperandos.Push(varSymbol);
+		VariableSymbol field = getInstanceVariable($var.text);
+		VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
+		pOperandos.Push(temp);
+		MethodSymbol method = (MethodSymbol)actualScope;
+		quadruplesList.addGETFIELD(temp.address.ToString(), method.getThisParameterAddress(), field.address.ToString());
 		}
-		} 
 		| ID '[' expression ']' 
 		{
 		//TODO estamos metiendo objetos basura solo para verificar su tipo

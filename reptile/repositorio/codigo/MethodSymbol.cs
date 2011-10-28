@@ -8,10 +8,18 @@ public class MethodSymbol : Scope
     public ScopeWithMethods enclosingScope; //puede ser el scope global o una clase
     public ClassSymbol returnType; 
     public int cuadruplo;  //numero de cuadruplo donde empieza
-    private static int START_ADDRESS = 10000;
+
+    //the first address is reserved for the "This" parameter that the compiler implicitly passes to the method
+    private static int THIS_IMPLICIT_PARAMETER_ADDRESS = 10000;
+    private static int START_ADDRESS = THIS_IMPLICIT_PARAMETER_ADDRESS + 1;
     private static int MAX_ADDRESS = 19999;
 
     private LinkedList<VariableSymbol> parametros;
+
+    public string getThisParameterAddress()
+    {
+        return "" + THIS_IMPLICIT_PARAMETER_ADDRESS;
+    }
 
     public MethodSymbol(string name, ClassSymbol returnType, ScopeWithMethods enclosingScope)
     {
