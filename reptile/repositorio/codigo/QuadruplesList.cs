@@ -29,15 +29,20 @@ class QuadruplesList
         quadruplesList.AddLast(new Quadruple("GETFIELD", tempAddress, objAddress, fieldAddress));
     }
 
-    //Array Element Load
-    public void addGETARRAYELEM(string tempAddress, string arrAddress, string index)
+    //Vector Element Load
+    public void addGETVECTORELEM(string tempAddress, string arrAddress, string index)
     {
-        quadruplesList.AddLast(new Quadruple("GETARRAYELEM", tempAddress, arrAddress, index));
+        quadruplesList.AddLast(new Quadruple("GETVECTORELEM", tempAddress, arrAddress, index));
     }
 
     public void addEXPRESSION_OPER(string op, string op1Address, string op2Address, string tempAddress)
     {
         quadruplesList.AddLast(new Quadruple(op, op1Address, op2Address, tempAddress));
+    }
+
+    public void addOBJECT(string tempAddress, string nFields)
+    {
+        quadruplesList.AddLast(new Quadruple("OBJECT", tempAddress, nFields));
     }
 
     public override string ToString()

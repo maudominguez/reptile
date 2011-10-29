@@ -34,9 +34,10 @@ public class ClassSymbol : ScopeWithMethods
         return superClass.countVariables() + variables.Count;
     }
 
-    public bool isArrayType()
+    public bool isVectorType()
     {
-        return name.Contains("[]");
+        return name.Equals(SymbolTable.charVectorName) || name.Equals(SymbolTable.doubleVectorName) 
+                || name.Equals(SymbolTable.integerVectorName);
     }
 
     public bool isVoidType()
@@ -70,6 +71,21 @@ public class ClassSymbol : ScopeWithMethods
         return variableSymbol;
     }
 
+    public override void verifyVariableIsNotDefined(string variableName)
+    {
+        bool varAlreadyDefinedInSuperClass;
+        if (superClass != null)
+        {
+            superClass.verifyVariableIsNotDefined(variableName);
+        }
+        if (variables.ContainsKey(variableName))
+        {
+            String errorMsg = "La variable " + variableName + " ya esta declarada en la clase " + name
+                      + " y no se permite declararla de nuevo en la misma clase ni en ninguna de sus subclases.";
+            ReptileParser.manageException(new Exception(errorMsg));
+        }
+    }
+
     public bool isChildOf(ClassSymbol sup)
     {
         if(name == sup.name)
@@ -82,7 +98,4 @@ public class ClassSymbol : ScopeWithMethods
         }
         return superClass.isChildOf(sup);
     }
-
-
-
 }

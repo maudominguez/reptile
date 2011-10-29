@@ -36,7 +36,7 @@ public abstract class Scope
         return res.ToString();
     }
 
-    public void verifyVariableIsNotDefined(string variableName)
+    public virtual void verifyVariableIsNotDefined(string variableName)
     {
         if (variables.ContainsKey(variableName))
         {

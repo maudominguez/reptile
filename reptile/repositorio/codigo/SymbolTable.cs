@@ -6,13 +6,13 @@ using System.Text;
 public class SymbolTable
 {
     Dictionary<string, ScopeWithMethods> directory;
-    private string integerName = "int";
-    private string charName = "char";
-    private string doubleName = "double";
+    public static string integerName = "int";
+    public static string charName = "char";
+    public static string doubleName = "double";
     private string boolName = "bool";
-    private string integerArrayName = "int[]";
-    private string charArrayName = "char[]";
-    private string doubleArrayName = "double[]";
+    public static string integerVectorName = "IntVector";
+    public static string charVectorName = "CharVector";
+    public static string doubleVectorName = "DoubleVector";
     private string voidName = "void";
 
     public SymbolTable()
@@ -26,12 +26,12 @@ public class SymbolTable
 	    directory.Add(doubles.name, doubles);
         ClassSymbol bools = new ClassSymbol(boolName, null);
         directory.Add(bools.name, bools);
-        ClassSymbol integerArray = new ClassSymbol(integerArrayName, null);
-	    directory.Add(integerArray.name, integerArray);
-        ClassSymbol charArray = new ClassSymbol(charArrayName, null);
-	    directory.Add(charArray.name, charArray);
-        ClassSymbol doubleArray = new ClassSymbol(doubleArrayName, null);
-	    directory.Add(doubleArray.name, doubleArray);
+        ClassSymbol integerVector = new ClassSymbol(integerVectorName, null);
+	    directory.Add(integerVector.name, integerVector);
+        ClassSymbol charVector = new ClassSymbol(charVectorName, null);
+        directory.Add(charVector.name, charVector);
+        ClassSymbol doubleVector = new ClassSymbol(doubleVectorName, null);
+        directory.Add(doubleVector.name, doubleVector);
         ClassSymbol tipoVoid = new ClassSymbol(voidName, null);
 	    directory.Add(tipoVoid.name, tipoVoid);
     }
@@ -88,7 +88,7 @@ public class SymbolTable
         {
             return right.name.Equals(doubleName) || right.name.Equals(integerName);
         }
-        else if (left.isArrayType() || left.name.Equals(integerName) || left.name.Equals(charName))
+        else if (left.isVectorType() || left.name.Equals(integerName) || left.name.Equals(charName))
         {
             return left.name.Equals(right.name);
         }
@@ -152,7 +152,6 @@ public class SymbolTable
                 Console.WriteLine();
             }
         }
-
     }
 
     public ClassSymbol findType(string type)

@@ -38,7 +38,6 @@ public class MethodSymbol : Scope
         temp.address = addressTemp;
         return temp;
         //al parecer no sera necesario definir (registrar) la var temporal en el metodo
-        //push a la pila en el lugar donde se llamo a este metodo
     }
 
     public override string ToString()
