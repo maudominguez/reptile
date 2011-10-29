@@ -9,24 +9,35 @@ class QuadruplesList
 {
     LinkedList<Quadruple> quadruplesList = new LinkedList<Quadruple>();
 
-    public void addILOAD(string intConstant, string tempAddress)
+    public void addICONST(string intConstant, string tempAddress)
     {
-        quadruplesList.AddLast(new Quadruple("ILOAD", intConstant, tempAddress));
+        quadruplesList.AddLast(new Quadruple("ICONST", intConstant, tempAddress));
     }
 
-    public void addDLOAD(string doubleConstant, string tempAddress)
+    public void addDCONST(string doubleConstant, string tempAddress)
     {
-        quadruplesList.AddLast(new Quadruple("DLOAD", doubleConstant, tempAddress));
+        quadruplesList.AddLast(new Quadruple("DCONST", doubleConstant, tempAddress));
     }
 
-    public void addCLOAD(string charConstant, string tempAddress)
+    public void addCCONST(string charConstant, string tempAddress)
     {
-        quadruplesList.AddLast(new Quadruple("CLOAD", charConstant, tempAddress));
+        quadruplesList.AddLast(new Quadruple("CCONST", charConstant, tempAddress));
     }
 
     public void addGETFIELD(string tempAddress, string objAddress, string fieldAddress)
     {
         quadruplesList.AddLast(new Quadruple("GETFIELD", tempAddress, objAddress, fieldAddress));
+    }
+
+    //Array Element Load
+    public void addGETARRAYELEM(string tempAddress, string arrAddress, string index)
+    {
+        quadruplesList.AddLast(new Quadruple("GETARRAYELEM", tempAddress, arrAddress, index));
+    }
+
+    public void addEXPRESSION_OPER(string op, string op1Address, string op2Address, string tempAddress)
+    {
+        quadruplesList.AddLast(new Quadruple(op, op1Address, op2Address, tempAddress));
     }
 
     public override string ToString()

@@ -194,15 +194,6 @@ public bool tiposSonCompatiblesEnOperacion() {
 	return true;
 }
 
-public bool isRelationalOperator(string operador) {
-	return operador.Equals(">") || operador.Equals("<") || operador.Equals(">=")
-		|| operador.Equals("<=");
-}
-
-public bool isPorEntreAnd(string operador) {
-	return operador.Equals("*") || operador.Equals("/") || operador.Equals("and");
-}
-
 public void aplicaOperadorPendienteQueSea(LinkedList<string> operadoresBuscados) {
 	if(pOperadores.Count > 0) {
 		string operador = pOperadores.Peek();
@@ -212,10 +203,10 @@ public void aplicaOperadorPendienteQueSea(LinkedList<string> operadoresBuscados)
 				VariableSymbol right = pOperandos.Pop();
 				VariableSymbol left = pOperandos.Pop();
 				ClassSymbol tipoResultado = directory.resultType(left.type, right.type, operador);
-				//TODO el temporal debe obtenerse del avail
-				VariableSymbol temporal = new VariableSymbol("temporal", tipoResultado);
-				 
+				
+				VariableSymbol temporal = getNewTemporalVarOfType(tipoResultado.name);
 				//TODO generar cuadruplo usando operador, left, right y temporal
+				quadruplesList.addEXPRESSION_OPER(operador, left.address.ToString(), right.address.ToString(), temporal.address.ToString());
 				
 				pOperandos.Push(temporal);
 			}
@@ -229,6 +220,24 @@ public void aplicaOperadorPendienteQueSea(LinkedList<string> operadoresBuscados)
 			}
 		}
 	}
+}
+
+public void pushICONST(string iConst) {
+	VariableSymbol temp = getNewTemporalVarOfType("int");
+	pOperandos.Push(temp);
+	quadruplesList.addICONST(iConst, temp.address.ToString());
+}
+
+public void pushCCONST(string cConst) {
+	VariableSymbol temp = getNewTemporalVarOfType("char");
+	pOperandos.Push(temp);
+	quadruplesList.addCCONST(cConst, temp.address.ToString());
+}
+
+public void pushDCONST(string dConst) {
+	VariableSymbol temp = getNewTemporalVarOfType("double");
+	pOperandos.Push(temp);
+	quadruplesList.addDCONST(dConst, temp.address.ToString());
 }
 
 public VariableSymbol getNewTemporalVarOfType(string type) {
@@ -316,11 +325,14 @@ statement :	assignment
 		| ';';
 		
 assignment	//TODO
-	:	designator '=' 
+	:	designator '='
 		(
 		expression
 		| 'new' ID '(' ')' {directory.findType($ID.text);}
 		| 'new' primitiveType '[' INT ']'	
+		{
+		
+		}
 		//TODO generar cuadruplo ILOAD para la constante int leida
 		) 
 		';' //TODO verificar que la expresion, new clase, o new arreglo es asignable al tipo del designat
@@ -349,7 +361,7 @@ designator
 		| (ID '[' expression ']')	//arreglo[exp]
 		{
 		verifyIsArray($ID.text);
-
+		
 		//TODO verificar que el resultado de la expresion es un entero
 		}
 	;
@@ -387,7 +399,6 @@ factor	:	invoke	//TODO verificar semantica y hacer acciones para llamadas a meto
 		pOperandos.Push(temp);
 		quadruplesList.addGETFIELD(temp.address.ToString(), objeto.address.ToString(), field.address.ToString());
 		}
-		
 		| 'this' '.' var = ID 
 		{
 		VariableSymbol field = getInstanceVariable($var.text);
@@ -396,40 +407,24 @@ factor	:	invoke	//TODO verificar semantica y hacer acciones para llamadas a meto
 		MethodSymbol method = (MethodSymbol)actualScope;
 		quadruplesList.addGETFIELD(temp.address.ToString(), method.getThisParameterAddress(), field.address.ToString());
 		}
-		| ID '[' expression ']' 
+		| ID '[' {pOperadores.Push("[");} expression ']' {pOperadores.Pop();} 
 		{
-		//TODO estamos metiendo objetos basura solo para verificar su tipo
 		verifyIsArray($ID.text);
-		VariableSymbol indice = pOperandos.Pop();
-		if(!indice.type.name.Equals("int")) {
+		VariableSymbol index = pOperandos.Pop();
+		if(!index.type.name.Equals("int")) {
 			manageException(new Exception("El subindice del arreglo " + $ID.text + " debe ser de tipo int."));
 		}
 		else {
-			VariableSymbol basura = actualScope.getVariableSymbol($ID.text);
-			string tipo = basura.type.name.Substring(0, basura.type.name.Length - 2);
-			ClassSymbol t = directory.findType(tipo);
-			VariableSymbol basura2 = new VariableSymbol("basura2", t);
-			pOperandos.Push(basura2);
+			VariableSymbol arr = getVariable($ID.text);
+			string tipo = arr.type.name.Substring(0, arr.type.name.Length - 2);
+			VariableSymbol temp = getNewTemporalVarOfType(tipo);
+			pOperandos.Push(temp);
+			quadruplesList.addGETARRAYELEM(temp.address.ToString(), arr.address.ToString(), index.address.ToString());
 		}
-		//TODO verificar que el resultado de la expresion es un entero
 		}
-		| INT	{
-		VariableSymbol temp = getNewTemporalVarOfType("int");
-		pOperandos.Push(temp);
-		quadruplesList.addILOAD($INT.text, temp.address.ToString());
-		}
-		| CHAR
-		{
-		VariableSymbol temp = getNewTemporalVarOfType("char");
-		pOperandos.Push(temp);
-		quadruplesList.addCLOAD($CHAR.text, temp.address.ToString());
-		}
-		| DOUBLE
-		{
-		VariableSymbol temp = getNewTemporalVarOfType("double");
-		pOperandos.Push(temp);
-		quadruplesList.addDLOAD($DOUBLE.text, temp.address.ToString());
-		}
+		| INT	{pushICONST($INT.text);}
+		| CHAR	{pushCCONST($CHAR.text);}
+		| DOUBLE {pushDCONST($DOUBLE.text);}
 		| '('{pOperadores.Push("(");} expression ')' {pOperadores.Pop();}
 		;
 	
