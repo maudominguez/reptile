@@ -120,6 +120,10 @@ void verifyObjectAndInstVariableDefined(string objeto, string instVar) {
 	verifyVariableCanBeAccessed(objeto);
 	VariableSymbol obj = actualScope.getVariableSymbol(objeto);
 	ClassSymbol tipo = obj.type;
+	verifyInstVariableDefinedInClassSymbol(tipo, instVar);
+}
+
+void verifyInstVariableDefinedInClassSymbol(ClassSymbol tipo, string instVar) {
 	VariableSymbol varDeInstancia = tipo.getVariableSymbol(instVar);
 	if(varDeInstancia == null) {
 		generateInstanceVariableNotFoundError(tipo.name, instVar);
@@ -139,24 +143,16 @@ VariableSymbol getField(string objeto, string instVar) {
 	return varDeInstancia;
 }
 
-void generateInstanceVariableNotFoundError(string clase, string variable) {
-	Exception e = new Exception("No se encontro la variable de instancia " + variable + " en el tipo " + clase);
+void generateInstanceVariableNotFoundError(string scope, string variable) {
+	Exception e = new Exception("No se encontro la variable de instancia " + variable + " en " + scope);
 	manageException(e);
 }
 
 void verifyInstanceVariableDefinedInThis(string var) {
 	ScopeWithMethods enclosingScope = ((MethodSymbol)actualScope).enclosingScope;
-	if(enclosingScope is GlobalScope) {
-		Exception e = new Exception("No se puede usar 'this' si no es dentro de una clase.");
-		manageException(e);
-		return;
-	}
-	else {
-		ClassSymbol clase = (ClassSymbol)enclosingScope;
-		VariableSymbol instVariable = clase.getVariableSymbol(var);
-		if(instVariable == null) {
-			generateInstanceVariableNotFoundError(clase.name, var);
-		}
+	VariableSymbol instVariable = enclosingScope.getVariableSymbol(var);
+	if(instVariable == null) {
+		generateInstanceVariableNotFoundError(enclosingScope.name, var);
 	}
 }
 
@@ -262,17 +258,6 @@ public string typeOfVector(string type) {
 	}
 }
 
-public void pushFieldOfTemporalVariable(string instVariable) {
-	VariableSymbol objeto = pOperandos.Pop();
-	VariableSymbol field = objeto.type.getVariableSymbol(instVariable);
-	if(field == null) {
-		generateInstanceVariableNotFoundError(objeto.type.name, instVariable);
-	}
-	VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
-	pOperandos.Push(temp);
-	quadruplesList.addGETFIELD(temp.address.ToString(), objeto.address.ToString(), field.address.ToString());	
-}
-
 public void printQuadruplesList() {
 	Console.WriteLine(quadruplesList.ToString());
 }
@@ -283,7 +268,7 @@ public static void manageException(Exception e) {
 }
 }
 
-public program	:	{createDirectories(); defineScopeGlobal();} classes? {actualScope = globalScope;} vars? methods? mainMethod;
+public program	:	{createDirectories(); defineScopeGlobal();} classes? {actualScope = globalScope;} vars? methods mainMethod;
 
 mainMethod
 	:	'void' 'main' '(' ')' '{'vars? someStatements '}' {directory.printDirectory(); directory.printTypesDirectory(); printQuadruplesList();} ;
@@ -356,21 +341,100 @@ statement :	assignment
 		| ';';
 			
 assignment	//TODO
-	:	designator '=' expression
-		';' //TODO verificar que la expresion, new clase, o new arreglo es asignable al tipo del designat
+scope {
+	int caso;
+	VariableSymbol par1;	//obj
+	VariableSymbol par2;	//field
+	ClassSymbol leftType;
+}
+	:	designator '=' 
+		(
+		expression
+		| 'new' ID '(' ')' 
+			{
+			ClassSymbol tipo = directory.findType($ID.text);
+			VariableSymbol temp = getNewTemporalVarOfType(tipo.name);
+			pOperandos.Push(temp);
+			quadruplesList.addOBJECT(temp.address.ToString(), tipo.countVariables().ToString());
+			
+			}
+		| 'new' vectorType '[' {pOperadores.Push("[");} INT ']' {pOperadores.Pop();}	
+			{
+			VariableSymbol temp = getNewTemporalVarOfType($vectorType.t);
+			pOperandos.Push(temp);
+			quadruplesList.addVECTOR(temp.address.ToString(), $INT.text);
+			
+			
+			}
+		)
+		{
+		VariableSymbol right = pOperandos.Pop();
+		if(!directory.validAssignment($assignment::leftType, right.type)) {
+			manageException(new Exception("No se puede asignar " + right.name + " a " + $assignment::par2.name + " porque los tipos " + 
+						$assignment::leftType.name + " y " + right.type.name + " no son compatibles."));
+		}
+		if($assignment::caso == 0) {
+				quadruplesList.addASSIGNMENT(right.address.ToString(), $assignment::par2.address.ToString());
+		}
+		else if($assignment::caso == 1) {
+				quadruplesList.addPUTFIELD(right.address.ToString(), $assignment::par1.address.ToString(), $assignment::par2.address.ToString());
+		}
+		else if($assignment::caso == 2) {
+			MethodSymbol method = (MethodSymbol)actualScope;
+			quadruplesList.addPUTFIELD(right.address.ToString(), method.getThisParameterAddress(), $assignment::par2.address.ToString());	
+		}
+		else if($assignment::caso == 3) {
+			quadruplesList.addPUTVECTORELEM(right.address.ToString(), $assignment::par2.address.ToString(), $assignment::par1.address.ToString());			
+		}
+		}
+		
+		';'
 	;
 	
 designator
 	:	
-		v = ID {verifyVariableCanBeAccessed($v.text); } //variable local del metodo
-		| obj = ID  '.' var = ID {verifyObjectAndInstVariableDefined($obj.text, $var.text); } //objeto.variable
-		| 'this' '.' var = ID   {verifyInstanceVariableDefinedInThis($var.text);}    //this.variable
-		| (ID '[' expression ']')	//vector[exp]
-		{
-		verifyIsVector($ID.text);
-		
-		//TODO verificar que el resultado de la expresion es un entero
-		}
+		v = ID //variable local del metodo
+			{
+			$assignment::caso = 0;
+			verifyVariableCanBeAccessed($v.text); 
+			$assignment::par2 = getVariable($ID.text);
+			
+			$assignment::leftType = $assignment::par2.type;
+			} 
+		| obj = ID  '.' var = ID 
+			{
+			$assignment::caso = 1;
+			verifyObjectAndInstVariableDefined($obj.text, $var.text); 
+			$assignment::par1 = getVariable($obj.text);
+			$assignment::par2 = getField($obj.text, $var.text);
+			
+			$assignment::leftType = $assignment::par2.type;
+			} //objeto.variable
+		| 'this' '.' var = ID   
+			{
+			$assignment::caso = 2;
+			verifyInstanceVariableDefinedInThis($var.text);
+			$assignment::par2 = getInstanceVariable($var.text);
+			
+			$assignment::leftType = $assignment::par2.type;
+			}    //this.variable
+		| (ID '[' {pOperadores.Push("[");} expression ']' {pOperadores.Pop();})	//vector[exp]
+			{
+			$assignment::caso = 3;
+			verifyIsVector($ID.text);
+			VariableSymbol index = pOperandos.Pop();
+			if(!index.type.name.Equals("int")) {
+				manageException(new Exception("El subindice del Vector " + $ID.text + " debe ser de tipo int."));
+			}
+			else {
+				$assignment::par2 = getVariable($ID.text);
+				$assignment::par1 = index;
+			}
+			
+			
+			string tipo = typeOfVector($assignment::par2.type.name);
+			$assignment::leftType = directory.findType(tipo);
+			}
 	;
 	
 		//TODO verificar semantica en invocaciones
@@ -407,58 +471,48 @@ term	:	factor {aplicaOperadorPendienteQueSea(porEntreAnd);}
 			factor {aplicaOperadorPendienteQueSea(porEntreAnd);}
 		)*;
 
-factor	:	invoke	//TODO verificar semantica y hacer acciones para llamadas a metodos
+factor
+	:	invoke	//TODO verificar semantica y hacer acciones para llamadas a metodos
 		| v = ID 
-		{
-		VariableSymbol varSymbol = getVariable($v.text);
-		pOperandos.Push(varSymbol);
-		}
+			{
+			VariableSymbol varSymbol = getVariable($v.text);
+			pOperandos.Push(varSymbol);
+			}
 		| obj = ID '.' var = ID 
-		{
-		VariableSymbol objeto = getVariable($obj.text);
-		VariableSymbol field = getField($obj.text, $var.text);
-		VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
-		pOperandos.Push(temp);
-		quadruplesList.addGETFIELD(temp.address.ToString(), objeto.address.ToString(), field.address.ToString());
-		}
-		| 'this' '.' var = ID 
-		{
-		VariableSymbol field = getInstanceVariable($var.text);
-		VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
-		pOperandos.Push(temp);
-		MethodSymbol method = (MethodSymbol)actualScope;
-		quadruplesList.addGETFIELD(temp.address.ToString(), method.getThisParameterAddress(), field.address.ToString());
-		}
-		| ID '[' {pOperadores.Push("[");} expression ']' {pOperadores.Pop();} 
-		{
-		verifyIsVector($ID.text);
-		VariableSymbol index = pOperandos.Pop();
-		if(!index.type.name.Equals("int")) {
-			manageException(new Exception("El subindice del Vector " + $ID.text + " debe ser de tipo int."));
-		}
-		else {
-			VariableSymbol arr = getVariable($ID.text);
-			string tipo = typeOfVector(arr.type.name);
-			VariableSymbol temp = getNewTemporalVarOfType(tipo);
+			{
+			VariableSymbol objeto = getVariable($obj.text);
+			VariableSymbol field = getField($obj.text, $var.text);
+			VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
 			pOperandos.Push(temp);
-			quadruplesList.addGETVECTORELEM(temp.address.ToString(), arr.address.ToString(), index.address.ToString());
-		}
-		}
+			quadruplesList.addGETFIELD(temp.address.ToString(), objeto.address.ToString(), field.address.ToString());
+			}
+		| 'this' '.' var = ID 
+			{
+			VariableSymbol field = getInstanceVariable($var.text);
+			VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
+			pOperandos.Push(temp);
+			MethodSymbol method = (MethodSymbol)actualScope;
+			quadruplesList.addGETFIELD(temp.address.ToString(), method.getThisParameterAddress(), field.address.ToString());
+			}
+		| ID '[' {pOperadores.Push("[");} expression ']' {pOperadores.Pop();} 
+			{
+			verifyIsVector($ID.text);
+			VariableSymbol index = pOperandos.Pop();
+			if(!index.type.name.Equals("int")) {
+				manageException(new Exception("El subindice del Vector " + $ID.text + " debe ser de tipo int."));
+			}
+			else {
+				VariableSymbol arr = getVariable($ID.text);
+				string tipo = typeOfVector(arr.type.name);
+				VariableSymbol temp = getNewTemporalVarOfType(tipo);
+				pOperandos.Push(temp);
+				quadruplesList.addGETVECTORELEM(temp.address.ToString(), arr.address.ToString(), index.address.ToString());
+			}
+			}
 		| INT	{pushICONST($INT.text);}	//int constant
 		| CHAR	{pushCCONST($CHAR.text);}	//char constant
 		| DOUBLE {pushDCONST($DOUBLE.text);}	//double constant
-		| '('{pOperadores.Push("(");} expression ')' {pOperadores.Pop();} ('.' ID {pushFieldOfTemporalVariable($ID.text);})?	//(exp).field
-		| 'new' ID '(' ')' 
-		{
-		ClassSymbol tipo = directory.findType($ID.text);
-		VariableSymbol temp = getNewTemporalVarOfType(tipo.name);
-		pOperandos.Push(temp);
-		quadruplesList.addOBJECT(temp.address.ToString(), tipo.countVariables().ToString());
-		}
-		
-		//TODO
-		| 'new' vectorType '[' expression ']'	
-		
+		| '('{pOperadores.Push("(");} expression ')' {pOperadores.Pop();}
 		;
 	
 relOp returns[string operador]:	 op = ('==' | '!=' | '>' | '>=' | '<' | '<=') {$operador = $op.text;};

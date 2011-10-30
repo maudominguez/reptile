@@ -87,9 +87,11 @@ public class MethodSymbol : Scope
     {
         VariableSymbol variableSymbol;
         variables.TryGetValue(variableName, out variableSymbol);
+        /*
         if(variableSymbol == null) {
             variableSymbol = enclosingScope.getVariableSymbol(variableName);
         }
+         */
         return variableSymbol;
     }
 

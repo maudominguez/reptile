@@ -1,0 +1,58 @@
+factor
+	:	invoke	//TODO verificar semantica y hacer acciones para llamadas a metodos
+		| v = ID 
+			{
+			VariableSymbol varSymbol = getVariable($v.text);
+			pOperandos.Push(varSymbol);
+			}
+		| obj = ID '.' var = ID 
+			{
+			VariableSymbol objeto = getVariable($obj.text);
+			VariableSymbol field = getField($obj.text, $var.text);
+			VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
+			pOperandos.Push(temp);
+			quadruplesList.addGETFIELD(temp.address.ToString(), objeto.address.ToString(), field.address.ToString());
+			}
+		| 'this' '.' var = ID 
+			{
+			VariableSymbol field = getInstanceVariable($var.text);
+			VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
+			pOperandos.Push(temp);
+			MethodSymbol method = (MethodSymbol)actualScope;
+			quadruplesList.addGETFIELD(temp.address.ToString(), method.getThisParameterAddress(), field.address.ToString());
+			}
+		| ID '[' {pOperadores.Push("[");} expression ']' {pOperadores.Pop();} 
+			{
+			verifyIsVector($ID.text);
+			VariableSymbol index = pOperandos.Pop();
+			if(!index.type.name.Equals("int")) {
+				manageException(new Exception("El subindice del Vector " + $ID.text + " debe ser de tipo int."));
+			}
+			else {
+				VariableSymbol arr = getVariable($ID.text);
+				string tipo = typeOfVector(arr.type.name);
+				VariableSymbol temp = getNewTemporalVarOfType(tipo);
+				pOperandos.Push(temp);
+				quadruplesList.addGETVECTORELEM(temp.address.ToString(), arr.address.ToString(), index.address.ToString());
+			}
+			}
+		| INT	{pushICONST($INT.text);}	//int constant
+		| CHAR	{pushCCONST($CHAR.text);}	//char constant
+		| DOUBLE {pushDCONST($DOUBLE.text);}	//double constant
+		| '('{pOperadores.Push("(");} expression ')' {pOperadores.Pop();}
+			(
+			('.' ID) 
+				{
+				VariableSymbol objeto = pOperandos.Pop();
+				verifyInstVariableDefinedInClassSymbol(objeto.type, $ID.text);
+				VariableSymbol field = objeto.type.getVariableSymbol($ID.text);
+				ClassSymbol type = field.type;
+				VariableSymbol temp = getNewTemporalVarOfType(type.name);
+				pOperandos.Push(temp);
+				quadruplesList.addGETFIELD(temp.address.ToString(), objeto.address.ToString(), field.address.ToString());
+				}
+			
+			| 
+			('['{pOperadores.Push("[");} expression {pOperadores.Pop();} ']')	//TODO
+			)?
+		;

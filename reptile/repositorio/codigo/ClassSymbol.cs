@@ -73,7 +73,6 @@ public class ClassSymbol : ScopeWithMethods
 
     public override void verifyVariableIsNotDefined(string variableName)
     {
-        bool varAlreadyDefinedInSuperClass;
         if (superClass != null)
         {
             superClass.verifyVariableIsNotDefined(variableName);

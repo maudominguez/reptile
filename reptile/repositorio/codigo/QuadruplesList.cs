@@ -30,9 +30,9 @@ class QuadruplesList
     }
 
     //Vector Element Load
-    public void addGETVECTORELEM(string tempAddress, string arrAddress, string index)
+    public void addGETVECTORELEM(string tempAddress, string vectorAddress, string index)
     {
-        quadruplesList.AddLast(new Quadruple("GETVECTORELEM", tempAddress, arrAddress, index));
+        quadruplesList.AddLast(new Quadruple("GETVECTORELEM", tempAddress, vectorAddress, index));
     }
 
     public void addEXPRESSION_OPER(string op, string op1Address, string op2Address, string tempAddress)
@@ -43,6 +43,27 @@ class QuadruplesList
     public void addOBJECT(string tempAddress, string nFields)
     {
         quadruplesList.AddLast(new Quadruple("OBJECT", tempAddress, nFields));
+    }
+
+    public void addVECTOR(string tempAddress, string nSlots)
+    {
+        quadruplesList.AddLast(new Quadruple("VECTOR", tempAddress, nSlots));
+    }
+
+    //se asigna el contenido de address1 a address2
+    public void addASSIGNMENT(string address1, string address2)
+    {
+        quadruplesList.AddLast(new Quadruple("=", address1, address2));
+    }
+
+    public void addPUTFIELD(string rightAddress, string objAddress, string field)
+    {
+        quadruplesList.AddLast(new Quadruple("PUTFIELD", rightAddress, objAddress, field));
+    }
+
+    public void addPUTVECTORELEM(string rightAddress, string vectorAddress, string indexAddress)
+    {
+        quadruplesList.AddLast(new Quadruple("PUTVECTORELEM", rightAddress, vectorAddress, indexAddress));
     }
 
     public override string ToString()
