@@ -34,9 +34,10 @@ SymbolTable directory;
 Stack<string> pOperadores = new Stack<string>();
 Stack<VariableSymbol> pOperandos = new Stack<VariableSymbol>();
 QuadruplesList quadruplesList = new QuadruplesList();
+string mainClassName = "Main";
 
 Scope actualScope;
-Scope globalScope = new GlobalScope();
+ClassSymbol mainClass;
 
 LinkedList<string> operadoresRelacionales = new LinkedList<string>(new string[] {"==", "!=", ">", "<", ">=", "<="});
 LinkedList<string> masMenosOr = new LinkedList<string>(new string[] {"+", "-", "or"});
@@ -56,9 +57,9 @@ void createDirectories() {
 	directory = new SymbolTable();
 }
 
-void defineScopeGlobal() {
-	globalScope = new GlobalScope();
-	directory.Add("GlobalScope", (ScopeWithMethods)globalScope);
+void defineMainClass() {
+	mainClass = new ClassSymbol(mainClassName, null);
+	directory.Add(mainClass.name, (ScopeWithMethods)mainClass);
 }
 
 void registerClass(string className, string superClase) {
@@ -201,13 +202,11 @@ public void aplicaOperadorPendienteQueSea(LinkedList<string> operadoresBuscados)
 				ClassSymbol tipoResultado = directory.resultType(left.type, right.type, operador);
 				
 				VariableSymbol temporal = getNewTemporalVarOfType(tipoResultado.name);
-				//TODO generar cuadruplo usando operador, left, right y temporal
 				quadruplesList.addEXPRESSION_OPER(operador, left.address.ToString(), right.address.ToString(), temporal.address.ToString());
-				
 				pOperandos.Push(temporal);
 			}
 			else {
-				//TODO accion correctiva: sacar los dos operandos y el operador de sus pilas
+				
 				pOperadores.Pop();
 				VariableSymbol right = pOperandos.Pop();
 				VariableSymbol left = pOperandos.Pop();
@@ -262,18 +261,32 @@ public void printQuadruplesList() {
 	Console.WriteLine(quadruplesList.ToString());
 }
 
+public void verifyMainMethodDefinedInMainClass() {
+	MethodSymbol mainMethod = mainClass.getMethodSymbol("main");
+	if(mainMethod == null) {
+		string errorMsg = "Debe definir al metodo void main() {..} en la clase Main";
+		manageException(new Exception(errorMsg));
+	}
+	else if(mainMethod.returnType.name != SymbolTable.voidName) {
+		string errorMsg = "El tipo de retorno de main() {..} en la clase Main debe ser void";
+		manageException(new Exception(errorMsg));
+	}
+}
+
 public static void manageException(Exception e) {
 	Console.WriteLine(e.ToString());
 	throw new RecognitionException("Se encontro Error semantico\n");
 }
 }
 
-public program	:	{createDirectories(); defineScopeGlobal();} classes? {actualScope = globalScope;} vars? methods mainMethod;
+public program	:	{createDirectories(); defineMainClass();} classDecl* {actualScope = mainClass;} classMain;
 
-mainMethod
-	:	'void' 'main' '(' ')' '{'vars? someStatements '}' {directory.printDirectory(); directory.printTypesDirectory(); printQuadruplesList();} ;
-
-classes	:	'classes' ':' classDecl*;
+classMain
+	:	'class' 'Main' '{' vars? methods '}' 
+		{
+		verifyMainMethodDefinedInMainClass();
+		directory.printDirectory(); directory.printTypesDirectory(); printQuadruplesList();
+		};
 
 classDecl
     :   'class' clase = ID (superClass)? {registerClass($clase.text, $superClass.superClase);} '{' vars? methods? '}';
@@ -340,7 +353,7 @@ statement :	assignment
 		|	print
 		| ';';
 			
-assignment	//TODO
+assignment
 scope {
 	int caso;
 	VariableSymbol par1;	//obj
@@ -373,17 +386,17 @@ scope {
 			manageException(new Exception("No se puede asignar " + right.name + " a " + $assignment::par2.name + " porque los tipos " + 
 						$assignment::leftType.name + " y " + right.type.name + " no son compatibles."));
 		}
-		if($assignment::caso == 0) {
+		if($assignment::caso == 0) {	//ID = right
 				quadruplesList.addASSIGNMENT(right.address.ToString(), $assignment::par2.address.ToString());
 		}
-		else if($assignment::caso == 1) {
+		else if($assignment::caso == 1) {	//ID.ID = right
 				quadruplesList.addPUTFIELD(right.address.ToString(), $assignment::par1.address.ToString(), $assignment::par2.address.ToString());
 		}
-		else if($assignment::caso == 2) {
+		else if($assignment::caso == 2) {	//this.ID = bla
 			MethodSymbol method = (MethodSymbol)actualScope;
 			quadruplesList.addPUTFIELD(right.address.ToString(), method.getThisParameterAddress(), $assignment::par2.address.ToString());	
 		}
-		else if($assignment::caso == 3) {
+		else if($assignment::caso == 3) {	//ID[expression] = bla
 			quadruplesList.addPUTVECTORELEM(right.address.ToString(), $assignment::par2.address.ToString(), $assignment::par1.address.ToString());			
 		}
 		}
@@ -431,12 +444,10 @@ designator
 				$assignment::par1 = index;
 			}
 			
-			
 			string tipo = typeOfVector($assignment::par2.type.name);
 			$assignment::leftType = directory.findType(tipo);
 			}
 	;
-	
 		//TODO verificar semantica en invocaciones
 invoke	:	ID actualParameters	 //miObjeto(param1, param2,...);
 		| ID '.' ID actualParameters	 //miObjeto.attr(param1, param2,...);

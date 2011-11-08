@@ -11,14 +11,15 @@ public class MethodSymbol : Scope
 
     //the first address is reserved for the "This" parameter that the compiler implicitly passes to the method
     private static int THIS_IMPLICIT_PARAMETER_ADDRESS = 10000;
-    private static int START_ADDRESS = THIS_IMPLICIT_PARAMETER_ADDRESS + 1;
+    private static int START_ADDRESS = THIS_IMPLICIT_PARAMETER_ADDRESS;
     private static int MAX_ADDRESS = 19999;
 
     private LinkedList<VariableSymbol> parametros;
 
     public string getThisParameterAddress()
     {
-        return "" + THIS_IMPLICIT_PARAMETER_ADDRESS;
+        return parametros.ElementAt(0).address.ToString();
+        //return "" + THIS_IMPLICIT_PARAMETER_ADDRESS;
     }
 
     public MethodSymbol(string name, ClassSymbol returnType, ScopeWithMethods enclosingScope)
@@ -29,6 +30,14 @@ public class MethodSymbol : Scope
         this.memory = new Memory(START_ADDRESS, MAX_ADDRESS);
         variables = new Dictionary<string, VariableSymbol>();
         parametros = new LinkedList<VariableSymbol>();
+        defineThisImplicitParameter();
+    }
+
+    private void defineThisImplicitParameter()
+    {
+        string this_param_name = "#this";
+        VariableSymbol implicit_this_param = new VariableSymbol(this_param_name, (ClassSymbol)enclosingScope);
+        defineParameter(this_param_name, implicit_this_param);
     }
 
     public VariableSymbol getNewTemporal(ClassSymbol type)
@@ -87,11 +96,6 @@ public class MethodSymbol : Scope
     {
         VariableSymbol variableSymbol;
         variables.TryGetValue(variableName, out variableSymbol);
-        /*
-        if(variableSymbol == null) {
-            variableSymbol = enclosingScope.getVariableSymbol(variableName);
-        }
-         */
         return variableSymbol;
     }
 

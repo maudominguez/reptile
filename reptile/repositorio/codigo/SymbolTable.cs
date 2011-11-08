@@ -9,11 +9,11 @@ public class SymbolTable
     public static string integerName = "int";
     public static string charName = "char";
     public static string doubleName = "double";
-    private string boolName = "bool";
+    public static string boolName = "bool";
     public static string integerVectorName = "IntVector";
     public static string charVectorName = "CharVector";
     public static string doubleVectorName = "DoubleVector";
-    private string voidName = "void";
+    public static string voidName = "void";
 
     public SymbolTable()
     {
