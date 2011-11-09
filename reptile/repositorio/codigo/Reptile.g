@@ -363,8 +363,7 @@ methodDeclaration
 	
 	{
 	if(method.returnsVoid()) {
-		VariableSymbol tmpVoid = method.getNewTemporal(tipoRetorno);
-		quadruplesList.addRETURN(tmpVoid.address.ToString());
+		quadruplesList.addRETURNVOID();
 	}
 	else {
 		quadruplesList.addSHOULD_RETURN_SOMETHING_ERROR(((ClassSymbol)method.enclosingScope).name, method.name);
@@ -381,14 +380,21 @@ formalParameters
 someStatements
 	:	statement*;
 
-statement :	assignment
+statement 
+scope {
+	bool inExpression;
+}
+:		{$statement::inExpression = false;}
+		(
+			assignment
 		|	invoke ';'
 		|	if_inst
 		|	while_inst
 		|	return_inst
 		|	read
 		|	print
-		| ';';
+		| ';'
+		);
 			
 assignment
 scope {
@@ -485,7 +491,7 @@ designator
 			$assignment::leftType = directory.findType(tipo);
 			}
 	;
-		//TODO verificar semantica en invocaciones
+
 invoke
 scope {
 	MethodSymbol invokedMethod;
@@ -494,7 +500,16 @@ scope {
 :	
 		(objId = ID {$invoke::obj = getVariable($objId.text);}| 'this' {$invoke::obj = ((MethodSymbol)actualScope).getThisParameter();}) 
 		'.' method = ID {$invoke::invokedMethod = getMethod($invoke::obj.name, $method.text);}
-		actualParameters 	
+		{
+		
+		if($statement::inExpression && $invoke::invokedMethod.returnsVoid()) {
+			string msg = "Llamada a metodo void " + $invoke::invokedMethod.fullyQualifiedName() + ". No es valido llamar a un metodo void"
+									+ " como parte de una expresion.";
+			manageException(new Exception(msg));
+		}
+		
+		}
+		actualParameters
 		//miObjeto.metodo(param1, param2,...) 
 		//this.metodo(param1,param2,...)
 		;
@@ -511,20 +526,7 @@ actualParameters
 		LinkedList<VariableSymbol> argsList = new LinkedList<VariableSymbol>();
 		argsList.AddLast($invoke::obj);
 		}
-	/*
-		{
-		string methodEnclosingClass = $invoke::invokedMethod.enclosingScope.name;
-		string fullQualifiedMethodName = methodEnclosingClass + "@" + $invoke::invokedMethod.name;
-		quadruplesList.addERA(fullQualifiedMethodName);
-		int paramCount = 0;
-		quadruplesList.addPARAM($invoke::obj.address.ToString(), paramCount.ToString());
-		IEnumerator<VariableSymbol> paramIterator = $invoke::invokedMethod.getParamIterator();
-		paramIterator.MoveNext();
-		paramCount++;
-		}
-		*/
-		
-		//TODO fondo falso?
+
 		(expression 
 		{
 		if(!paramIterator.MoveNext()) {
@@ -541,25 +543,6 @@ actualParameters
 		argsList.AddLast(actualParam);
 		}
 		
-		
-		/*
-		{
-		if(!paramIterator.MoveNext()) {
-			string msg = "Parametros formales de mas en llamada a " + fullQualifiedMethodName;
-			manageException(new Exception(msg));
-		}
-		VariableSymbol formalParam = paramIterator.Current;
-		VariableSymbol actualParam = pOperandos.Pop();
-		if(!directory.validAssignment(formalParam.type, actualParam.type)) {
-			string msg = "El tipo del argumento " + actualParam.name + " no es asignable al tipo del parametro formal " 
-					+ formalParam.name + " en la llamada a " + fullQualifiedMethodName;
-			manageException(new Exception(msg));
-		}
-		quadruplesList.addPARAM(actualParam.address.ToString(), paramCount.ToString());
-		paramCount++;
-		}
-		*/
-		//TODO fondo falso?
 		(',' expression 
 		{
 		if(!paramIterator.MoveNext()) {
@@ -575,26 +558,6 @@ actualParameters
 		}
 		argsList.AddLast(actualParam);
 		}
-		
-		/*
-		{
-		if(!paramIterator.MoveNext()) {
-			string msg = "Parametros formales de mas en llamada a " + fullQualifiedMethodName;
-			manageException(new Exception(msg));
-		}
-		formalParam = paramIterator.Current;
-		actualParam = pOperandos.Pop();
-		if(!directory.validAssignment(formalParam.type, actualParam.type)) {
-			string msg = "El tipo del argumento " + actualParam.name + " no es asignable al tipo del parametro formal " 
-				+ formalParam.name + " en la llamada a " + fullQualifiedMethodName;
-			manageException(new Exception(msg));
-		}
-		quadruplesList.addPARAM(actualParam.address.ToString(), paramCount.ToString());
-		paramCount++;
-		}
-		*/
-		
-		
 		)*)? ')'
 		
 		{pOperadores.Pop();}
@@ -611,21 +574,15 @@ actualParameters
 			paramCount++;
 		}
 		
-		VariableSymbol varToStoreResult = ((MethodSymbol)actualScope).getNewTemporal($invoke::invokedMethod.returnType);
-		quadruplesList.addGOSUB($invoke::invokedMethod.fullyQualifiedName(), varToStoreResult.address.ToString());
-		pOperandos.Push(varToStoreResult);
+		if($invoke::invokedMethod.returnsVoid()) {
+			quadruplesList.addGOSUBVOID($invoke::invokedMethod.fullyQualifiedName());
 		}
-		/*
-		{
-		if(paramIterator.MoveNext()) { 
-			string msg = "Faltan argumentos en la llamada a " + fullQualifiedMethodName;
-			manageException(new Exception(msg));
+		else {
+			VariableSymbol varToStoreResult = ((MethodSymbol)actualScope).getNewTemporal($invoke::invokedMethod.returnType);
+			quadruplesList.addGOSUB($invoke::invokedMethod.fullyQualifiedName(), varToStoreResult.address.ToString());
+			pOperandos.Push(varToStoreResult);
 		}
-		quadruplesList.addGOSUB(fullQualifiedMethodName);
 		}
-		*/
-		
-		
 		;
 
 if_inst	:	'if' '(' expression ')' '{' someStatements '}' ('else' '{' someStatements '}')?;
@@ -661,17 +618,18 @@ return_inst
 			manageException(new Exception(msg));
 		}
 		if(method.returnsVoid()) {
-			varToReturn = method.getNewTemporal(method.returnType);
+			quadruplesList.addRETURNVOID();
 		}
 		else {
 			varToReturn = pOperandos.Pop();
+			if(!directory.validAssignment(method.returnType, varToReturn.type)) {
+				string msg = "Error en return: Tipo " + varToReturn.type.name + " no se puede regresar como tipo " + method.returnType.name
+						+ " en " + method.fullyQualifiedName();
+				manageException(new Exception(msg));
+			}
+			quadruplesList.addRETURN(varToReturn.address.ToString());
 		}
-		if(!directory.validAssignment(method.returnType, varToReturn.type)) {
-			string msg = "Error en return: Tipo " + varToReturn.type.name + " no se puede regresar como tipo " + method.returnType.name
-					+ " en " + method.fullyQualifiedName();
-			manageException(new Exception(msg));
-		}
-		quadruplesList.addRETURN(varToReturn.address.ToString());
+		
 		}
 		
 		';'
@@ -681,10 +639,9 @@ read	:	'read' '(' designator ')' ';';
 
 print	:	'print' '(' expression ')' ';';
 
-
-	
 expression
-	:	es (relOp {pOperadores.Push($relOp.operador);} es {aplicaOperadorPendienteQueSea(operadoresRelacionales);})?;
+	:	{$statement::inExpression = true;}
+		es (relOp {pOperadores.Push($relOp.operador);} es {aplicaOperadorPendienteQueSea(operadoresRelacionales);})?;
 
 es
 	:	term {aplicaOperadorPendienteQueSea(masMenosOr);}
@@ -700,7 +657,7 @@ term	:	factor {aplicaOperadorPendienteQueSea(porEntreAnd);}
 		)*;
 
 factor
-	:	invoke	//TODO verificar semantica y hacer acciones para llamadas a metodos
+	:	invoke
 		| v = ID 
 			{
 			VariableSymbol varSymbol = getVariable($v.text);

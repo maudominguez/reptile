@@ -78,6 +78,11 @@ class QuadruplesList
         quadruplesList.AddLast(new Quadruple("RETURN", varToReturn));
     }
 
+    public void addRETURNVOID()
+    {
+        quadruplesList.AddLast(new Quadruple("RETURNVOID"));
+    }
+
     public void addSHOULD_RETURN_SOMETHING_ERROR(string className, string methodName)
     {
         quadruplesList.AddLast(new Quadruple("SHOULD_RETURN_SOMETHING_ERROR", className, methodName));
@@ -96,6 +101,11 @@ class QuadruplesList
     public void addGOSUB(string method, string varToStoreResult)
     {
         quadruplesList.AddLast(new Quadruple("GOSUB", method, varToStoreResult));
+    }
+
+    public void addGOSUBVOID(string method)
+    {
+        quadruplesList.AddLast(new Quadruple("GOSUBVOID", method));
     }
 
     public override string ToString()
