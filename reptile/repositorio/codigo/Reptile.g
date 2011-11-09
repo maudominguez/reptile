@@ -144,6 +144,28 @@ VariableSymbol getField(string objeto, string instVar) {
 	return varDeInstancia;
 }
 
+MethodSymbol getMethod(string objeto, string method) {
+	verifyObjectAndMethodDefined(objeto, method);
+	VariableSymbol obj = actualScope.getVariableSymbol(objeto);
+	MethodSymbol methodSymbol = obj.type.getMethodSymbol(method);
+	return methodSymbol;
+}
+
+void verifyObjectAndMethodDefined(string objeto, string method) {
+	verifyVariableCanBeAccessed(objeto);
+	VariableSymbol obj = actualScope.getVariableSymbol(objeto);
+	ClassSymbol type = obj.type;
+	verifyMethodDefinedInClassSymbol(type, method);
+}
+
+void verifyMethodDefinedInClassSymbol(ClassSymbol type, string method) {
+	MethodSymbol methodSymbol = type.getMethodSymbol(method);
+	if(methodSymbol == null) {
+		string msg = "Metodo " + method + " no esta definido en la clase " + type.name + " ni en alguna superclase.";
+		manageException(new Exception(msg));
+	}
+}
+
 void generateInstanceVariableNotFoundError(string scope, string variable) {
 	Exception e = new Exception("No se encontro la variable de instancia " + variable + " en " + scope);
 	manageException(e);
@@ -328,12 +350,27 @@ methods
 methodDeclaration
 @init {
 	ClassSymbol tipoRetorno;
+	MethodSymbol method;
 }
 :	(tRet = primitiveType | tRet = referenceType | tRet = voidType) {tipoRetorno = directory.findType($tRet.tipo);} 
-	ID {registrarMetodo(tipoRetorno, $ID.text);} 
-	'(' formalParameters? ')' 
-	'{' vars? someStatements '}' 
-	{actualScope = ((MethodSymbol)actualScope).enclosingScope;}
+	ID 
+	{
+	registrarMetodo(tipoRetorno, $ID.text);
+	method = (MethodSymbol)actualScope;
+	} 
+	'(' formalParameters? ')' //TODO agregaral metodo cual fue el numero total de variables
+	'{' {method.firstQuadruple = quadruplesList.nextNumberOfQuadruple();} vars? someStatements '}' 
+	
+	{
+	if(method.returnsVoid()) {
+		VariableSymbol tmpVoid = method.getNewTemporal(tipoRetorno);
+		quadruplesList.addRETURN(tmpVoid.address.ToString());
+	}
+	else {
+		quadruplesList.addSHOULD_RETURN_SOMETHING_ERROR(((ClassSymbol)method.enclosingScope).name, method.name);
+	}
+	actualScope = ((MethodSymbol)actualScope).enclosingScope;
+	}
 	;
 	
 formalParam:	t = formalParamType ID {registerFormalParameter($ID.text, $t.tipo);};
@@ -368,7 +405,7 @@ scope {
 			ClassSymbol tipo = directory.findType($ID.text);
 			VariableSymbol temp = getNewTemporalVarOfType(tipo.name);
 			pOperandos.Push(temp);
-			quadruplesList.addOBJECT(temp.address.ToString(), tipo.countVariables().ToString());
+			quadruplesList.addOBJECT(temp.address.ToString(), tipo.name);
 			
 			}
 		| 'new' vectorType '[' {pOperadores.Push("[");} INT ']' {pOperadores.Pop();}	
@@ -449,22 +486,202 @@ designator
 			}
 	;
 		//TODO verificar semantica en invocaciones
-invoke	:	ID actualParameters	 //miObjeto(param1, param2,...);
-		| ID '.' ID actualParameters	 //miObjeto.attr(param1, param2,...);
+invoke
+scope {
+	MethodSymbol invokedMethod;
+	VariableSymbol obj;
+}
+:	
+		(objId = ID {$invoke::obj = getVariable($objId.text);}| 'this' {$invoke::obj = ((MethodSymbol)actualScope).getThisParameter();}) 
+		'.' method = ID {$invoke::invokedMethod = getMethod($invoke::obj.name, $method.text);}
+		actualParameters 	
+		//miObjeto.metodo(param1, param2,...) 
+		//this.metodo(param1,param2,...)
+		;
+		
+actualParameters
+	:	
+		{pOperadores.Push("(");}
+		'('
+		{
+		VariableSymbol formalParam;
+		VariableSymbol actualParam;
+		IEnumerator<VariableSymbol> paramIterator = $invoke::invokedMethod.getParamIterator();
+		paramIterator.MoveNext();
+		LinkedList<VariableSymbol> argsList = new LinkedList<VariableSymbol>();
+		argsList.AddLast($invoke::obj);
+		}
+	/*
+		{
+		string methodEnclosingClass = $invoke::invokedMethod.enclosingScope.name;
+		string fullQualifiedMethodName = methodEnclosingClass + "@" + $invoke::invokedMethod.name;
+		quadruplesList.addERA(fullQualifiedMethodName);
+		int paramCount = 0;
+		quadruplesList.addPARAM($invoke::obj.address.ToString(), paramCount.ToString());
+		IEnumerator<VariableSymbol> paramIterator = $invoke::invokedMethod.getParamIterator();
+		paramIterator.MoveNext();
+		paramCount++;
+		}
+		*/
+		
+		//TODO fondo falso?
+		(expression 
+		{
+		if(!paramIterator.MoveNext()) {
+			string msg = "Parametros formales de mas en llamada a " + $invoke::invokedMethod.fullyQualifiedName();
+			manageException(new Exception(msg));
+		}
+		formalParam = paramIterator.Current;
+		actualParam = pOperandos.Pop();
+		if(!directory.validAssignment(formalParam.type, actualParam.type)) {
+			string msg = "El tipo del argumento " + actualParam.name + " no es asignable al tipo del parametro formal " 
+					+ formalParam.name + " en la llamada a " + $invoke::invokedMethod.fullyQualifiedName();
+			manageException(new Exception(msg));
+		}
+		argsList.AddLast(actualParam);
+		}
+		
+		
+		/*
+		{
+		if(!paramIterator.MoveNext()) {
+			string msg = "Parametros formales de mas en llamada a " + fullQualifiedMethodName;
+			manageException(new Exception(msg));
+		}
+		VariableSymbol formalParam = paramIterator.Current;
+		VariableSymbol actualParam = pOperandos.Pop();
+		if(!directory.validAssignment(formalParam.type, actualParam.type)) {
+			string msg = "El tipo del argumento " + actualParam.name + " no es asignable al tipo del parametro formal " 
+					+ formalParam.name + " en la llamada a " + fullQualifiedMethodName;
+			manageException(new Exception(msg));
+		}
+		quadruplesList.addPARAM(actualParam.address.ToString(), paramCount.ToString());
+		paramCount++;
+		}
+		*/
+		//TODO fondo falso?
+		(',' expression 
+		{
+		if(!paramIterator.MoveNext()) {
+			string msg = "Parametros formales de mas en llamada a " + $invoke::invokedMethod.fullyQualifiedName();
+			manageException(new Exception(msg));
+		}
+		formalParam = paramIterator.Current;
+		actualParam = pOperandos.Pop();
+		if(!directory.validAssignment(formalParam.type, actualParam.type)) {
+			string msg = "El tipo del argumento " + actualParam.name + " no es asignable al tipo del parametro formal " 
+					+ formalParam.name + " en la llamada a " + $invoke::invokedMethod.fullyQualifiedName();
+			manageException(new Exception(msg));
+		}
+		argsList.AddLast(actualParam);
+		}
+		
+		/*
+		{
+		if(!paramIterator.MoveNext()) {
+			string msg = "Parametros formales de mas en llamada a " + fullQualifiedMethodName;
+			manageException(new Exception(msg));
+		}
+		formalParam = paramIterator.Current;
+		actualParam = pOperandos.Pop();
+		if(!directory.validAssignment(formalParam.type, actualParam.type)) {
+			string msg = "El tipo del argumento " + actualParam.name + " no es asignable al tipo del parametro formal " 
+				+ formalParam.name + " en la llamada a " + fullQualifiedMethodName;
+			manageException(new Exception(msg));
+		}
+		quadruplesList.addPARAM(actualParam.address.ToString(), paramCount.ToString());
+		paramCount++;
+		}
+		*/
+		
+		
+		)*)? ')'
+		
+		{pOperadores.Pop();}
+		{
+		if(paramIterator.MoveNext()) { 
+			string msg = "Faltan argumentos en la llamada a " + $invoke::invokedMethod.fullyQualifiedName();
+			manageException(new Exception(msg));
+		}
+		
+		quadruplesList.addERA($invoke::invokedMethod.fullyQualifiedName());
+		int paramCount = 0;
+		foreach (VariableSymbol arg in argsList) {
+			quadruplesList.addPARAM(arg.address.ToString(), paramCount.ToString());
+			paramCount++;
+		}
+		
+		VariableSymbol varToStoreResult = ((MethodSymbol)actualScope).getNewTemporal($invoke::invokedMethod.returnType);
+		quadruplesList.addGOSUB($invoke::invokedMethod.fullyQualifiedName(), varToStoreResult.address.ToString());
+		pOperandos.Push(varToStoreResult);
+		}
+		/*
+		{
+		if(paramIterator.MoveNext()) { 
+			string msg = "Faltan argumentos en la llamada a " + fullQualifiedMethodName;
+			manageException(new Exception(msg));
+		}
+		quadruplesList.addGOSUB(fullQualifiedMethodName);
+		}
+		*/
+		
+		
 		;
 
 if_inst	:	'if' '(' expression ')' '{' someStatements '}' ('else' '{' someStatements '}')?;
 
 while_inst	:	'while' '(' expression ')' '{' someStatements '}';
 
-return_inst	:	'return' expression? ';';
+return_inst
+@init {
+	bool returnsSomething = false;
+	VariableSymbol varToReturn;
+	MethodSymbol method;
+}
+:
+		{method = (MethodSymbol)actualScope;}
+		'return' 
+		
+		(
+		//si estamos aqui es porque si vino una expresion despues del return
+		{
+		returnsSomething = true;
+		if(method.returnsVoid()) {
+			string msg = "Error en return: No se permite regresar un valor en el metodo void " + method.fullyQualifiedName();
+			manageException(new Exception(msg));
+		}
+		}
+		expression
+		)?
+		
+		
+		{
+		if(!method.returnsVoid() && !returnsSomething) {
+			string msg = "Error en return: " + method.fullyQualifiedName() + " debe regresar un valor tipo " + method.returnType.name;
+			manageException(new Exception(msg));
+		}
+		if(method.returnsVoid()) {
+			varToReturn = method.getNewTemporal(method.returnType);
+		}
+		else {
+			varToReturn = pOperandos.Pop();
+		}
+		if(!directory.validAssignment(method.returnType, varToReturn.type)) {
+			string msg = "Error en return: Tipo " + varToReturn.type.name + " no se puede regresar como tipo " + method.returnType.name
+					+ " en " + method.fullyQualifiedName();
+			manageException(new Exception(msg));
+		}
+		quadruplesList.addRETURN(varToReturn.address.ToString());
+		}
+		
+		';'
+		;
 
 read	:	'read' '(' designator ')' ';';
 
 print	:	'print' '(' expression ')' ';';
-	
-actualParameters
-	:	'(' (expression (',' expression)*)? ')';
+
+
 	
 expression
 	:	es (relOp {pOperadores.Push($relOp.operador);} es {aplicaOperadorPendienteQueSea(operadoresRelacionales);})?;
@@ -527,6 +744,10 @@ factor
 		;
 	
 relOp returns[string operador]:	 op = ('==' | '!=' | '>' | '>=' | '<' | '<=') {$operador = $op.text;};
+
+BOOL	:	'bool';
+
+VOID	:	'void';
 
 ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     ;

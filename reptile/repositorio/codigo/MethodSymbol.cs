@@ -7,7 +7,8 @@ public class MethodSymbol : Scope
 {
     public ScopeWithMethods enclosingScope; //puede ser el scope global o una clase
     public ClassSymbol returnType; 
-    public int cuadruplo;  //numero de cuadruplo donde empieza
+    public int firstQuadruple;  //first quadruple of this method
+    private static string this_param_name = "#this";
 
     //the first address is reserved for the "This" parameter that the compiler implicitly passes to the method
     private static int THIS_IMPLICIT_PARAMETER_ADDRESS = 10000;
@@ -16,10 +17,19 @@ public class MethodSymbol : Scope
 
     private LinkedList<VariableSymbol> parametros;
 
+    public IEnumerator<VariableSymbol> getParamIterator() {
+        return parametros.GetEnumerator();
+    }
+
     public string getThisParameterAddress()
     {
         return parametros.ElementAt(0).address.ToString();
         //return "" + THIS_IMPLICIT_PARAMETER_ADDRESS;
+    }
+
+    public VariableSymbol getThisParameter()
+    {
+        return getVariableSymbol(this_param_name);
     }
 
     public MethodSymbol(string name, ClassSymbol returnType, ScopeWithMethods enclosingScope)
@@ -33,9 +43,18 @@ public class MethodSymbol : Scope
         defineThisImplicitParameter();
     }
 
+    public bool returnsVoid()
+    {
+        return returnType.name.Equals(SymbolTable.voidName);
+    }
+
+    public string fullyQualifiedName()
+    {
+        return enclosingScope.name + "@" + name;
+    }
+
     private void defineThisImplicitParameter()
     {
-        string this_param_name = "#this";
         VariableSymbol implicit_this_param = new VariableSymbol(this_param_name, (ClassSymbol)enclosingScope);
         defineParameter(this_param_name, implicit_this_param);
     }
@@ -58,6 +77,9 @@ public class MethodSymbol : Scope
         res.Append("(");
         res.Append(parametrosToString());
         res.Append(") {\n");
+        res.Append("first quadruple: ");
+        res.Append(firstQuadruple);
+        res.Append("\n");
         res.Append(variablesToString());
         res.Append("}");
         return res.ToString();

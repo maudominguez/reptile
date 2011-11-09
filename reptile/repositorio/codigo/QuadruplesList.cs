@@ -7,7 +7,14 @@ using System.Collections;
 
 class QuadruplesList
 {
+    //we start to count the quadruples in zero
+
     LinkedList<Quadruple> quadruplesList = new LinkedList<Quadruple>();
+
+    public int nextNumberOfQuadruple()
+    {
+        return quadruplesList.Count();
+    }
 
     public void addICONST(string intConstant, string tempAddress)
     {
@@ -40,9 +47,9 @@ class QuadruplesList
         quadruplesList.AddLast(new Quadruple(op, op1Address, op2Address, tempAddress));
     }
 
-    public void addOBJECT(string tempAddress, string nFields)
+    public void addOBJECT(string tempAddress, string clase)
     {
-        quadruplesList.AddLast(new Quadruple("OBJECT", tempAddress, nFields));
+        quadruplesList.AddLast(new Quadruple("OBJECT", tempAddress, clase));
     }
 
     public void addVECTOR(string tempAddress, string nSlots)
@@ -66,11 +73,39 @@ class QuadruplesList
         quadruplesList.AddLast(new Quadruple("PUTVECTORELEM", rightAddress, vectorAddress, indexAddress));
     }
 
+    public void addRETURN(string varToReturn)
+    {
+        quadruplesList.AddLast(new Quadruple("RETURN", varToReturn));
+    }
+
+    public void addSHOULD_RETURN_SOMETHING_ERROR(string className, string methodName)
+    {
+        quadruplesList.AddLast(new Quadruple("SHOULD_RETURN_SOMETHING_ERROR", className, methodName));
+    }
+
+    public void addERA(string method)
+    {
+        quadruplesList.AddLast(new Quadruple("ERA", method));
+    }
+
+    public void addPARAM(string variable, string nParam)
+    {
+        quadruplesList.AddLast(new Quadruple("PARAM", variable, nParam));
+    }
+
+    public void addGOSUB(string method, string varToStoreResult)
+    {
+        quadruplesList.AddLast(new Quadruple("GOSUB", method, varToStoreResult));
+    }
+
     public override string ToString()
     {
         StringBuilder res = new StringBuilder();
+        int countQuadruple = 0;
         foreach (Quadruple quadruple in quadruplesList)
         {
+            res.Append(countQuadruple + " ");
+            countQuadruple++;
             res.Append(quadruple);
             res.Append("\n");
         }

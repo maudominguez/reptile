@@ -73,14 +73,19 @@ public class ClassSymbol : ScopeWithMethods
 
     public override void verifyVariableIsNotDefined(string variableName)
     {
+        /*
         if (superClass != null)
         {
             superClass.verifyVariableIsNotDefined(variableName);
         }
+        */
         if (variables.ContainsKey(variableName))
         {
+            String errorMsg = "La variable " + variableName + " ya esta declarada en la clase " + name;
+            /*
             String errorMsg = "La variable " + variableName + " ya esta declarada en la clase " + name
                       + " y no se permite declararla de nuevo en la misma clase ni en ninguna de sus subclases.";
+             **/
             ReptileParser.manageException(new Exception(errorMsg));
         }
     }
