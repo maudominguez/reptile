@@ -59,7 +59,10 @@ public class SymbolTable
             res.Append(classSymbol.name + "\n");
             res.Append(classSymbol.countVariables() + "\n");
 
-            res.Append(classSymbol.getInstVarsTypesFormatted());
+            if(classSymbol.countVariables() > 0) {
+                res.Append(classSymbol.getInstVarsTypesFormatted());
+                res.Append("\n");
+            }
             res.Append(classSymbol.getMethodSymbols().Count + "\n");
             
 

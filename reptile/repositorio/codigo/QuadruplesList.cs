@@ -52,9 +52,19 @@ class QuadruplesList
         quadruplesList.AddLast(new Quadruple("OBJECT", tempAddress, clase));
     }
 
-    public void addVECTOR(string tempAddress, string nSlots)
+    public void addINTVECTOR(string tempAddress, string nSlots)
     {
-        quadruplesList.AddLast(new Quadruple("VECTOR", tempAddress, nSlots));
+        quadruplesList.AddLast(new Quadruple("INTVECTOR", tempAddress, nSlots));
+    }
+
+    public void addDOUBLEVECTOR(string tempAddress, string nSlots)
+    {
+        quadruplesList.AddLast(new Quadruple("DOUBLEVECTOR", tempAddress, nSlots));
+    }
+
+    public void addCHARVECTOR(string tempAddress, string nSlots)
+    {
+        quadruplesList.AddLast(new Quadruple("CHARVECTOR", tempAddress, nSlots));
     }
 
     //se asigna el contenido de address1 a address2
@@ -106,6 +116,11 @@ class QuadruplesList
     public void addGOSUBVOID(string method)
     {
         quadruplesList.AddLast(new Quadruple("GOSUBVOID", method));
+    }
+
+    public void addHALT()
+    {
+        quadruplesList.AddLast(new Quadruple("HALT"));
     }
 
     public override string ToString()

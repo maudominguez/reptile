@@ -43,7 +43,7 @@ public class ClassSymbol : ScopeWithMethods
             {
                 res.Append("ref");
             }
-            res.Append("\n");
+            res.Append(" ");
         }
         return res.ToString();
     }

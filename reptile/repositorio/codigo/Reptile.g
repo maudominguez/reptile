@@ -310,13 +310,14 @@ public static void manageException(Exception e) {
 public program	:	{createDirectories(); defineMainClass();} classDecl* {actualScope = mainClass;} classMain;
 
 classMain
-	:	'class' 'Main' '{' vars? methods '}' 
+	:	'class' 'Main' '{' vars? methods {quadruplesList.addHALT();} '}' 
 		{
 		verifyMainMethodDefinedInMainClass();
 		
 		directory.printDirectory(); directory.printTypesDirectory(); printQuadruplesList();
 		
-		Console.WriteLine(directory.formattedSymbolTable());
+		//Console.WriteLine(directory.formattedSymbolTable());
+		System.IO.File.WriteAllText(@"C:\dev\reptile\reptile\repositorio\codigo\rvm\code.txt", directory.formattedSymbolTable());
 		};
 
 classDecl
@@ -429,7 +430,15 @@ scope {
 			{
 			VariableSymbol temp = getNewTemporalVarOfType($vectorType.t);
 			pOperandos.Push(temp);
-			quadruplesList.addVECTOR(temp.address.ToString(), $INT.text);
+			if($vectorType.t.Equals(SymbolTable.integerVectorName)) {
+				quadruplesList.addINTVECTOR(temp.address.ToString(), $INT.text);
+			}
+			else if($vectorType.t.Equals(SymbolTable.charVectorName)) {
+				quadruplesList.addCHARVECTOR(temp.address.ToString(), $INT.text);
+			}
+			else if($vectorType.t.Equals(SymbolTable.doubleVectorName)) {
+				quadruplesList.addDOUBLEVECTOR(temp.address.ToString(), $INT.text);
+			}
 			
 			
 			}
