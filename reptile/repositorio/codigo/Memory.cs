@@ -8,9 +8,11 @@ public class Memory
 
     private int count = 0;
     private int limit = 0;
+    private int startAddress;
 
     public Memory(int startAddress, int limit)
     {
+        this.startAddress = startAddress;
         count = startAddress;
         this.limit = limit;
     }
@@ -24,5 +26,9 @@ public class Memory
         return count++;
     }
 
-}
+    public int countVariables()
+    {
+        return count - startAddress;
+    }
 
+}

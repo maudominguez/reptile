@@ -83,9 +83,9 @@ class QuadruplesList
         quadruplesList.AddLast(new Quadruple("RETURNVOID"));
     }
 
-    public void addSHOULD_RETURN_SOMETHING_ERROR(string className, string methodName)
+    public void addSHOULD_RETURN_SOMETHING_ERROR(string fullyQualifiedMethodName)
     {
-        quadruplesList.AddLast(new Quadruple("SHOULD_RETURN_SOMETHING_ERROR", className, methodName));
+        quadruplesList.AddLast(new Quadruple("SHOULD_RETURN_SOMETHING_ERROR", fullyQualifiedMethodName));
     }
 
     public void addERA(string method)

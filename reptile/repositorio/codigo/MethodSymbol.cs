@@ -18,10 +18,15 @@ public class MethodSymbol : Scope
     private LinkedList<VariableSymbol> parametros;
     private LinkedList<VariableSymbol> localVariables;
 
+    public int registerOfFirstLocal()
+    {
+        return parametros.Count;
+    }
+
     //includes params, local vars and temporals
     public int countTotalOfVariables()
     {
-        return variables.Count;
+        return memory.countVariables();
     }
 
     public LinkedList<VariableSymbol> getParametersList()

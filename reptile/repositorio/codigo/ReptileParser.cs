@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.4 C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g 2011-11-09 19:30:15
+// $ANTLR 3.4 C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g 2011-11-09 21:55:59
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -1726,7 +1726,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 					quadruplesList.addRETURNVOID();
 				}
 				else {
-					quadruplesList.addSHOULD_RETURN_SOMETHING_ERROR(((ClassSymbol)method.enclosingScope).name, method.name);
+					quadruplesList.addSHOULD_RETURN_SOMETHING_ERROR(method.fullyQualifiedName());
 				}
 				actualScope = ((MethodSymbol)actualScope).enclosingScope;
 				

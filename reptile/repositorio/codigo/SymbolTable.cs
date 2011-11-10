@@ -48,6 +48,9 @@ public class SymbolTable
     public string formattedSymbolTable()
     {
         StringBuilder res = new StringBuilder();
+        int firstQuadrupleOfMainMethod = findType("Main").getMethodSymbol("main").firstQuadruple;
+        res.Append(firstQuadrupleOfMainMethod);
+        res.Append("\n");
         res.Append(directory.Count);    //number of classes
         res.Append("\n");
         foreach (KeyValuePair<String, ScopeWithMethods> entry in directory)
@@ -64,10 +67,16 @@ public class SymbolTable
             {
                 MethodSymbol methodSymbol = element.Value;
                 res.Append(methodSymbol.fullyQualifiedName() + "\n");
-                res.Append(methodSymbol.countTotalOfVariables() + "\n");    //total, includes params, locals and temps
-                res.Append(methodSymbol.getLocalVariablesList().Count + "\n");  //number of local vars
-                res.Append(methodSymbol.countTotalOfVariables() - methodSymbol.getLocalVariablesList().Count + "\n");   //register of the first local
-                foreach(VariableSymbol localVar in methodSymbol.getLocalVariablesList())
+                int totalOfVars = methodSymbol.countTotalOfVariables();
+                int numberOfLocalVars = methodSymbol.getLocalVariablesList().Count;
+                int registerOfFirstLocal = methodSymbol.registerOfFirstLocal();
+                res.Append(totalOfVars + "\n");    //total, includes params, locals and temps
+                res.Append(numberOfLocalVars + "\n");  //number of local vars
+                if (numberOfLocalVars > 0)
+                {
+                    res.Append(registerOfFirstLocal + "\n");   //register of the first local
+                }
+                    foreach(VariableSymbol localVar in methodSymbol.getLocalVariablesList())
                 {
                     if (isPrimitiveType(localVar.type.name))
                     {

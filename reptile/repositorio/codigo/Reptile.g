@@ -35,7 +35,7 @@ Stack<string> pOperadores = new Stack<string>();
 Stack<VariableSymbol> pOperandos = new Stack<VariableSymbol>();
 QuadruplesList quadruplesList = new QuadruplesList();
 string mainClassName = "Main";
-string mainMethodName = "name";
+string mainMethodName = "main";
 
 Scope actualScope;
 ClassSymbol mainClass;
@@ -290,7 +290,7 @@ public void printQuadruplesList() {
 }
 
 public void verifyMainMethodDefinedInMainClass() {
-	MethodSymbol mainMethod = mainClass.getMethodSymbol("main");
+	MethodSymbol mainMethod = mainClass.getMethodSymbol(mainMethodName);
 	if(mainMethod == null) {
 		string errorMsg = "Debe definir al metodo void main() {..} en la clase Main";
 		manageException(new Exception(errorMsg));
@@ -377,7 +377,7 @@ methodDeclaration
 		quadruplesList.addRETURNVOID();
 	}
 	else {
-		quadruplesList.addSHOULD_RETURN_SOMETHING_ERROR(((ClassSymbol)method.enclosingScope).name, method.name);
+		quadruplesList.addSHOULD_RETURN_SOMETHING_ERROR(method.fullyQualifiedName());
 	}
 	actualScope = ((MethodSymbol)actualScope).enclosingScope;
 	}
