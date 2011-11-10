@@ -16,6 +16,30 @@ public class MethodSymbol : Scope
     private static int MAX_ADDRESS = 19999;
 
     private LinkedList<VariableSymbol> parametros;
+    private LinkedList<VariableSymbol> localVariables;
+
+    //includes params, local vars and temporals
+    public int countTotalOfVariables()
+    {
+        return variables.Count;
+    }
+
+    public LinkedList<VariableSymbol> getParametersList()
+    {
+        return parametros;
+    }
+
+    public LinkedList<VariableSymbol> getLocalVariablesList()
+    {
+        return localVariables;
+    }
+
+    public void defineLocalVariable(string variableName, VariableSymbol variableSymbol)
+    {
+        verifyVariableIsNotDefined(variableName);
+        defineVariable(variableName, variableSymbol);
+        localVariables.AddLast(variableSymbol);
+    }
 
     public IEnumerator<VariableSymbol> getParamIterator() {
         return parametros.GetEnumerator();
@@ -40,6 +64,7 @@ public class MethodSymbol : Scope
         this.memory = new Memory(START_ADDRESS, MAX_ADDRESS);
         variables = new Dictionary<string, VariableSymbol>();
         parametros = new LinkedList<VariableSymbol>();
+        localVariables = new LinkedList<VariableSymbol>();
         defineThisImplicitParameter();
     }
 

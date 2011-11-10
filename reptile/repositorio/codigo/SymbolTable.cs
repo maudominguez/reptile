@@ -15,6 +15,15 @@ public class SymbolTable
     public static string doubleVectorName = "DoubleVector";
     public static string voidName = "void";
 
+    public static bool isPrimitiveType(string type)
+    {
+        if(type.Equals(integerName) || type.Equals(charName) || type.Equals(doubleName)
+            || type.Equals(boolName)) {
+                return true;
+        }
+        return false;
+    }
+
     public SymbolTable()
     {
         directory = new Dictionary<string, ScopeWithMethods>();
@@ -34,6 +43,45 @@ public class SymbolTable
         directory.Add(doubleVector.name, doubleVector);
         ClassSymbol tipoVoid = new ClassSymbol(voidName, null);
 	    directory.Add(tipoVoid.name, tipoVoid);
+    }
+
+    public string formattedSymbolTable()
+    {
+        StringBuilder res = new StringBuilder();
+        res.Append(directory.Count);    //number of classes
+        res.Append("\n");
+        foreach (KeyValuePair<String, ScopeWithMethods> entry in directory)
+        {
+            ClassSymbol classSymbol = (ClassSymbol)entry.Value;
+            res.Append(classSymbol.name + "\n");
+            res.Append(classSymbol.countVariables() + "\n");
+
+            res.Append(classSymbol.getInstVarsTypesFormatted());
+            res.Append(classSymbol.getMethodSymbols().Count + "\n");
+            
+
+            foreach (KeyValuePair<string, MethodSymbol> element in classSymbol.getMethodSymbols())
+            {
+                MethodSymbol methodSymbol = element.Value;
+                res.Append(methodSymbol.fullyQualifiedName() + "\n");
+                res.Append(methodSymbol.countTotalOfVariables() + "\n");    //total, includes params, locals and temps
+                res.Append(methodSymbol.getLocalVariablesList().Count + "\n");  //number of local vars
+                res.Append(methodSymbol.countTotalOfVariables() - methodSymbol.getLocalVariablesList().Count + "\n");   //register of the first local
+                foreach(VariableSymbol localVar in methodSymbol.getLocalVariablesList())
+                {
+                    if (isPrimitiveType(localVar.type.name))
+                    {
+                        res.Append(localVar.type.name);
+                    }
+                    else
+                    {
+                        res.Append("ref");
+                    }
+                    res.Append("\n");
+                }
+            }
+        }
+        return res.ToString();
     }
 
     public ClassSymbol resultType(ClassSymbol left, ClassSymbol right, string op)

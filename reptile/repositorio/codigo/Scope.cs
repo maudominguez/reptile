@@ -11,7 +11,7 @@ public abstract class Scope
 
     public abstract VariableSymbol getVariableSymbol(string variableName);
     
-    public void defineVariable(string variableName, VariableSymbol variableSymbol) 
+    public virtual void defineVariable(string variableName, VariableSymbol variableSymbol) 
     {
         verifyVariableIsNotDefined(variableName);
         try

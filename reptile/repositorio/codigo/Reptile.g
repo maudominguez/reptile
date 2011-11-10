@@ -35,6 +35,7 @@ Stack<string> pOperadores = new Stack<string>();
 Stack<VariableSymbol> pOperandos = new Stack<VariableSymbol>();
 QuadruplesList quadruplesList = new QuadruplesList();
 string mainClassName = "Main";
+string mainMethodName = "name";
 
 Scope actualScope;
 ClassSymbol mainClass;
@@ -86,7 +87,12 @@ void registerClass(string className, string superClase) {
 //usado con metodos y variables
 void registerVariableInScope(string variableName, ClassSymbol tipo) {
 	VariableSymbol variable = new VariableSymbol(variableName, tipo);
-	actualScope.defineVariable(variable.name, variable);
+	if(actualScope is MethodSymbol) {
+		((MethodSymbol)actualScope).defineLocalVariable(variableName, variable);
+	}
+	else {
+		actualScope.defineVariable(variable.name, variable);
+	}
 }
 
 void registrarMetodo(ClassSymbol tipoRetorno, string methodName) {
@@ -307,7 +313,10 @@ classMain
 	:	'class' 'Main' '{' vars? methods '}' 
 		{
 		verifyMainMethodDefinedInMainClass();
+		
 		directory.printDirectory(); directory.printTypesDirectory(); printQuadruplesList();
+		
+		Console.WriteLine(directory.formattedSymbolTable());
 		};
 
 classDecl
@@ -322,7 +331,9 @@ varDecl
 @init {
 	ClassSymbol clase;
 }
-    :   (t = primitiveType | t = referenceType) {clase = directory.findType($t.tipo);} ID {registerVariableInScope($ID.text, clase);} ';' ;
+    :   (t = primitiveType | t = referenceType) {clase = directory.findType($t.tipo);} ID 
+    	{registerVariableInScope($ID.text, clase);} 
+    	';' ;
     
 primitiveType returns[string tipo]:	t = ('int'|'char' | 'double') {$tipo = $t.text;};
 

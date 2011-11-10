@@ -8,6 +8,7 @@ public class ClassSymbol : ScopeWithMethods
     public ClassSymbol superClass;
     private static int START_ADDRESS = 0;
     private static int MAX_ADDRESS = 9999;
+    private LinkedList<VariableSymbol> instanceVariablesList = new LinkedList<VariableSymbol>();
 
     public ClassSymbol(string name, ClassSymbol superClass)
     {
@@ -23,6 +24,44 @@ public class ClassSymbol : ScopeWithMethods
                 this.memory.nextAddress();
             }
         }
+    }
+
+    public string getInstVarsTypesFormatted()
+    {
+        StringBuilder res = new StringBuilder();
+        if (superClass != null)
+        {
+            res.Append(superClass.getInstVarsTypesFormatted());
+        }
+        foreach (VariableSymbol instVar in instanceVariablesList)
+        {
+            if (SymbolTable.isPrimitiveType(instVar.type.name))
+            {
+                res.Append(instVar.type.name);
+            }
+            else
+            {
+                res.Append("ref");
+            }
+            res.Append("\n");
+        }
+        return res.ToString();
+    }
+
+    public override void defineVariable(string variableName, VariableSymbol variableSymbol)
+    {
+        base.defineVariable(variableName, variableSymbol);
+        instanceVariablesList.AddLast(variableSymbol);
+    }
+
+    public LinkedList<VariableSymbol> getInstanceVariablesList()
+    {
+        return instanceVariablesList;
+    }
+
+    public Dictionary<string, MethodSymbol> getMethodSymbols()
+    {
+        return methods;
     }
 
     public int countVariables()
@@ -82,10 +121,6 @@ public class ClassSymbol : ScopeWithMethods
         if (variables.ContainsKey(variableName))
         {
             String errorMsg = "La variable " + variableName + " ya esta declarada en la clase " + name;
-            /*
-            String errorMsg = "La variable " + variableName + " ya esta declarada en la clase " + name
-                      + " y no se permite declararla de nuevo en la misma clase ni en ninguna de sus subclases.";
-             **/
             ReptileParser.manageException(new Exception(errorMsg));
         }
     }
