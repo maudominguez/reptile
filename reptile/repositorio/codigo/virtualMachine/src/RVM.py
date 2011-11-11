@@ -23,7 +23,6 @@ class RVM (object):
         self.mainMethod = None
 
     def cpu(self):
-        print("in cpu")
         
         """
         the first main frame should return to the HALT inst, which is the last
@@ -51,6 +50,9 @@ class RVM (object):
                 op2 = int(quadruple.op2)
                 op3 = int(quadruple.op3)
                 registers[offset(op3)] = registers[offset(op1)] - registers[offset(op2)]
+            elif(quadruple.opCode == "PRINTLINE"):
+                op1 = int(quadruple.op1)
+                print(str(registers[offset(op1)]))
             elif(quadruple.opCode == "GOTOFALSE"):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
@@ -59,6 +61,10 @@ class RVM (object):
             elif(quadruple.opCode == "GOTO"):
                 op1 = int(quadruple.op1)
                 self.ip = op1
+            elif(quadruple.opCode == "CCONST"):
+                op1 = quadruple.op1
+                op2 = int(quadruple.op2)
+                registers[offset(op2)] = chr(ord(op1))
             elif(quadruple.opCode == "ICONST"):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
@@ -72,7 +78,7 @@ class RVM (object):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
                 registers[offset(op2)] = registers[offset(op1)]
-                print("result = " + str(registers[offset(op2)]))
+                #print("asignacion = " + str(registers[offset(op2)]))
             elif(quadruple.opCode == "ERA"):
                 op1 = quadruple.op1
                 methodToBeInvoked = self.methodsDirectory[op1]
@@ -125,23 +131,28 @@ class RVM (object):
             #update self.ip on the inst if necessary
             #manage the callstack if necessary
 
-        print("HALTED!")
+        #print("HALTED!")
 
-        
-        
-        
 
     def loadQuadruplesFromFile(self, inFile):
         nQuadruples = int(inFile.readline())
         for iQuad in range(nQuadruples):
-            quadElems = inFile.readline().split()
-            quadruple = Quadruple(quadElems[0])
-            if(len(quadElems) >= 2):
-                quadruple.op1 = quadElems[1]
-            if(len(quadElems) >= 3):
-                quadruple.op2 = quadElems[2]
-            if(len(quadElems) >= 4):
-                quadruple.op3 = quadElems[3]
+            line = inFile.readline()
+            if(line.startswith("CCONST")):
+                start = line.find("'") + 1
+                end = line.rfind("'")
+                #print("ja = ", line[start:end])
+                quadruple = Quadruple("CCONST", line[start:end], line.split()[-1])
+
+            else:
+                quadElems = line.split()
+                quadruple = Quadruple(quadElems[0])
+                if(len(quadElems) >= 2):
+                    quadruple.op1 = quadElems[1]
+                if(len(quadElems) >= 3):
+                    quadruple.op2 = quadElems[2]
+                if(len(quadElems) >= 4):
+                    quadruple.op3 = quadElems[3]
             self.code.append(quadruple)
 
         
@@ -193,21 +204,22 @@ class RVM (object):
             print(self.methodsDirectory[key])
 
     def loadCodeFile(self):
-        inFile = open ("code.txt", "r")
+        inFile = open ("../../../../bin/Debug/code.txt", "r")
         self.loadDirectoriesFromFile(inFile)
         self.loadQuadruplesFromFile(inFile)
         inFile.close()
 
 def offset(address):
-        return address - RVM.firstRegisterInFrames
+    return address - RVM.firstRegisterInFrames
 
 def main():
+    #print("w = " + chr(ord("\n")))
     virtualMachine = RVM()
     virtualMachine.loadCodeFile()
-    virtualMachine.printClassesDirectory()
-    virtualMachine.printMethodsDirectory()
-    virtualMachine.printCode()
-
+    #virtualMachine.printClassesDirectory()
+    #virtualMachine.printMethodsDirectory()
+    #virtualMachine.printCode()
     virtualMachine.cpu()
 
-main()
+if __name__ == '__main__':
+    main()

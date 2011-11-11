@@ -138,6 +138,11 @@ class QuadruplesList
         quadruplesList.AddLast(new Quadruple("GOTO", quadruple));
     }
 
+    public void addPRINTLINE(string varToPrint)
+    {
+        quadruplesList.AddLast(new Quadruple("PRINTLINE", varToPrint));
+    }
+
     public void addHALT()
     {
         quadruplesList.AddLast(new Quadruple("HALT"));

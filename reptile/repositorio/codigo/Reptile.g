@@ -319,7 +319,7 @@ classMain
 		directory.printDirectory(); directory.printTypesDirectory(); printQuadruplesList();
 		
 		
-		string outputFile = "C:\\dev\\reptile\\reptile\\repositorio\\codigo\\virtualMachine\\src\\code.txt";
+		string outputFile = "code.txt";
 		System.IO.File.WriteAllText(@outputFile, directory.formattedSymbolTable() + quadruplesList.countQuadruples() + "\n" + quadruplesList.ToString());
 
 
@@ -409,7 +409,7 @@ scope {
 		|	while_inst
 		|	return_inst
 		|	read
-		|	print
+		|	printline
 		| ';'
 		);
 			
@@ -703,7 +703,32 @@ return_inst
 
 read	:	'read' '(' designator ')' ';';
 
-print	:	'print' '(' expression ')' ';';
+printline	:	'printline' '(' 
+		expression 
+		{
+		VariableSymbol varToPrint = pOperandos.Pop();
+		MethodSymbol method = (MethodSymbol)actualScope;
+		if(!SymbolTable.isPrimitiveType(varToPrint.type.name)) {
+			string msg = "Error en " + method.fullyQualifiedName() + " en print(..). Se encontro tipo " + varToPrint.type.name + ", pero print(..) "
+					+ "solo puede imprimir primitivos. ";
+			manageException(new Exception(msg));
+		}
+		quadruplesList.addPRINTLINE(varToPrint.address.ToString());
+		}
+		(',' expression
+		{
+		varToPrint = pOperandos.Pop();
+		method = (MethodSymbol)actualScope;
+		if(!SymbolTable.isPrimitiveType(varToPrint.type.name)) {
+			string msg = "Error en " + method.fullyQualifiedName() + " en print(..). Se encontro tipo " + varToPrint.type.name + ", pero print(..) "
+					+ "solo puede imprimir primitivos. ";
+			manageException(new Exception(msg));
+		}
+		quadruplesList.addPRINTLINE(varToPrint.address.ToString());
+		}
+		)*
+		
+		')' ';';
 
 expression
 	:	{$statement::inExpression = true;}
