@@ -35,6 +35,7 @@ SymbolTable directory;
 Stack<string> pOperadores = new Stack<string>();
 Stack<VariableSymbol> pOperandos = new Stack<VariableSymbol>();
 QuadruplesList quadruplesList = new QuadruplesList();
+Stack<Quadruple> pSaltos = new Stack<Quadruple>();
 string mainClassName = "Main";
 string mainMethodName = "main";
 
@@ -287,7 +288,7 @@ public string typeOfVector(string type) {
 }
 
 public void printQuadruplesList() {
-	Console.WriteLine(quadruplesList.ToString());
+	Console.WriteLine(quadruplesList.ToStringWithQuadrupleNumbers());
 }
 
 public void verifyMainMethodDefinedInMainClass() {
@@ -609,7 +610,48 @@ actualParameters
 		}
 		;
 
-if_inst	:	'if' '(' expression ')' '{' someStatements '}' ('else' '{' someStatements '}')?;
+if_inst	
+scope {
+	bool elsePresent;
+}
+:	'if' '(' expression ')' 
+		{
+		$if_inst::elsePresent = false;
+		VariableSymbol condition = pOperandos.Pop();
+		if(!condition.type.name.Equals(SymbolTable.boolName)) {
+			string msg = "En metodo " + ((MethodSymbol)actualScope).fullyQualifiedName() +  " condicion en if debe ser un valor bool.";
+			manageException(new Exception(msg));
+		}
+		
+		quadruplesList.addGOTOFALSE(condition.address.ToString(), "-");
+		pSaltos.Push(quadruplesList.getLastQuadruple());
+		}
+		'{'  someStatements '}' 
+		
+		(
+		{$if_inst::elsePresent = true;}
+		'else' 
+		{
+		quadruplesList.addGOTO("-");
+		Quadruple end = quadruplesList.getLastQuadruple();
+		Quadruple falso = pSaltos.Pop();
+		falso.operando2 = quadruplesList.nextNumberOfQuadruple().ToString();
+		pSaltos.Push(end);
+		}
+		'{' someStatements '}'
+		{
+		Quadruple gotoEnd = pSaltos.Pop();
+		gotoEnd.operando1 = quadruplesList.nextNumberOfQuadruple().ToString();
+		}
+		)?
+		
+		{
+		if(!$if_inst::elsePresent) {
+			Quadruple end = pSaltos.Pop();
+			end.operando2 = quadruplesList.nextNumberOfQuadruple().ToString();
+		}
+		}
+		;
 
 while_inst	:	'while' '(' expression ')' '{' someStatements '}';
 

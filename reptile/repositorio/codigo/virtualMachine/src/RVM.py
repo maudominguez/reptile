@@ -46,11 +46,25 @@ class RVM (object):
                 op2 = int(quadruple.op2)
                 op3 = int(quadruple.op3)
                 registers[offset(op3)] = registers[offset(op1)] + registers[offset(op2)]
-                #print("resultado de suma = " + str(registers[offset(op3)]))
+            elif(quadruple.opCode == "-"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] - registers[offset(op2)]
+            elif(quadruple.opCode == "GOTOFALSE"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                if(not registers[offset(op1)]):
+                    self.ip = op2
             elif(quadruple.opCode == "ICONST"):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
                 registers[offset(op2)] = op1
+            elif(quadruple.opCode == "=="):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] == registers[offset(op2)]
             elif(quadruple.opCode == "="):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
@@ -96,7 +110,7 @@ class RVM (object):
                 print("ERROR EN EJECUCION: Metodo " + op1 + " no regreso nada...")
                 #TODO throw exception
             else:
-                print("Cuadruplo no reconocido")
+                print("Cuadruplo no reconocido: " + quadruple.opCode)
                 
 
 

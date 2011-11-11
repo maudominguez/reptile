@@ -21,6 +21,11 @@ class QuadruplesList
         return quadruplesList.Count;
     }
 
+    public Quadruple getLastQuadruple()
+    {
+        return quadruplesList.ElementAt(quadruplesList.Count - 1);
+    }
+
     public void addICONST(string intConstant, string tempAddress)
     {
         quadruplesList.AddLast(new Quadruple("ICONST", intConstant, tempAddress));
@@ -123,6 +128,16 @@ class QuadruplesList
         quadruplesList.AddLast(new Quadruple("GOSUBVOID", method));
     }
 
+    public void addGOTOFALSE(string condition, string quadruple)
+    {
+        quadruplesList.AddLast(new Quadruple("GOTOFALSE", condition, quadruple));
+    }
+
+    public void addGOTO(string quadruple)
+    {
+        quadruplesList.AddLast(new Quadruple("GOTO", quadruple));
+    }
+
     public void addHALT()
     {
         quadruplesList.AddLast(new Quadruple("HALT"));
@@ -135,6 +150,20 @@ class QuadruplesList
         foreach (Quadruple quadruple in quadruplesList)
         {
             //res.Append(countQuadruple + " ");
+            countQuadruple++;
+            res.Append(quadruple);
+            res.Append("\n");
+        }
+        return res.ToString();
+    }
+
+    public string ToStringWithQuadrupleNumbers()
+    {
+        StringBuilder res = new StringBuilder();
+        int countQuadruple = 0;
+        foreach (Quadruple quadruple in quadruplesList)
+        {
+            res.Append(countQuadruple + " ");
             countQuadruple++;
             res.Append(quadruple);
             res.Append("\n");
