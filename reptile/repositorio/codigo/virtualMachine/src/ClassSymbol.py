@@ -3,6 +3,9 @@ class ClassSymbol (object):
         self.name = name
         self.instVarsTypesList = []
 
+    def countInstVars(self):
+        return len(self.instVarsTypesList)
+
     def addInstanceVarType(self, type):
         self.instVarsTypesList.append(type)
 

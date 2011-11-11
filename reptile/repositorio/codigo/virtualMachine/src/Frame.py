@@ -1,4 +1,4 @@
-class StackFrame (object):
+class Frame (object):
     def __init__(self, methodSymbol, returnAddress):
         self.methodSymbol = methodSymbol
         self.returnAddress = returnAddress

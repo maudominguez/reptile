@@ -1,20 +1,75 @@
+import RVM
 from ClassSymbol import *
 from MethodSymbol import *
-from StackFrame import *
+from Frame import *
 from Quadruple import *
+from Quadruple import *
+from ObjectSpace import *
+from CallStack import *
 
 class RVM (object):
+
+    mainMethodName = "Main@main"
+    mainClassName = "Main"
+    firstRegisterInFrames = 10000
 
     def __init__(self):
         self.classesDirectory = {}
         self.methodsDirectory = {}
         self.code = [] #list of quadruples
-        self.startQuadruple = -1
-        self.framesStack = [] #stack of frames
-        self.framePointer = -1 #idx of current frame in framesStack
+        self.ip = -1    #qudruple pointer
+        self.callStack = CallStack() #stack of frames
+        self.mainClass = None
+        self.mainMethod = None
 
     def cpu(self):
         print("in cpu")
+        
+        """
+        the first main frame should return to the HALT inst, which is the last
+        quadruple
+        """
+        HALTinstIdx = len(self.code) - 1
+        mainMethodFrame = Frame(self.mainMethod, HALTinstIdx)
+        mainObject = ObjectSpace(self.mainClass.countInstVars())
+        mainMethodFrame.registers[0] = mainObject
+        self.callStack.push(mainMethodFrame)
+
+        quadruple = self.code[self.ip]
+        while (quadruple.opCode != "HALT" and self.ip < len(self.code)):
+            registers = self.callStack.peek().registers  #shortcut to current stack registers
+            self.ip = self.ip + 1 #almost all the instructions should increment the ip
+                        #if not, the instruction should take care of it
+            if(quadruple.opCode == "+"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] + registers[offset(op2)]
+            elif(quadruple.opCode == "ICONST"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                registers[offset(op2)] = op1
+            elif(quadruple.opCode == "="):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                registers[offset(op2)] = registers[offset(op1)]
+                print("result = " + str(registers[offset(op2)]))
+            elif(quadruple.opCode == "RETURNVOID"):
+                popedFrame = self.callStack.pop()
+                self.ip = popedFrame.returnAddress
+
+
+            quadruple = self.code[self.ip]
+                
+
+
+            
+            #update self.ip on the inst if necessary
+            #manage the callstack if necessary
+
+        print("HALTED!")
+
+        
         
         
 
@@ -35,7 +90,7 @@ class RVM (object):
 
     def loadDirectoriesFromFile(self, inFile):
        
-        self.startQuadruple = int(inFile.readline())
+        self.ip = int(inFile.readline())
         nClasses = int(inFile.readline())
 
         for iClass in range(nClasses):
@@ -64,6 +119,8 @@ class RVM (object):
                     methodSymbol.addLocalVarType(type)
 
                 self.methodsDirectory[methodSymbol.name] = methodSymbol
+        self.mainClass = self.classesDirectory[RVM.mainClassName]
+        self.mainMethod = self.methodsDirectory[RVM.mainMethodName]
 
     def printCode(self):
         for quadruple in self.code:
@@ -83,6 +140,9 @@ class RVM (object):
         self.loadQuadruplesFromFile(inFile)
         inFile.close()
 
+def offset(address):
+        return address - RVM.firstRegisterInFrames
+
 
 def main():
     virtualMachine = RVM()
@@ -90,5 +150,7 @@ def main():
     virtualMachine.printClassesDirectory()
     virtualMachine.printMethodsDirectory()
     virtualMachine.printCode()
+
+    virtualMachine.cpu()
 
 main()
