@@ -13,6 +13,7 @@ tokens
 @header
 {
 	using System;
+	using System.IO;
 }
 
 @rulecatch {
@@ -316,8 +317,11 @@ classMain
 		
 		directory.printDirectory(); directory.printTypesDirectory(); printQuadruplesList();
 		
-		//Console.WriteLine(directory.formattedSymbolTable());
-		System.IO.File.WriteAllText(@"C:\dev\reptile\reptile\repositorio\codigo\rvm\code.txt", directory.formattedSymbolTable());
+		
+		string outputFile = "C:\\dev\\reptile\\reptile\\repositorio\\codigo\\virtualMachine\\src\\code.txt";
+		System.IO.File.WriteAllText(@outputFile, directory.formattedSymbolTable() + quadruplesList.countQuadruples() + "\n" + quadruplesList.ToString());
+
+
 		};
 
 classDecl
@@ -370,7 +374,7 @@ methodDeclaration
 	registrarMetodo(tipoRetorno, $ID.text);
 	method = (MethodSymbol)actualScope;
 	} 
-	'(' formalParameters? ')' //TODO agregaral metodo cual fue el numero total de variables
+	'(' formalParameters? ')'
 	'{' {method.firstQuadruple = quadruplesList.nextNumberOfQuadruple();} vars? someStatements '}' 
 	
 	{

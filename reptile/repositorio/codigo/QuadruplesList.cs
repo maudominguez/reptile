@@ -16,6 +16,11 @@ class QuadruplesList
         return quadruplesList.Count();
     }
 
+    public int countQuadruples()
+    {
+        return quadruplesList.Count;
+    }
+
     public void addICONST(string intConstant, string tempAddress)
     {
         quadruplesList.AddLast(new Quadruple("ICONST", intConstant, tempAddress));
@@ -129,7 +134,7 @@ class QuadruplesList
         int countQuadruple = 0;
         foreach (Quadruple quadruple in quadruplesList)
         {
-            res.Append(countQuadruple + " ");
+            //res.Append(countQuadruple + " ");
             countQuadruple++;
             res.Append(quadruple);
             res.Append("\n");

@@ -1,0 +1,105 @@
+32
+13
+int
+0
+0
+char
+0
+0
+double
+0
+0
+bool
+0
+0
+IntVector
+0
+0
+CharVector
+0
+0
+DoubleVector
+0
+0
+void
+0
+0
+Main
+2
+int char 
+4
+Main@metodo
+12
+0
+Main@metodo3
+1
+0
+Main@metodo2
+8
+2
+3
+int
+ref
+Main@main
+3
+1
+1
+int
+NodoAbuelo
+1
+int 
+0
+NodoPadre
+4
+int ref ref int 
+0
+Nodo
+6
+int ref ref int int ref 
+0
+X
+0
+1
+X@saca
+3
+2
+1
+ref
+ref
+36
+SHOULD_RETURN_SOMETHING_ERROR X@saca  
+ICONST 4 10002 
+ICONST 3 10003 
++ 10002 10003 10004
+ERA Main@metodo  
+PARAM 10000 0 
+PARAM 10004 1 
+GOSUB Main@metodo 10005 
+ICONST 5 10006 
+* 10005 10006 10007
+ICONST 2 10008 
+ERA Main@metodo  
+PARAM 10000 0 
+PARAM 10008 1 
+GOSUB Main@metodo 10009 
++ 10007 10009 10010
+ERA Main@metodo  
+PARAM 10000 0 
+PARAM 10010 1 
+GOSUB Main@metodo 10011 
+RETURN 10011  
+SHOULD_RETURN_SOMETHING_ERROR Main@metodo  
+RETURNVOID   
+RETURNVOID   
+ICONST 4 10005 
+ICONST 3 10006 
++ 10005 10006 10007
+= 10007 10003 
+ERA Main@metodo3  
+PARAM 10000 0 
+GOSUBVOID Main@metodo3  
+SHOULD_RETURN_SOMETHING_ERROR Main@metodo2  
+ICONST 5 10002 
+= 10002 10001 
+RETURNVOID   
+HALT   
