@@ -73,6 +73,7 @@ public class SymbolTable
                 int totalOfVars = methodSymbol.countTotalOfVariables();
                 int numberOfLocalVars = methodSymbol.getLocalVariablesList().Count;
                 int registerOfFirstLocal = methodSymbol.registerOfFirstLocal();
+                res.Append(methodSymbol.firstQuadruple + "\n");
                 res.Append(totalOfVars + "\n");    //total, includes params, locals and temps
                 res.Append(numberOfLocalVars + "\n");  //number of local vars
                 if (numberOfLocalVars > 0)

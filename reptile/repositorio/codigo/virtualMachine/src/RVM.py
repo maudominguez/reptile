@@ -36,15 +36,17 @@ class RVM (object):
         self.callStack.push(mainMethodFrame)
 
         quadruple = self.code[self.ip]
+        toBeInvokedFrame = None
         while (quadruple.opCode != "HALT" and self.ip < len(self.code)):
             registers = self.callStack.peek().registers  #shortcut to current stack registers
             self.ip = self.ip + 1 #almost all the instructions should increment the ip
-                        #if not, the instruction should take care of it
+                                #if not, the instruction should take care of it
             if(quadruple.opCode == "+"):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
                 op3 = int(quadruple.op3)
                 registers[offset(op3)] = registers[offset(op1)] + registers[offset(op2)]
+                #print("resultado de suma = " + str(registers[offset(op3)]))
             elif(quadruple.opCode == "ICONST"):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
@@ -54,9 +56,48 @@ class RVM (object):
                 op2 = int(quadruple.op2)
                 registers[offset(op2)] = registers[offset(op1)]
                 print("result = " + str(registers[offset(op2)]))
+            elif(quadruple.opCode == "ERA"):
+                op1 = quadruple.op1
+                methodToBeInvoked = self.methodsDirectory[op1]
+                toBeInvokedFrame = Frame(methodToBeInvoked, -1) #TODO en GOSUB y GOSUBVOID ponerle al frame invocado el return address, aqui le
+                                                                #voy a dejar un -1 para indicar que esta pendiente
+            elif(quadruple.opCode == "PARAM"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                toBeInvokedFrame.registers[op2] = registers[offset(op1)]
+            elif(quadruple.opCode == "GOSUB"):
+                op1 = quadruple.op1
+                op2 = int(quadruple.op2)
+                invokedMethodSymbol = self.methodsDirectory[op1]
+                callerFrame = self.callStack.peek()
+                callerFrame.tempReturned = op2  #register that will be used to store the value that invokedFrame will return. no offseted yet
+                toBeInvokedFrame.returnAddress = self.ip
+                self.callStack.push(toBeInvokedFrame)
+                self.ip = invokedMethodSymbol.firstQuadrupleIdx
+            elif(quadruple.opCode == "GOSUBVOID"):
+                op1 = quadruple.op1
+                invokedMethodSymbol = self.methodsDirectory[op1]
+                callerFrame = self.callStack.peek()
+                toBeInvokedFrame.returnAddress = self.ip
+                self.callStack.push(toBeInvokedFrame)
+                self.ip = invokedMethodSymbol.firstQuadrupleIdx
+            elif(quadruple.opCode == "RETURN"):
+                op1 = int(quadruple.op1)
+                returnValue = registers[offset(op1)]
+                popedFrame = self.callStack.pop()
+                callerFrame = self.callStack.peek()
+                callerFrame.registers[offset(callerFrame.tempReturned)] = returnValue
+                self.ip = popedFrame.returnAddress
             elif(quadruple.opCode == "RETURNVOID"):
                 popedFrame = self.callStack.pop()
                 self.ip = popedFrame.returnAddress
+            elif(quadruple.opCode == "SHOULD_RETURN_SOMETHING_ERROR"):
+                op1 = quadruple.op1
+                print("ERROR EN EJECUCION: Metodo " + op1 + " no regreso nada...")
+                #TODO throw exception
+            else:
+                print("Cuadruplo no reconocido")
+                
 
 
             quadruple = self.code[self.ip]
@@ -106,10 +147,10 @@ class RVM (object):
             nMethods = int(inFile.readline().rstrip())
             for iMethod in range(nMethods):
                 methodName = inFile.readline().rstrip()
-
+                firstQuadrupleIdx = int(inFile.readline().rstrip())
                 totalOfVars = int(inFile.readline().rstrip())
                 numberOfLocalVars = int(inFile.readline().rstrip())
-                methodSymbol = MethodSymbol(methodName, totalOfVars, numberOfLocalVars)
+                methodSymbol = MethodSymbol(methodName, firstQuadrupleIdx, totalOfVars, numberOfLocalVars)
                 if(numberOfLocalVars > 0):
                     registerOfTheFirstLocal = int(inFile.readline().rstrip())
                     methodSymbol.registerOfTheFirstLocal = registerOfTheFirstLocal
@@ -142,7 +183,6 @@ class RVM (object):
 
 def offset(address):
         return address - RVM.firstRegisterInFrames
-
 
 def main():
     virtualMachine = RVM()
