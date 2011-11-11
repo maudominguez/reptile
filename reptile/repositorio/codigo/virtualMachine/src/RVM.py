@@ -56,6 +56,9 @@ class RVM (object):
                 op2 = int(quadruple.op2)
                 if(not registers[offset(op1)]):
                     self.ip = op2
+            elif(quadruple.opCode == "GOTO"):
+                op1 = int(quadruple.op1)
+                self.ip = op1
             elif(quadruple.opCode == "ICONST"):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
@@ -73,8 +76,8 @@ class RVM (object):
             elif(quadruple.opCode == "ERA"):
                 op1 = quadruple.op1
                 methodToBeInvoked = self.methodsDirectory[op1]
-                toBeInvokedFrame = Frame(methodToBeInvoked, -1) #TODO en GOSUB y GOSUBVOID ponerle al frame invocado el return address, aqui le
-                                                                #voy a dejar un -1 para indicar que esta pendiente
+                toBeInvokedFrame = Frame(methodToBeInvoked, -1) #the return address of the invokedFrame should be set in the GOSUB/GOSUBVOID.
+                                                                #here we leave it pending with a -1
             elif(quadruple.opCode == "PARAM"):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
