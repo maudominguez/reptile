@@ -785,9 +785,32 @@ factor
 				quadruplesList.addGETVECTORELEM(temp.address.ToString(), arr.address.ToString(), index.address.ToString());
 			}
 			}
-		| INT	{pushICONST($INT.text);}	//int constant
-		| CHAR	{pushCCONST($CHAR.text);}	//char constant
-		| DOUBLE {pushDCONST($DOUBLE.text);}	//double constant
+		| INT	
+		{
+		try {
+			int intConst = int.Parse($INT.text);
+		}
+		catch(Exception e) {
+			MethodSymbol methodSymbol = (MethodSymbol)actualScope;
+			string msg = "Error en " + methodSymbol.fullyQualifiedName() + ". Constante entera es demasiado grande o pequena para un int: " + $INT.text;
+			manageException(new Exception(msg));
+		}
+		pushICONST($INT.text);
+		}
+		| CHAR	{pushCCONST($CHAR.text);}	
+		| DOUBLE 
+		{
+		try {
+			double doubleConst = double.Parse($DOUBLE.text);
+		}
+		catch(Exception e) {
+			MethodSymbol methodSymbol = (MethodSymbol)actualScope;
+			string msg = "Error en " + methodSymbol.fullyQualifiedName() + ". Constante double es demasiado grande o pequena para un double: " + $DOUBLE.text;
+			manageException(new Exception(msg));
+		}
+		
+		pushDCONST($DOUBLE.text);
+		}
 		| '('{pOperadores.Push("(");} expression ')' {pOperadores.Pop();}
 		;
 	

@@ -50,6 +50,46 @@ class RVM (object):
                 op2 = int(quadruple.op2)
                 op3 = int(quadruple.op3)
                 registers[offset(op3)] = registers[offset(op1)] - registers[offset(op2)]
+            elif(quadruple.opCode == "*"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] * registers[offset(op2)]
+            elif(quadruple.opCode == "/"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] / registers[offset(op2)]
+            elif(quadruple.opCode == "or"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] or registers[offset(op2)]
+            elif(quadruple.opCode == "=="):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] == registers[offset(op2)]
+            elif(quadruple.opCode == ">="):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] >= registers[offset(op2)]
+            elif(quadruple.opCode == ">"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] > registers[offset(op2)]
+            elif(quadruple.opCode == "<="):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] <= registers[offset(op2)]
+            elif(quadruple.opCode == "<"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] < registers[offset(op2)]
             elif(quadruple.opCode == "PRINTLINE"):
                 op1 = int(quadruple.op1)
                 print(str(registers[offset(op1)]))
@@ -65,15 +105,14 @@ class RVM (object):
                 op1 = quadruple.op1
                 op2 = int(quadruple.op2)
                 registers[offset(op2)] = chr(ord(op1))
+            elif(quadruple.opCode == "DCONST"):
+                op1 = float(quadruple.op1)
+                op2 = int(quadruple.op2)
+                registers[offset(op2)] = op1
             elif(quadruple.opCode == "ICONST"):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
                 registers[offset(op2)] = op1
-            elif(quadruple.opCode == "=="):
-                op1 = int(quadruple.op1)
-                op2 = int(quadruple.op2)
-                op3 = int(quadruple.op3)
-                registers[offset(op3)] = registers[offset(op1)] == registers[offset(op2)]
             elif(quadruple.opCode == "="):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)

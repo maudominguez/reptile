@@ -100,6 +100,10 @@ public class SymbolTable
     public ClassSymbol resultType(ClassSymbol left, ClassSymbol right, string op)
     {
         ClassSymbol resultType = findType(voidName);
+        if(left.name.Equals(voidName) || right.name.Equals(voidName)) 
+        {
+            return resultType;
+        }
 
         if(isAndOrOperator(op)) //and, or
         {
@@ -110,9 +114,16 @@ public class SymbolTable
         }
         else if(isEqOrDifOperator(op))  // ==, !=
         {
-            if(left.name.Equals(right.name))
+            if(SymbolTable.isPrimitiveType(left.name) || SymbolTable.isPrimitiveType(right.name))
             {
-                resultType = findType(boolName);
+                if (validAssignment(left, right) || validAssignment(right, left))
+                {
+                    resultType = findType(boolName);
+                }
+            }
+            else
+            {
+                resultType = findType(boolName);    //reference types can always be compared
             }
         }
         else if (isArithmeticOperator(op))  //+, -, *, /

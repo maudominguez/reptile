@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.4 C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g 2011-11-11 10:06:52
+// $ANTLR 3.4 C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g 2011-11-11 15:36:45
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -4111,49 +4111,70 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				{
 				DebugLocation(788, 5);
 				INT14=(IToken)Match(input,INT,Follow._INT_in_factor1348); 
-				DebugLocation(788, 9);
-				pushICONST((INT14!=null?INT14.Text:null));
+				DebugLocation(789, 3);
+
+						try {
+							int intConst = int.Parse((INT14!=null?INT14.Text:null));
+						}
+						catch(Exception e) {
+							MethodSymbol methodSymbol = (MethodSymbol)actualScope;
+							string msg = "Error en " + methodSymbol.fullyQualifiedName() + ". Constante entera es demasiado grande o pequena para un int: " + (INT14!=null?INT14.Text:null);
+							manageException(new Exception(msg));
+						}
+						pushICONST((INT14!=null?INT14.Text:null));
+						
 
 				}
 				break;
 			case 7:
 				DebugEnterAlt(7);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:789:5: CHAR
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:800:5: CHAR
 				{
-				DebugLocation(789, 5);
-				CHAR15=(IToken)Match(input,CHAR,Follow._CHAR_in_factor1357); 
-				DebugLocation(789, 10);
+				DebugLocation(800, 5);
+				CHAR15=(IToken)Match(input,CHAR,Follow._CHAR_in_factor1359); 
+				DebugLocation(800, 10);
 				pushCCONST((CHAR15!=null?CHAR15.Text:null));
 
 				}
 				break;
 			case 8:
 				DebugEnterAlt(8);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:790:5: DOUBLE
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:801:5: DOUBLE
 				{
-				DebugLocation(790, 5);
-				DOUBLE16=(IToken)Match(input,DOUBLE,Follow._DOUBLE_in_factor1366); 
-				DebugLocation(790, 12);
-				pushDCONST((DOUBLE16!=null?DOUBLE16.Text:null));
+				DebugLocation(801, 5);
+				DOUBLE16=(IToken)Match(input,DOUBLE,Follow._DOUBLE_in_factor1368); 
+				DebugLocation(802, 3);
+
+						try {
+							double doubleConst = double.Parse((DOUBLE16!=null?DOUBLE16.Text:null));
+						}
+						catch(Exception e) {
+							MethodSymbol methodSymbol = (MethodSymbol)actualScope;
+							string msg = "Error en " + methodSymbol.fullyQualifiedName() + ". Constante double es demasiado grande o pequena para un double: " + (DOUBLE16!=null?DOUBLE16.Text:null);
+							manageException(new Exception(msg));
+						}
+						
+						pushDCONST((DOUBLE16!=null?DOUBLE16.Text:null));
+						
 
 				}
 				break;
 			case 9:
 				DebugEnterAlt(9);
-				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:791:5: '(' expression ')'
+				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:814:5: '(' expression ')'
 				{
-				DebugLocation(791, 5);
-				Match(input,18,Follow._18_in_factor1375); 
-				DebugLocation(791, 8);
+				DebugLocation(814, 5);
+				Match(input,18,Follow._18_in_factor1379); 
+				DebugLocation(814, 8);
 				pOperadores.Push("(");
-				DebugLocation(791, 33);
-				PushFollow(Follow._expression_in_factor1378);
+				DebugLocation(814, 33);
+				PushFollow(Follow._expression_in_factor1382);
 				expression();
 				PopFollow();
 
-				DebugLocation(791, 44);
-				Match(input,19,Follow._19_in_factor1380); 
-				DebugLocation(791, 48);
+				DebugLocation(814, 44);
+				Match(input,19,Follow._19_in_factor1384); 
+				DebugLocation(814, 48);
 				pOperadores.Pop();
 
 				}
@@ -4172,7 +4193,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("factor", 30);
 			LeaveRule_factor();
 	    }
-	 	DebugLocation(792, 2);
+	 	DebugLocation(815, 2);
 		} finally { DebugExitRule(GrammarFileName, "factor"); }
 		return;
 
@@ -4186,7 +4207,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	protected virtual void LeaveRule_relOp() {}
 
 	// $ANTLR start "relOp"
-	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:794:1: relOp returns [string operador] : op= ( '==' | '!=' | '>' | '>=' | '<' | '<=' ) ;
+	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:817:1: relOp returns [string operador] : op= ( '==' | '!=' | '>' | '>=' | '<' | '<=' ) ;
 	[GrammarRule("relOp")]
 	private string relOp()
 	{
@@ -4199,14 +4220,14 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 	    IToken op = default(IToken);
 
 		try { DebugEnterRule(GrammarFileName, "relOp");
-		DebugLocation(794, 101);
+		DebugLocation(817, 101);
 		try
 		{
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:794:31: (op= ( '==' | '!=' | '>' | '>=' | '<' | '<=' ) )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:817:31: (op= ( '==' | '!=' | '>' | '>=' | '<' | '<=' ) )
 			DebugEnterAlt(1);
-			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:794:34: op= ( '==' | '!=' | '>' | '>=' | '<' | '<=' )
+			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:817:34: op= ( '==' | '!=' | '>' | '>=' | '<' | '<=' )
 			{
-			DebugLocation(794, 37);
+			DebugLocation(817, 37);
 
 			op=(IToken)input.LT(1);
 			if (input.LA(1)==17||(input.LA(1)>=28 && input.LA(1)<=29)||(input.LA(1)>=31 && input.LA(1)<=33))
@@ -4221,7 +4242,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 				throw mse;
 			}
 
-			DebugLocation(794, 79);
+			DebugLocation(817, 79);
 			operador = (op!=null?op.Text:null);
 
 			}
@@ -4238,7 +4259,7 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 			LeaveRule("relOp", 31);
 			LeaveRule_relOp();
 	    }
-	 	DebugLocation(794, 101);
+	 	DebugLocation(817, 101);
 		} finally { DebugExitRule(GrammarFileName, "relOp"); }
 		return operador;
 
@@ -4401,12 +4422,12 @@ public partial class ReptileParser : Antlr.Runtime.Parser
 		public static readonly BitSet _expression_in_factor1332 = new BitSet(new ulong[]{0x8000000000UL});
 		public static readonly BitSet _39_in_factor1334 = new BitSet(new ulong[]{0x2UL});
 		public static readonly BitSet _INT_in_factor1348 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _CHAR_in_factor1357 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _DOUBLE_in_factor1366 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _18_in_factor1375 = new BitSet(new ulong[]{0x400000000418A0UL});
-		public static readonly BitSet _expression_in_factor1378 = new BitSet(new ulong[]{0x80000UL});
-		public static readonly BitSet _19_in_factor1380 = new BitSet(new ulong[]{0x2UL});
-		public static readonly BitSet _set_in_relOp1401 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _CHAR_in_factor1359 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _DOUBLE_in_factor1368 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _18_in_factor1379 = new BitSet(new ulong[]{0x400000000418A0UL});
+		public static readonly BitSet _expression_in_factor1382 = new BitSet(new ulong[]{0x80000UL});
+		public static readonly BitSet _19_in_factor1384 = new BitSet(new ulong[]{0x2UL});
+		public static readonly BitSet _set_in_relOp1405 = new BitSet(new ulong[]{0x2UL});
 	}
 	#endregion Follow sets
 }
