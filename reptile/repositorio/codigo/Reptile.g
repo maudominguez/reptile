@@ -297,8 +297,12 @@ public void verifyMainMethodDefinedInMainClass() {
 		string errorMsg = "Debe definir al metodo void main() {..} en la clase Main";
 		manageException(new Exception(errorMsg));
 	}
-	else if(mainMethod.returnType.name != SymbolTable.voidName) {
+	if(mainMethod.returnType.name != SymbolTable.voidName) {
 		string errorMsg = "El tipo de retorno de main() {..} en la clase Main debe ser void";
+		manageException(new Exception(errorMsg));
+	}
+	if(mainMethod.countParameters() > 1) {
+		string errorMsg = "El metodo " + mainMethod.fullyQualifiedName() + " no puede recibir parametros.";
 		manageException(new Exception(errorMsg));
 	}
 }
@@ -312,7 +316,7 @@ public static void manageException(Exception e) {
 public program	:	{createDirectories(); defineMainClass();} classDecl* {actualScope = mainClass;} classMain;
 
 classMain
-	:	'class' 'Main' '{' vars? methods {quadruplesList.addHALT();} '}' 
+	:	'class' 'Main' '{' varDecl* methodDeclaration* {quadruplesList.addHALT();} '}' 
 		{
 		verifyMainMethodDefinedInMainClass();
 		
@@ -326,7 +330,7 @@ classMain
 		};
 
 classDecl
-    :   'class' clase = ID (superClass)? {registerClass($clase.text, $superClass.superClase);} '{' vars? methods? '}';
+    :   'class' clase = ID (superClass)? {registerClass($clase.text, $superClass.superClase);} '{' varDecl* methodDeclaration* '}';
 
 superClass returns[string superClase]:	'extends' ID {$superClase = $ID.text;};
 
@@ -376,7 +380,7 @@ methodDeclaration
 	method = (MethodSymbol)actualScope;
 	} 
 	'(' formalParameters? ')'
-	'{' {method.firstQuadruple = quadruplesList.nextNumberOfQuadruple();} vars? someStatements '}' 
+	'{' {method.firstQuadruple = quadruplesList.nextNumberOfQuadruple();} varDecl* someStatements '}' 
 	
 	{
 	if(method.returnsVoid()) {
@@ -409,7 +413,7 @@ scope {
 		|	while_inst
 		|	return_inst
 		|	read
-		|	printline
+		|	print
 		| ';'
 		);
 			
@@ -451,8 +455,8 @@ scope {
 		{
 		VariableSymbol right = pOperandos.Pop();
 		if(!directory.validAssignment($assignment::leftType, right.type)) {
-			manageException(new Exception("No se puede asignar " + right.name + " a " + $assignment::par2.name + " porque los tipos " + 
-						$assignment::leftType.name + " y " + right.type.name + " no son compatibles."));
+			manageException(new Exception("No se puede asignar " + right.name + " a " + $assignment::par2.name + " porque el tipo " + 
+						right.type.name + " no es asignable al tipo " + $assignment::leftType.name));
 		}
 		if($assignment::caso == 0) {	//ID = right
 				quadruplesList.addASSIGNMENT(right.address.ToString(), $assignment::par2.address.ToString());
@@ -491,7 +495,7 @@ designator
 			
 			$assignment::leftType = $assignment::par2.type;
 			} //objeto.variable
-		| 'this' '.' var = ID   
+		| 'this' '.' var = ID
 			{
 			$assignment::caso = 2;
 			verifyInstanceVariableDefinedInThis($var.text);
@@ -703,7 +707,12 @@ return_inst
 
 read	:	'read' '(' designator ')' ';';
 
-printline	:	'printline' '(' 
+print
+scope {
+	bool printline;
+}
+	:	('printline'{$print::printline = true;} | 'print' {$print::printline = false;}) '(' 
+		(
 		expression 
 		{
 		VariableSymbol varToPrint = pOperandos.Pop();
@@ -713,7 +722,7 @@ printline	:	'printline' '('
 					+ "solo puede imprimir primitivos. ";
 			manageException(new Exception(msg));
 		}
-		quadruplesList.addPRINTLINE(varToPrint.address.ToString());
+		quadruplesList.addPRINT(varToPrint.address.ToString());
 		}
 		(',' expression
 		{
@@ -724,11 +733,18 @@ printline	:	'printline' '('
 					+ "solo puede imprimir primitivos. ";
 			manageException(new Exception(msg));
 		}
-		quadruplesList.addPRINTLINE(varToPrint.address.ToString());
+		quadruplesList.addPRINT(varToPrint.address.ToString());
 		}
 		)*
+		)?
 		
-		')' ';';
+		')' ';'
+		{
+		if($print::printline) {
+			quadruplesList.addPRINTLINE();
+		}
+		}
+		;
 
 expression
 	:	{$statement::inExpression = true;}

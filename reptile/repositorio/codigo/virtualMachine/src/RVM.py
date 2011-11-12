@@ -1,3 +1,4 @@
+
 import RVM
 from ClassSymbol import *
 from MethodSymbol import *
@@ -25,12 +26,12 @@ class RVM (object):
     def cpu(self):
         
         """
-        the first main frame should return to the HALT inst, which is the last
+        the first main frame should return to the HALT instruction, which is the last
         quadruple
         """
         HALTinstIdx = len(self.code) - 1
         mainMethodFrame = Frame(self.mainMethod, HALTinstIdx)
-        mainObject = ObjectSpace(self.mainClass.countInstVars())
+        mainObject = ObjectSpace(self.mainClass)
         mainMethodFrame.registers[0] = mainObject
         self.callStack.push(mainMethodFrame)
 
@@ -40,6 +41,7 @@ class RVM (object):
             registers = self.callStack.peek().registers  #shortcut to current stack registers
             self.ip = self.ip + 1 #almost all the instructions should increment the ip
                                 #if not, the instruction should take care of it
+                
             if(quadruple.opCode == "+"):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
@@ -65,11 +67,21 @@ class RVM (object):
                 op2 = int(quadruple.op2)
                 op3 = int(quadruple.op3)
                 registers[offset(op3)] = registers[offset(op1)] or registers[offset(op2)]
+            elif(quadruple.opCode == "and"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] and registers[offset(op2)]
             elif(quadruple.opCode == "=="):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
                 op3 = int(quadruple.op3)
                 registers[offset(op3)] = registers[offset(op1)] == registers[offset(op2)]
+            elif(quadruple.opCode == "!="):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op3)] = registers[offset(op1)] != registers[offset(op2)]
             elif(quadruple.opCode == ">="):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
@@ -90,9 +102,11 @@ class RVM (object):
                 op2 = int(quadruple.op2)
                 op3 = int(quadruple.op3)
                 registers[offset(op3)] = registers[offset(op1)] < registers[offset(op2)]
-            elif(quadruple.opCode == "PRINTLINE"):
+            elif(quadruple.opCode == "PRINT"):
                 op1 = int(quadruple.op1)
-                print(str(registers[offset(op1)]))
+                print(str(registers[offset(op1)]), end = "")
+            elif(quadruple.opCode == "PRINTLINE"):
+                print()
             elif(quadruple.opCode == "GOTOFALSE"):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
@@ -132,7 +146,7 @@ class RVM (object):
                 op2 = int(quadruple.op2)
                 invokedMethodSymbol = self.methodsDirectory[op1]
                 callerFrame = self.callStack.peek()
-                callerFrame.tempReturned = op2  #register that will be used to store the value that invokedFrame will return. no offseted yet
+                callerFrame.tempReturned = op2  #register that will be used to store the value that invokedFrame will return. No offseted yet
                 toBeInvokedFrame.returnAddress = self.ip
                 self.callStack.push(toBeInvokedFrame)
                 self.ip = invokedMethodSymbol.firstQuadrupleIdx
@@ -157,6 +171,24 @@ class RVM (object):
                 op1 = quadruple.op1
                 print("ERROR EN EJECUCION: Metodo " + op1 + " no regreso nada...")
                 #TODO throw exception
+            elif(quadruple.opCode == "OBJECT"):
+                op1 = int(quadruple.op1)
+                op2 = quadruple.op2.strip()
+                clase = self.classesDirectory[op2]
+                obj = ObjectSpace(clase)
+                registers[offset(op1)] = obj
+                #TODO inicializar variables de instancia del obj
+                #hacer eso en el constructor de ObjectSpace
+            elif(quadruple.opCode == "PUTFIELD"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op2)].fields[op3] = registers[offset(op1)]
+            elif(quadruple.opCode == "GETFIELD"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                op3 = int(quadruple.op3)
+                registers[offset(op1)] = registers[offset(op2)].fields[op3]
             else:
                 print("Cuadruplo no reconocido: " + quadruple.opCode)
                 
@@ -180,7 +212,6 @@ class RVM (object):
             if(line.startswith("CCONST")):
                 start = line.find("'") + 1
                 end = line.rfind("'")
-                #print("ja = ", line[start:end])
                 quadruple = Quadruple("CCONST", line[start:end], line.split()[-1])
 
             else:
@@ -254,6 +285,7 @@ def offset(address):
 def main():
     #print("w = " + chr(ord("\n")))
     virtualMachine = RVM()
+        
     virtualMachine.loadCodeFile()
     #virtualMachine.printClassesDirectory()
     #virtualMachine.printMethodsDirectory()

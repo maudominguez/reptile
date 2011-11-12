@@ -29,6 +29,13 @@ public class MethodSymbol : Scope
         return memory.countVariables();
     }
 
+    //includes the implicit this parameter added by the compiler
+    //so at least it will always be one or more
+    public int countParameters() 
+    {
+        return parametros.Count;
+    }
+
     public LinkedList<VariableSymbol> getParametersList()
     {
         return parametros;

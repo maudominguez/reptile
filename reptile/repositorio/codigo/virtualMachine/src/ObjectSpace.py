@@ -1,4 +1,5 @@
 class ObjectSpace (object):
 
-    def __init__(self, nFields):
-        self.fields = [None] * nFields
+    def __init__(self, classSymbol):
+        self.classSymbol = classSymbol
+        self.fields = [None] * self.classSymbol.countInstVars()

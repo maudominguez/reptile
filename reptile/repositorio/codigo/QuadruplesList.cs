@@ -138,9 +138,14 @@ class QuadruplesList
         quadruplesList.AddLast(new Quadruple("GOTO", quadruple));
     }
 
-    public void addPRINTLINE(string varToPrint)
+    public void addPRINTLINE()
     {
-        quadruplesList.AddLast(new Quadruple("PRINTLINE", varToPrint));
+        quadruplesList.AddLast(new Quadruple("PRINTLINE"));
+    }
+
+    public void addPRINT(string varToPrint)
+    {
+        quadruplesList.AddLast(new Quadruple("PRINT", varToPrint));
     }
 
     public void addHALT()

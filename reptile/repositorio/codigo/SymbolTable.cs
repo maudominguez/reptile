@@ -156,11 +156,16 @@ public class SymbolTable
    
     public bool validAssignment(ClassSymbol left, ClassSymbol right)
     {
+        //not allowed to assign a void to anything nor to assign anything to a void
+        if (left.name.Equals(voidName) || right.name.Equals(voidName))
+        {
+            return false;
+        }
         if(left.name.Equals(doubleName))
         {
             return right.name.Equals(doubleName) || right.name.Equals(integerName);
         }
-        else if (left.isVectorType() || left.name.Equals(integerName) || left.name.Equals(charName))
+        else if (isPrimitiveType(left.name))
         {
             return left.name.Equals(right.name);
         }

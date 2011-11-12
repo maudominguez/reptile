@@ -54,6 +54,15 @@ public class ClassSymbol : ScopeWithMethods
         instanceVariablesList.AddLast(variableSymbol);
     }
 
+    public override void verifyVariableIsNotDefined(string variableName)
+    {
+        if (getVariableSymbol(variableName) != null)
+        {
+            ReptileParser.manageException(new Exception("Variable " + variableName + " ya declarada en la clase "
+                                        + name + " o en alguna super clase."));
+        }
+    }
+
     public LinkedList<VariableSymbol> getInstanceVariablesList()
     {
         return instanceVariablesList;
@@ -110,21 +119,6 @@ public class ClassSymbol : ScopeWithMethods
         return variableSymbol;
     }
 
-    public override void verifyVariableIsNotDefined(string variableName)
-    {
-        /*
-        if (superClass != null)
-        {
-            superClass.verifyVariableIsNotDefined(variableName);
-        }
-        */
-        if (variables.ContainsKey(variableName))
-        {
-            String errorMsg = "La variable " + variableName + " ya esta declarada en la clase " + name;
-            ReptileParser.manageException(new Exception(errorMsg));
-        }
-    }
-
     public bool isChildOf(ClassSymbol sup)
     {
         if(name == sup.name)
@@ -137,4 +131,6 @@ public class ClassSymbol : ScopeWithMethods
         }
         return superClass.isChildOf(sup);
     }
+
+
 }
