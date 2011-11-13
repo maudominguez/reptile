@@ -1,6 +1,5 @@
 
 import RVM
-import sys
 from ClassSymbol import *
 from MethodSymbol import *
 from Frame import *
@@ -154,7 +153,6 @@ class RVM (object):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
                 registers[offset(op2)] = registers[offset(op1)]
-                #print("asignacion = " + str(registers[offset(op2)]))
             elif(quadruple.opCode == "ERA"):
                 op1 = quadruple.op1
                 methodToBeInvoked = self.methodsDirectory[op1]
@@ -192,7 +190,7 @@ class RVM (object):
                 self.ip = popedFrame.returnAddress
             elif(quadruple.opCode == "SHOULD_RETURN_SOMETHING_ERROR"):
                 op1 = quadruple.op1
-                print("ERROR EN EJECUCION: Metodo " + op1 + " no regreso nada...")
+                exit("ERROR Inesperado: Metodo " + op1 + " no regreso nada...")
                 #TODO throw exception
             elif(quadruple.opCode == "OBJECT"):
                 op1 = int(quadruple.op1)
@@ -200,8 +198,6 @@ class RVM (object):
                 clase = self.classesDirectory[op2]
                 obj = ObjectSpace(clase)
                 registers[offset(op1)] = obj
-                #TODO inicializar variables de instancia del obj
-                #hacer eso en el constructor de ObjectSpace
             elif(quadruple.opCode == "PUTFIELD"):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
@@ -218,14 +214,6 @@ class RVM (object):
 
 
             quadruple = self.code[self.ip]
-                
-
-
-            
-            #update self.ip on the inst if necessary
-            #manage the callstack if necessary
-
-        #print("HALTED!")
 
 
     def loadQuadruplesFromFile(self, inFile):

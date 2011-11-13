@@ -16,4 +16,3 @@ class CallStack (object):
 
   def size (self):
     return (len(self.stack))
-

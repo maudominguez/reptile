@@ -15,3 +15,4 @@ class ClassSymbol (object):
         for type in self.instVarsTypesList:
                 res += type + " "
         return res
+    
