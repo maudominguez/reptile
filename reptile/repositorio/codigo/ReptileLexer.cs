@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// $ANTLR 3.4 C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g 2011-11-12 16:27:10
+// $ANTLR 3.4 C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g 2011-11-13 12:43:56
 
 // The variable 'variable' is assigned but its value is never used.
 #pragma warning disable 168, 219
@@ -28,6 +28,7 @@ using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
 public partial class ReptileLexer : Antlr.Runtime.Lexer
 {
 	public const int EOF=-1;
+	public const int T__16=16;
 	public const int T__17=17;
 	public const int T__18=18;
 	public const int T__19=19;
@@ -78,20 +79,32 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
 	public const int COMMENT=6;
 	public const int DOUBLE=7;
 	public const int ESC_SEQ=8;
-	public const int EXPONENT=9;
-	public const int HEX_DIGIT=10;
-	public const int ID=11;
-	public const int INT=12;
-	public const int OCTAL_ESC=13;
-	public const int UNICODE_ESC=14;
-	public const int VOID=15;
-	public const int WS=16;
+	public const int HEX_DIGIT=9;
+	public const int ID=10;
+	public const int INT=11;
+	public const int OCTAL_ESC=12;
+	public const int UNICODE_ESC=13;
+	public const int VOID=14;
+	public const int WS=15;
 
 
 	public override void ReportError(RecognitionException e)
 	{
+		//System.Console.WriteLine("PLACE: En ReportError");
+		//DisplayRecognitionError(this.TokenNames, e);	//ADDED
 		throw e;
 	}
+
+	/*
+	public override string GetErrorMessage(RecognitionException e, string[] tokenNames) {	//ADDED
+		System.Console.WriteLine("EN GETERRORMESSAGE1");
+		System.Console.WriteLine("La base me regresa " + base.GetErrorMessage(e, tokenNames));
+		System.Console.WriteLine("Y la linea es " + Line);
+		System.Console.WriteLine("Y la posicion del caracter es " + CharPositionInLine);
+		System.Console.WriteLine("En el caracter " + GetCharErrorDisplay(e.Character));
+		return "EN GETERRORMESSAGE LEXER";
+	}
+	*/
 
 
     // delegates
@@ -125,26 +138,26 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
 	protected virtual void LeaveRule(string ruleName, int ruleIndex) {}
 
     [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_T__17() {}
+    protected virtual void EnterRule_T__16() {}
     [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_T__17() {}
+    protected virtual void LeaveRule_T__16() {}
 
-    // $ANTLR start "T__17"
-    [GrammarRule("T__17")]
-    private void mT__17()
+    // $ANTLR start "T__16"
+    [GrammarRule("T__16")]
+    private void mT__16()
     {
-    	EnterRule_T__17();
-    	EnterRule("T__17", 1);
-    	TraceIn("T__17", 1);
+    	EnterRule_T__16();
+    	EnterRule("T__16", 1);
+    	TraceIn("T__16", 1);
     		try
     		{
-    		int _type = T__17;
+    		int _type = T__16;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:15:7: ( '!=' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:28:7: ( '!=' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:15:9: '!='
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:28:9: '!='
     		{
-    		DebugLocation(15, 9);
+    		DebugLocation(28, 9);
     		Match("!="); 
 
 
@@ -155,8 +168,45 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__17", 1);
-    		LeaveRule("T__17", 1);
+    		TraceOut("T__16", 1);
+    		LeaveRule("T__16", 1);
+    		LeaveRule_T__16();
+        }
+    }
+    // $ANTLR end "T__16"
+
+    [Conditional("ANTLR_TRACE")]
+    protected virtual void EnterRule_T__17() {}
+    [Conditional("ANTLR_TRACE")]
+    protected virtual void LeaveRule_T__17() {}
+
+    // $ANTLR start "T__17"
+    [GrammarRule("T__17")]
+    private void mT__17()
+    {
+    	EnterRule_T__17();
+    	EnterRule("T__17", 2);
+    	TraceIn("T__17", 2);
+    		try
+    		{
+    		int _type = T__17;
+    		int _channel = DefaultTokenChannel;
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:29:7: ( '(' )
+    		DebugEnterAlt(1);
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:29:9: '('
+    		{
+    		DebugLocation(29, 9);
+    		Match('('); 
+
+    		}
+
+    		state.type = _type;
+    		state.channel = _channel;
+    	}
+    	finally
+    	{
+    		TraceOut("T__17", 2);
+    		LeaveRule("T__17", 2);
     		LeaveRule_T__17();
         }
     }
@@ -172,18 +222,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__18()
     {
     	EnterRule_T__18();
-    	EnterRule("T__18", 2);
-    	TraceIn("T__18", 2);
+    	EnterRule("T__18", 3);
+    	TraceIn("T__18", 3);
     		try
     		{
     		int _type = T__18;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:16:7: ( '(' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:30:7: ( ')' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:16:9: '('
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:30:9: ')'
     		{
-    		DebugLocation(16, 9);
-    		Match('('); 
+    		DebugLocation(30, 9);
+    		Match(')'); 
 
     		}
 
@@ -192,8 +242,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__18", 2);
-    		LeaveRule("T__18", 2);
+    		TraceOut("T__18", 3);
+    		LeaveRule("T__18", 3);
     		LeaveRule_T__18();
         }
     }
@@ -209,18 +259,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__19()
     {
     	EnterRule_T__19();
-    	EnterRule("T__19", 3);
-    	TraceIn("T__19", 3);
+    	EnterRule("T__19", 4);
+    	TraceIn("T__19", 4);
     		try
     		{
     		int _type = T__19;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:17:7: ( ')' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:31:7: ( '*' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:17:9: ')'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:31:9: '*'
     		{
-    		DebugLocation(17, 9);
-    		Match(')'); 
+    		DebugLocation(31, 9);
+    		Match('*'); 
 
     		}
 
@@ -229,8 +279,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__19", 3);
-    		LeaveRule("T__19", 3);
+    		TraceOut("T__19", 4);
+    		LeaveRule("T__19", 4);
     		LeaveRule_T__19();
         }
     }
@@ -246,18 +296,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__20()
     {
     	EnterRule_T__20();
-    	EnterRule("T__20", 4);
-    	TraceIn("T__20", 4);
+    	EnterRule("T__20", 5);
+    	TraceIn("T__20", 5);
     		try
     		{
     		int _type = T__20;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:18:7: ( '*' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:32:7: ( '+' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:18:9: '*'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:32:9: '+'
     		{
-    		DebugLocation(18, 9);
-    		Match('*'); 
+    		DebugLocation(32, 9);
+    		Match('+'); 
 
     		}
 
@@ -266,8 +316,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__20", 4);
-    		LeaveRule("T__20", 4);
+    		TraceOut("T__20", 5);
+    		LeaveRule("T__20", 5);
     		LeaveRule_T__20();
         }
     }
@@ -283,18 +333,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__21()
     {
     	EnterRule_T__21();
-    	EnterRule("T__21", 5);
-    	TraceIn("T__21", 5);
+    	EnterRule("T__21", 6);
+    	TraceIn("T__21", 6);
     		try
     		{
     		int _type = T__21;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:19:7: ( '+' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:33:7: ( ',' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:19:9: '+'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:33:9: ','
     		{
-    		DebugLocation(19, 9);
-    		Match('+'); 
+    		DebugLocation(33, 9);
+    		Match(','); 
 
     		}
 
@@ -303,8 +353,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__21", 5);
-    		LeaveRule("T__21", 5);
+    		TraceOut("T__21", 6);
+    		LeaveRule("T__21", 6);
     		LeaveRule_T__21();
         }
     }
@@ -320,18 +370,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__22()
     {
     	EnterRule_T__22();
-    	EnterRule("T__22", 6);
-    	TraceIn("T__22", 6);
+    	EnterRule("T__22", 7);
+    	TraceIn("T__22", 7);
     		try
     		{
     		int _type = T__22;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:20:7: ( ',' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:34:7: ( '-' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:20:9: ','
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:34:9: '-'
     		{
-    		DebugLocation(20, 9);
-    		Match(','); 
+    		DebugLocation(34, 9);
+    		Match('-'); 
 
     		}
 
@@ -340,8 +390,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__22", 6);
-    		LeaveRule("T__22", 6);
+    		TraceOut("T__22", 7);
+    		LeaveRule("T__22", 7);
     		LeaveRule_T__22();
         }
     }
@@ -357,18 +407,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__23()
     {
     	EnterRule_T__23();
-    	EnterRule("T__23", 7);
-    	TraceIn("T__23", 7);
+    	EnterRule("T__23", 8);
+    	TraceIn("T__23", 8);
     		try
     		{
     		int _type = T__23;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:21:7: ( '-' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:35:7: ( '.' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:21:9: '-'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:35:9: '.'
     		{
-    		DebugLocation(21, 9);
-    		Match('-'); 
+    		DebugLocation(35, 9);
+    		Match('.'); 
 
     		}
 
@@ -377,8 +427,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__23", 7);
-    		LeaveRule("T__23", 7);
+    		TraceOut("T__23", 8);
+    		LeaveRule("T__23", 8);
     		LeaveRule_T__23();
         }
     }
@@ -394,18 +444,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__24()
     {
     	EnterRule_T__24();
-    	EnterRule("T__24", 8);
-    	TraceIn("T__24", 8);
+    	EnterRule("T__24", 9);
+    	TraceIn("T__24", 9);
     		try
     		{
     		int _type = T__24;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:22:7: ( '.' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:36:7: ( '/' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:22:9: '.'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:36:9: '/'
     		{
-    		DebugLocation(22, 9);
-    		Match('.'); 
+    		DebugLocation(36, 9);
+    		Match('/'); 
 
     		}
 
@@ -414,8 +464,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__24", 8);
-    		LeaveRule("T__24", 8);
+    		TraceOut("T__24", 9);
+    		LeaveRule("T__24", 9);
     		LeaveRule_T__24();
         }
     }
@@ -431,18 +481,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__25()
     {
     	EnterRule_T__25();
-    	EnterRule("T__25", 9);
-    	TraceIn("T__25", 9);
+    	EnterRule("T__25", 10);
+    	TraceIn("T__25", 10);
     		try
     		{
     		int _type = T__25;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:23:7: ( '/' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:37:7: ( ':' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:23:9: '/'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:37:9: ':'
     		{
-    		DebugLocation(23, 9);
-    		Match('/'); 
+    		DebugLocation(37, 9);
+    		Match(':'); 
 
     		}
 
@@ -451,8 +501,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__25", 9);
-    		LeaveRule("T__25", 9);
+    		TraceOut("T__25", 10);
+    		LeaveRule("T__25", 10);
     		LeaveRule_T__25();
         }
     }
@@ -468,18 +518,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__26()
     {
     	EnterRule_T__26();
-    	EnterRule("T__26", 10);
-    	TraceIn("T__26", 10);
+    	EnterRule("T__26", 11);
+    	TraceIn("T__26", 11);
     		try
     		{
     		int _type = T__26;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:24:7: ( ':' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:38:7: ( ';' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:24:9: ':'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:38:9: ';'
     		{
-    		DebugLocation(24, 9);
-    		Match(':'); 
+    		DebugLocation(38, 9);
+    		Match(';'); 
 
     		}
 
@@ -488,8 +538,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__26", 10);
-    		LeaveRule("T__26", 10);
+    		TraceOut("T__26", 11);
+    		LeaveRule("T__26", 11);
     		LeaveRule_T__26();
         }
     }
@@ -505,18 +555,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__27()
     {
     	EnterRule_T__27();
-    	EnterRule("T__27", 11);
-    	TraceIn("T__27", 11);
+    	EnterRule("T__27", 12);
+    	TraceIn("T__27", 12);
     		try
     		{
     		int _type = T__27;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:25:7: ( ';' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:39:7: ( '<' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:25:9: ';'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:39:9: '<'
     		{
-    		DebugLocation(25, 9);
-    		Match(';'); 
+    		DebugLocation(39, 9);
+    		Match('<'); 
 
     		}
 
@@ -525,8 +575,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__27", 11);
-    		LeaveRule("T__27", 11);
+    		TraceOut("T__27", 12);
+    		LeaveRule("T__27", 12);
     		LeaveRule_T__27();
         }
     }
@@ -542,18 +592,19 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__28()
     {
     	EnterRule_T__28();
-    	EnterRule("T__28", 12);
-    	TraceIn("T__28", 12);
+    	EnterRule("T__28", 13);
+    	TraceIn("T__28", 13);
     		try
     		{
     		int _type = T__28;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:26:7: ( '<' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:40:7: ( '<=' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:26:9: '<'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:40:9: '<='
     		{
-    		DebugLocation(26, 9);
-    		Match('<'); 
+    		DebugLocation(40, 9);
+    		Match("<="); 
+
 
     		}
 
@@ -562,8 +613,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__28", 12);
-    		LeaveRule("T__28", 12);
+    		TraceOut("T__28", 13);
+    		LeaveRule("T__28", 13);
     		LeaveRule_T__28();
         }
     }
@@ -579,19 +630,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__29()
     {
     	EnterRule_T__29();
-    	EnterRule("T__29", 13);
-    	TraceIn("T__29", 13);
+    	EnterRule("T__29", 14);
+    	TraceIn("T__29", 14);
     		try
     		{
     		int _type = T__29;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:27:7: ( '<=' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:41:7: ( '=' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:27:9: '<='
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:41:9: '='
     		{
-    		DebugLocation(27, 9);
-    		Match("<="); 
-
+    		DebugLocation(41, 9);
+    		Match('='); 
 
     		}
 
@@ -600,8 +650,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__29", 13);
-    		LeaveRule("T__29", 13);
+    		TraceOut("T__29", 14);
+    		LeaveRule("T__29", 14);
     		LeaveRule_T__29();
         }
     }
@@ -617,18 +667,19 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__30()
     {
     	EnterRule_T__30();
-    	EnterRule("T__30", 14);
-    	TraceIn("T__30", 14);
+    	EnterRule("T__30", 15);
+    	TraceIn("T__30", 15);
     		try
     		{
     		int _type = T__30;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:28:7: ( '=' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:42:7: ( '==' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:28:9: '='
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:42:9: '=='
     		{
-    		DebugLocation(28, 9);
-    		Match('='); 
+    		DebugLocation(42, 9);
+    		Match("=="); 
+
 
     		}
 
@@ -637,8 +688,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__30", 14);
-    		LeaveRule("T__30", 14);
+    		TraceOut("T__30", 15);
+    		LeaveRule("T__30", 15);
     		LeaveRule_T__30();
         }
     }
@@ -654,19 +705,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__31()
     {
     	EnterRule_T__31();
-    	EnterRule("T__31", 15);
-    	TraceIn("T__31", 15);
+    	EnterRule("T__31", 16);
+    	TraceIn("T__31", 16);
     		try
     		{
     		int _type = T__31;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:29:7: ( '==' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:43:7: ( '>' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:29:9: '=='
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:43:9: '>'
     		{
-    		DebugLocation(29, 9);
-    		Match("=="); 
-
+    		DebugLocation(43, 9);
+    		Match('>'); 
 
     		}
 
@@ -675,8 +725,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__31", 15);
-    		LeaveRule("T__31", 15);
+    		TraceOut("T__31", 16);
+    		LeaveRule("T__31", 16);
     		LeaveRule_T__31();
         }
     }
@@ -692,18 +742,19 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__32()
     {
     	EnterRule_T__32();
-    	EnterRule("T__32", 16);
-    	TraceIn("T__32", 16);
+    	EnterRule("T__32", 17);
+    	TraceIn("T__32", 17);
     		try
     		{
     		int _type = T__32;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:30:7: ( '>' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:44:7: ( '>=' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:30:9: '>'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:44:9: '>='
     		{
-    		DebugLocation(30, 9);
-    		Match('>'); 
+    		DebugLocation(44, 9);
+    		Match(">="); 
+
 
     		}
 
@@ -712,8 +763,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__32", 16);
-    		LeaveRule("T__32", 16);
+    		TraceOut("T__32", 17);
+    		LeaveRule("T__32", 17);
     		LeaveRule_T__32();
         }
     }
@@ -729,18 +780,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__33()
     {
     	EnterRule_T__33();
-    	EnterRule("T__33", 17);
-    	TraceIn("T__33", 17);
+    	EnterRule("T__33", 18);
+    	TraceIn("T__33", 18);
     		try
     		{
     		int _type = T__33;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:31:7: ( '>=' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:45:7: ( 'CharVector' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:31:9: '>='
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:45:9: 'CharVector'
     		{
-    		DebugLocation(31, 9);
-    		Match(">="); 
+    		DebugLocation(45, 9);
+    		Match("CharVector"); 
 
 
     		}
@@ -750,8 +801,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__33", 17);
-    		LeaveRule("T__33", 17);
+    		TraceOut("T__33", 18);
+    		LeaveRule("T__33", 18);
     		LeaveRule_T__33();
         }
     }
@@ -767,18 +818,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__34()
     {
     	EnterRule_T__34();
-    	EnterRule("T__34", 18);
-    	TraceIn("T__34", 18);
+    	EnterRule("T__34", 19);
+    	TraceIn("T__34", 19);
     		try
     		{
     		int _type = T__34;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:32:7: ( 'CharVector' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:46:7: ( 'DoubleVector' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:32:9: 'CharVector'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:46:9: 'DoubleVector'
     		{
-    		DebugLocation(32, 9);
-    		Match("CharVector"); 
+    		DebugLocation(46, 9);
+    		Match("DoubleVector"); 
 
 
     		}
@@ -788,8 +839,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__34", 18);
-    		LeaveRule("T__34", 18);
+    		TraceOut("T__34", 19);
+    		LeaveRule("T__34", 19);
     		LeaveRule_T__34();
         }
     }
@@ -805,18 +856,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__35()
     {
     	EnterRule_T__35();
-    	EnterRule("T__35", 19);
-    	TraceIn("T__35", 19);
+    	EnterRule("T__35", 20);
+    	TraceIn("T__35", 20);
     		try
     		{
     		int _type = T__35;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:33:7: ( 'DoubleVector' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:47:7: ( 'IntVector' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:33:9: 'DoubleVector'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:47:9: 'IntVector'
     		{
-    		DebugLocation(33, 9);
-    		Match("DoubleVector"); 
+    		DebugLocation(47, 9);
+    		Match("IntVector"); 
 
 
     		}
@@ -826,8 +877,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__35", 19);
-    		LeaveRule("T__35", 19);
+    		TraceOut("T__35", 20);
+    		LeaveRule("T__35", 20);
     		LeaveRule_T__35();
         }
     }
@@ -843,18 +894,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__36()
     {
     	EnterRule_T__36();
-    	EnterRule("T__36", 20);
-    	TraceIn("T__36", 20);
+    	EnterRule("T__36", 21);
+    	TraceIn("T__36", 21);
     		try
     		{
     		int _type = T__36;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:34:7: ( 'IntVector' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:48:7: ( 'Main' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:34:9: 'IntVector'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:48:9: 'Main'
     		{
-    		DebugLocation(34, 9);
-    		Match("IntVector"); 
+    		DebugLocation(48, 9);
+    		Match("Main"); 
 
 
     		}
@@ -864,8 +915,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__36", 20);
-    		LeaveRule("T__36", 20);
+    		TraceOut("T__36", 21);
+    		LeaveRule("T__36", 21);
     		LeaveRule_T__36();
         }
     }
@@ -881,19 +932,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__37()
     {
     	EnterRule_T__37();
-    	EnterRule("T__37", 21);
-    	TraceIn("T__37", 21);
+    	EnterRule("T__37", 22);
+    	TraceIn("T__37", 22);
     		try
     		{
     		int _type = T__37;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:35:7: ( 'Main' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:49:7: ( '[' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:35:9: 'Main'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:49:9: '['
     		{
-    		DebugLocation(35, 9);
-    		Match("Main"); 
-
+    		DebugLocation(49, 9);
+    		Match('['); 
 
     		}
 
@@ -902,8 +952,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__37", 21);
-    		LeaveRule("T__37", 21);
+    		TraceOut("T__37", 22);
+    		LeaveRule("T__37", 22);
     		LeaveRule_T__37();
         }
     }
@@ -919,18 +969,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__38()
     {
     	EnterRule_T__38();
-    	EnterRule("T__38", 22);
-    	TraceIn("T__38", 22);
+    	EnterRule("T__38", 23);
+    	TraceIn("T__38", 23);
     		try
     		{
     		int _type = T__38;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:36:7: ( '[' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:50:7: ( ']' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:36:9: '['
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:50:9: ']'
     		{
-    		DebugLocation(36, 9);
-    		Match('['); 
+    		DebugLocation(50, 9);
+    		Match(']'); 
 
     		}
 
@@ -939,8 +989,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__38", 22);
-    		LeaveRule("T__38", 22);
+    		TraceOut("T__38", 23);
+    		LeaveRule("T__38", 23);
     		LeaveRule_T__38();
         }
     }
@@ -956,18 +1006,19 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__39()
     {
     	EnterRule_T__39();
-    	EnterRule("T__39", 23);
-    	TraceIn("T__39", 23);
+    	EnterRule("T__39", 24);
+    	TraceIn("T__39", 24);
     		try
     		{
     		int _type = T__39;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:37:7: ( ']' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:51:7: ( 'and' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:37:9: ']'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:51:9: 'and'
     		{
-    		DebugLocation(37, 9);
-    		Match(']'); 
+    		DebugLocation(51, 9);
+    		Match("and"); 
+
 
     		}
 
@@ -976,8 +1027,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__39", 23);
-    		LeaveRule("T__39", 23);
+    		TraceOut("T__39", 24);
+    		LeaveRule("T__39", 24);
     		LeaveRule_T__39();
         }
     }
@@ -993,18 +1044,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__40()
     {
     	EnterRule_T__40();
-    	EnterRule("T__40", 24);
-    	TraceIn("T__40", 24);
+    	EnterRule("T__40", 25);
+    	TraceIn("T__40", 25);
     		try
     		{
     		int _type = T__40;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:38:7: ( 'and' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:52:7: ( 'char' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:38:9: 'and'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:52:9: 'char'
     		{
-    		DebugLocation(38, 9);
-    		Match("and"); 
+    		DebugLocation(52, 9);
+    		Match("char"); 
 
 
     		}
@@ -1014,8 +1065,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__40", 24);
-    		LeaveRule("T__40", 24);
+    		TraceOut("T__40", 25);
+    		LeaveRule("T__40", 25);
     		LeaveRule_T__40();
         }
     }
@@ -1031,18 +1082,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__41()
     {
     	EnterRule_T__41();
-    	EnterRule("T__41", 25);
-    	TraceIn("T__41", 25);
+    	EnterRule("T__41", 26);
+    	TraceIn("T__41", 26);
     		try
     		{
     		int _type = T__41;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:39:7: ( 'char' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:53:7: ( 'class' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:39:9: 'char'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:53:9: 'class'
     		{
-    		DebugLocation(39, 9);
-    		Match("char"); 
+    		DebugLocation(53, 9);
+    		Match("class"); 
 
 
     		}
@@ -1052,8 +1103,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__41", 25);
-    		LeaveRule("T__41", 25);
+    		TraceOut("T__41", 26);
+    		LeaveRule("T__41", 26);
     		LeaveRule_T__41();
         }
     }
@@ -1069,18 +1120,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__42()
     {
     	EnterRule_T__42();
-    	EnterRule("T__42", 26);
-    	TraceIn("T__42", 26);
+    	EnterRule("T__42", 27);
+    	TraceIn("T__42", 27);
     		try
     		{
     		int _type = T__42;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:40:7: ( 'class' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:54:7: ( 'double' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:40:9: 'class'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:54:9: 'double'
     		{
-    		DebugLocation(40, 9);
-    		Match("class"); 
+    		DebugLocation(54, 9);
+    		Match("double"); 
 
 
     		}
@@ -1090,8 +1141,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__42", 26);
-    		LeaveRule("T__42", 26);
+    		TraceOut("T__42", 27);
+    		LeaveRule("T__42", 27);
     		LeaveRule_T__42();
         }
     }
@@ -1107,18 +1158,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__43()
     {
     	EnterRule_T__43();
-    	EnterRule("T__43", 27);
-    	TraceIn("T__43", 27);
+    	EnterRule("T__43", 28);
+    	TraceIn("T__43", 28);
     		try
     		{
     		int _type = T__43;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:41:7: ( 'double' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:55:7: ( 'else' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:41:9: 'double'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:55:9: 'else'
     		{
-    		DebugLocation(41, 9);
-    		Match("double"); 
+    		DebugLocation(55, 9);
+    		Match("else"); 
 
 
     		}
@@ -1128,8 +1179,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__43", 27);
-    		LeaveRule("T__43", 27);
+    		TraceOut("T__43", 28);
+    		LeaveRule("T__43", 28);
     		LeaveRule_T__43();
         }
     }
@@ -1145,18 +1196,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__44()
     {
     	EnterRule_T__44();
-    	EnterRule("T__44", 28);
-    	TraceIn("T__44", 28);
+    	EnterRule("T__44", 29);
+    	TraceIn("T__44", 29);
     		try
     		{
     		int _type = T__44;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:42:7: ( 'else' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:56:7: ( 'extends' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:42:9: 'else'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:56:9: 'extends'
     		{
-    		DebugLocation(42, 9);
-    		Match("else"); 
+    		DebugLocation(56, 9);
+    		Match("extends"); 
 
 
     		}
@@ -1166,8 +1217,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__44", 28);
-    		LeaveRule("T__44", 28);
+    		TraceOut("T__44", 29);
+    		LeaveRule("T__44", 29);
     		LeaveRule_T__44();
         }
     }
@@ -1183,18 +1234,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__45()
     {
     	EnterRule_T__45();
-    	EnterRule("T__45", 29);
-    	TraceIn("T__45", 29);
+    	EnterRule("T__45", 30);
+    	TraceIn("T__45", 30);
     		try
     		{
     		int _type = T__45;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:43:7: ( 'extends' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:57:7: ( 'if' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:43:9: 'extends'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:57:9: 'if'
     		{
-    		DebugLocation(43, 9);
-    		Match("extends"); 
+    		DebugLocation(57, 9);
+    		Match("if"); 
 
 
     		}
@@ -1204,8 +1255,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__45", 29);
-    		LeaveRule("T__45", 29);
+    		TraceOut("T__45", 30);
+    		LeaveRule("T__45", 30);
     		LeaveRule_T__45();
         }
     }
@@ -1221,18 +1272,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__46()
     {
     	EnterRule_T__46();
-    	EnterRule("T__46", 30);
-    	TraceIn("T__46", 30);
+    	EnterRule("T__46", 31);
+    	TraceIn("T__46", 31);
     		try
     		{
     		int _type = T__46;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:44:7: ( 'if' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:58:7: ( 'int' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:44:9: 'if'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:58:9: 'int'
     		{
-    		DebugLocation(44, 9);
-    		Match("if"); 
+    		DebugLocation(58, 9);
+    		Match("int"); 
 
 
     		}
@@ -1242,8 +1293,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__46", 30);
-    		LeaveRule("T__46", 30);
+    		TraceOut("T__46", 31);
+    		LeaveRule("T__46", 31);
     		LeaveRule_T__46();
         }
     }
@@ -1259,18 +1310,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__47()
     {
     	EnterRule_T__47();
-    	EnterRule("T__47", 31);
-    	TraceIn("T__47", 31);
+    	EnterRule("T__47", 32);
+    	TraceIn("T__47", 32);
     		try
     		{
     		int _type = T__47;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:45:7: ( 'int' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:59:7: ( 'methods' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:45:9: 'int'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:59:9: 'methods'
     		{
-    		DebugLocation(45, 9);
-    		Match("int"); 
+    		DebugLocation(59, 9);
+    		Match("methods"); 
 
 
     		}
@@ -1280,8 +1331,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__47", 31);
-    		LeaveRule("T__47", 31);
+    		TraceOut("T__47", 32);
+    		LeaveRule("T__47", 32);
     		LeaveRule_T__47();
         }
     }
@@ -1297,18 +1348,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__48()
     {
     	EnterRule_T__48();
-    	EnterRule("T__48", 32);
-    	TraceIn("T__48", 32);
+    	EnterRule("T__48", 33);
+    	TraceIn("T__48", 33);
     		try
     		{
     		int _type = T__48;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:46:7: ( 'methods' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:60:7: ( 'new' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:46:9: 'methods'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:60:9: 'new'
     		{
-    		DebugLocation(46, 9);
-    		Match("methods"); 
+    		DebugLocation(60, 9);
+    		Match("new"); 
 
 
     		}
@@ -1318,8 +1369,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__48", 32);
-    		LeaveRule("T__48", 32);
+    		TraceOut("T__48", 33);
+    		LeaveRule("T__48", 33);
     		LeaveRule_T__48();
         }
     }
@@ -1335,18 +1386,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__49()
     {
     	EnterRule_T__49();
-    	EnterRule("T__49", 33);
-    	TraceIn("T__49", 33);
+    	EnterRule("T__49", 34);
+    	TraceIn("T__49", 34);
     		try
     		{
     		int _type = T__49;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:47:7: ( 'new' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:61:7: ( 'or' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:47:9: 'new'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:61:9: 'or'
     		{
-    		DebugLocation(47, 9);
-    		Match("new"); 
+    		DebugLocation(61, 9);
+    		Match("or"); 
 
 
     		}
@@ -1356,8 +1407,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__49", 33);
-    		LeaveRule("T__49", 33);
+    		TraceOut("T__49", 34);
+    		LeaveRule("T__49", 34);
     		LeaveRule_T__49();
         }
     }
@@ -1373,18 +1424,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__50()
     {
     	EnterRule_T__50();
-    	EnterRule("T__50", 34);
-    	TraceIn("T__50", 34);
+    	EnterRule("T__50", 35);
+    	TraceIn("T__50", 35);
     		try
     		{
     		int _type = T__50;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:48:7: ( 'or' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:62:7: ( 'print' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:48:9: 'or'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:62:9: 'print'
     		{
-    		DebugLocation(48, 9);
-    		Match("or"); 
+    		DebugLocation(62, 9);
+    		Match("print"); 
 
 
     		}
@@ -1394,8 +1445,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__50", 34);
-    		LeaveRule("T__50", 34);
+    		TraceOut("T__50", 35);
+    		LeaveRule("T__50", 35);
     		LeaveRule_T__50();
         }
     }
@@ -1411,18 +1462,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__51()
     {
     	EnterRule_T__51();
-    	EnterRule("T__51", 35);
-    	TraceIn("T__51", 35);
+    	EnterRule("T__51", 36);
+    	TraceIn("T__51", 36);
     		try
     		{
     		int _type = T__51;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:49:7: ( 'print' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:63:7: ( 'printline' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:49:9: 'print'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:63:9: 'printline'
     		{
-    		DebugLocation(49, 9);
-    		Match("print"); 
+    		DebugLocation(63, 9);
+    		Match("printline"); 
 
 
     		}
@@ -1432,8 +1483,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__51", 35);
-    		LeaveRule("T__51", 35);
+    		TraceOut("T__51", 36);
+    		LeaveRule("T__51", 36);
     		LeaveRule_T__51();
         }
     }
@@ -1449,18 +1500,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__52()
     {
     	EnterRule_T__52();
-    	EnterRule("T__52", 36);
-    	TraceIn("T__52", 36);
+    	EnterRule("T__52", 37);
+    	TraceIn("T__52", 37);
     		try
     		{
     		int _type = T__52;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:50:7: ( 'printline' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:64:7: ( 'program' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:50:9: 'printline'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:64:9: 'program'
     		{
-    		DebugLocation(50, 9);
-    		Match("printline"); 
+    		DebugLocation(64, 9);
+    		Match("program"); 
 
 
     		}
@@ -1470,8 +1521,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__52", 36);
-    		LeaveRule("T__52", 36);
+    		TraceOut("T__52", 37);
+    		LeaveRule("T__52", 37);
     		LeaveRule_T__52();
         }
     }
@@ -1487,17 +1538,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__53()
     {
     	EnterRule_T__53();
-    	EnterRule("T__53", 37);
-    	TraceIn("T__53", 37);
+    	EnterRule("T__53", 38);
+    	TraceIn("T__53", 38);
     		try
     		{
     		int _type = T__53;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:51:7: ( 'readchar' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:65:7: ( 'readchar' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:51:9: 'readchar'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:65:9: 'readchar'
     		{
-    		DebugLocation(51, 9);
+    		DebugLocation(65, 9);
     		Match("readchar"); 
 
 
@@ -1508,8 +1559,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__53", 37);
-    		LeaveRule("T__53", 37);
+    		TraceOut("T__53", 38);
+    		LeaveRule("T__53", 38);
     		LeaveRule_T__53();
         }
     }
@@ -1525,17 +1576,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__54()
     {
     	EnterRule_T__54();
-    	EnterRule("T__54", 38);
-    	TraceIn("T__54", 38);
+    	EnterRule("T__54", 39);
+    	TraceIn("T__54", 39);
     		try
     		{
     		int _type = T__54;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:52:7: ( 'readdouble' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:66:7: ( 'readdouble' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:52:9: 'readdouble'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:66:9: 'readdouble'
     		{
-    		DebugLocation(52, 9);
+    		DebugLocation(66, 9);
     		Match("readdouble"); 
 
 
@@ -1546,8 +1597,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__54", 38);
-    		LeaveRule("T__54", 38);
+    		TraceOut("T__54", 39);
+    		LeaveRule("T__54", 39);
     		LeaveRule_T__54();
         }
     }
@@ -1563,17 +1614,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__55()
     {
     	EnterRule_T__55();
-    	EnterRule("T__55", 39);
-    	TraceIn("T__55", 39);
+    	EnterRule("T__55", 40);
+    	TraceIn("T__55", 40);
     		try
     		{
     		int _type = T__55;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:53:7: ( 'readint' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:67:7: ( 'readint' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:53:9: 'readint'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:67:9: 'readint'
     		{
-    		DebugLocation(53, 9);
+    		DebugLocation(67, 9);
     		Match("readint"); 
 
 
@@ -1584,8 +1635,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__55", 39);
-    		LeaveRule("T__55", 39);
+    		TraceOut("T__55", 40);
+    		LeaveRule("T__55", 40);
     		LeaveRule_T__55();
         }
     }
@@ -1601,17 +1652,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__56()
     {
     	EnterRule_T__56();
-    	EnterRule("T__56", 40);
-    	TraceIn("T__56", 40);
+    	EnterRule("T__56", 41);
+    	TraceIn("T__56", 41);
     		try
     		{
     		int _type = T__56;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:54:7: ( 'return' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:68:7: ( 'return' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:54:9: 'return'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:68:9: 'return'
     		{
-    		DebugLocation(54, 9);
+    		DebugLocation(68, 9);
     		Match("return"); 
 
 
@@ -1622,8 +1673,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__56", 40);
-    		LeaveRule("T__56", 40);
+    		TraceOut("T__56", 41);
+    		LeaveRule("T__56", 41);
     		LeaveRule_T__56();
         }
     }
@@ -1639,17 +1690,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__57()
     {
     	EnterRule_T__57();
-    	EnterRule("T__57", 41);
-    	TraceIn("T__57", 41);
+    	EnterRule("T__57", 42);
+    	TraceIn("T__57", 42);
     		try
     		{
     		int _type = T__57;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:55:7: ( 'this' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:69:7: ( 'this' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:55:9: 'this'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:69:9: 'this'
     		{
-    		DebugLocation(55, 9);
+    		DebugLocation(69, 9);
     		Match("this"); 
 
 
@@ -1660,8 +1711,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__57", 41);
-    		LeaveRule("T__57", 41);
+    		TraceOut("T__57", 42);
+    		LeaveRule("T__57", 42);
     		LeaveRule_T__57();
         }
     }
@@ -1677,17 +1728,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__58()
     {
     	EnterRule_T__58();
-    	EnterRule("T__58", 42);
-    	TraceIn("T__58", 42);
+    	EnterRule("T__58", 43);
+    	TraceIn("T__58", 43);
     		try
     		{
     		int _type = T__58;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:56:7: ( 'vars' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:70:7: ( 'vars' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:56:9: 'vars'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:70:9: 'vars'
     		{
-    		DebugLocation(56, 9);
+    		DebugLocation(70, 9);
     		Match("vars"); 
 
 
@@ -1698,8 +1749,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__58", 42);
-    		LeaveRule("T__58", 42);
+    		TraceOut("T__58", 43);
+    		LeaveRule("T__58", 43);
     		LeaveRule_T__58();
         }
     }
@@ -1715,17 +1766,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__59()
     {
     	EnterRule_T__59();
-    	EnterRule("T__59", 43);
-    	TraceIn("T__59", 43);
+    	EnterRule("T__59", 44);
+    	TraceIn("T__59", 44);
     		try
     		{
     		int _type = T__59;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:57:7: ( 'while' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:71:7: ( 'while' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:57:9: 'while'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:71:9: 'while'
     		{
-    		DebugLocation(57, 9);
+    		DebugLocation(71, 9);
     		Match("while"); 
 
 
@@ -1736,8 +1787,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__59", 43);
-    		LeaveRule("T__59", 43);
+    		TraceOut("T__59", 44);
+    		LeaveRule("T__59", 44);
     		LeaveRule_T__59();
         }
     }
@@ -1753,17 +1804,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__60()
     {
     	EnterRule_T__60();
-    	EnterRule("T__60", 44);
-    	TraceIn("T__60", 44);
+    	EnterRule("T__60", 45);
+    	TraceIn("T__60", 45);
     		try
     		{
     		int _type = T__60;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:58:7: ( '{' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:72:7: ( '{' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:58:9: '{'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:72:9: '{'
     		{
-    		DebugLocation(58, 9);
+    		DebugLocation(72, 9);
     		Match('{'); 
 
     		}
@@ -1773,8 +1824,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__60", 44);
-    		LeaveRule("T__60", 44);
+    		TraceOut("T__60", 45);
+    		LeaveRule("T__60", 45);
     		LeaveRule_T__60();
         }
     }
@@ -1790,17 +1841,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mT__61()
     {
     	EnterRule_T__61();
-    	EnterRule("T__61", 45);
-    	TraceIn("T__61", 45);
+    	EnterRule("T__61", 46);
+    	TraceIn("T__61", 46);
     		try
     		{
     		int _type = T__61;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:59:7: ( '}' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:73:7: ( '}' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:59:9: '}'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:73:9: '}'
     		{
-    		DebugLocation(59, 9);
+    		DebugLocation(73, 9);
     		Match('}'); 
 
     		}
@@ -1810,8 +1861,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("T__61", 45);
-    		LeaveRule("T__61", 45);
+    		TraceOut("T__61", 46);
+    		LeaveRule("T__61", 46);
     		LeaveRule_T__61();
         }
     }
@@ -1827,17 +1878,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mBOOL()
     {
     	EnterRule_BOOL();
-    	EnterRule("BOOL", 46);
-    	TraceIn("BOOL", 46);
+    	EnterRule("BOOL", 47);
+    	TraceIn("BOOL", 47);
     		try
     		{
     		int _type = BOOL;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:880:6: ( 'bool' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:917:6: ( 'bool' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:880:8: 'bool'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:917:8: 'bool'
     		{
-    		DebugLocation(880, 8);
+    		DebugLocation(917, 8);
     		Match("bool"); 
 
 
@@ -1848,8 +1899,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("BOOL", 46);
-    		LeaveRule("BOOL", 46);
+    		TraceOut("BOOL", 47);
+    		LeaveRule("BOOL", 47);
     		LeaveRule_BOOL();
         }
     }
@@ -1865,17 +1916,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mVOID()
     {
     	EnterRule_VOID();
-    	EnterRule("VOID", 47);
-    	TraceIn("VOID", 47);
+    	EnterRule("VOID", 48);
+    	TraceIn("VOID", 48);
     		try
     		{
     		int _type = VOID;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:882:6: ( 'void' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:919:6: ( 'void' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:882:8: 'void'
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:919:8: 'void'
     		{
-    		DebugLocation(882, 8);
+    		DebugLocation(919, 8);
     		Match("void"); 
 
 
@@ -1886,8 +1937,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("VOID", 47);
-    		LeaveRule("VOID", 47);
+    		TraceOut("VOID", 48);
+    		LeaveRule("VOID", 48);
     		LeaveRule_VOID();
         }
     }
@@ -1903,17 +1954,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mID()
     {
     	EnterRule_ID();
-    	EnterRule("ID", 48);
-    	TraceIn("ID", 48);
+    	EnterRule("ID", 49);
+    	TraceIn("ID", 49);
     		try
     		{
     		int _type = ID;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:884:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )* )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:921:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )* )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:884:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:921:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
     		{
-    		DebugLocation(884, 7);
+    		DebugLocation(921, 7);
     		if ((input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z'))
     		{
     			input.Consume();
@@ -1926,8 +1977,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     			throw mse;
     		}
 
-    		DebugLocation(884, 31);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:884:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
+    		DebugLocation(921, 31);
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:921:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
     		try { DebugEnterSubRule(1);
     		while (true)
     		{
@@ -1948,7 +1999,7 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     				DebugEnterAlt(1);
     				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:
     				{
-    				DebugLocation(884, 31);
+    				DebugLocation(921, 31);
     				input.Consume();
 
 
@@ -1973,8 +2024,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("ID", 48);
-    		LeaveRule("ID", 48);
+    		TraceOut("ID", 49);
+    		LeaveRule("ID", 49);
     		LeaveRule_ID();
         }
     }
@@ -1990,18 +2041,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mINT()
     {
     	EnterRule_INT();
-    	EnterRule("INT", 49);
-    	TraceIn("INT", 49);
+    	EnterRule("INT", 50);
+    	TraceIn("INT", 50);
     		try
     		{
     		int _type = INT;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:887:6: ( ( '0' .. '9' )+ )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:924:6: ( ( '0' .. '9' )+ )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:887:8: ( '0' .. '9' )+
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:924:8: ( '0' .. '9' )+
     		{
-    		DebugLocation(887, 8);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:887:8: ( '0' .. '9' )+
+    		DebugLocation(924, 8);
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:924:8: ( '0' .. '9' )+
     		int cnt2=0;
     		try { DebugEnterSubRule(2);
     		while (true)
@@ -2023,7 +2074,7 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     				DebugEnterAlt(1);
     				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:
     				{
-    				DebugLocation(887, 8);
+    				DebugLocation(924, 8);
     				input.Consume();
 
 
@@ -2053,8 +2104,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("INT", 49);
-    		LeaveRule("INT", 49);
+    		TraceOut("INT", 50);
+    		LeaveRule("INT", 50);
     		LeaveRule_INT();
         }
     }
@@ -2070,13 +2121,13 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mDOUBLE()
     {
     	EnterRule_DOUBLE();
-    	EnterRule("DOUBLE", 50);
-    	TraceIn("DOUBLE", 50);
+    	EnterRule("DOUBLE", 51);
+    	TraceIn("DOUBLE", 51);
     		try
     		{
     		int _type = DOUBLE;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:890:5: ( INT '.' ( INT )* | '.' ( INT )+ )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:927:5: ( INT '.' ( INT )* | '.' ( INT )+ )
     		int alt5=2;
     		try { DebugEnterDecision(5, decisionCanBacktrack[5]);
     		int LA5_0 = input.LA(1);
@@ -2100,14 +2151,14 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     		{
     		case 1:
     			DebugEnterAlt(1);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:890:9: INT '.' ( INT )*
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:927:9: INT '.' ( INT )*
     			{
-    			DebugLocation(890, 9);
+    			DebugLocation(927, 9);
     			mINT(); 
-    			DebugLocation(890, 13);
+    			DebugLocation(927, 13);
     			Match('.'); 
-    			DebugLocation(890, 17);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:890:17: ( INT )*
+    			DebugLocation(927, 17);
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:927:17: ( INT )*
     			try { DebugEnterSubRule(3);
     			while (true)
     			{
@@ -2126,9 +2177,9 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     				{
     				case 1:
     					DebugEnterAlt(1);
-    					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:890:17: INT
+    					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:927:17: INT
     					{
-    					DebugLocation(890, 17);
+    					DebugLocation(927, 17);
     					mINT(); 
 
     					}
@@ -2149,12 +2200,12 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     			break;
     		case 2:
     			DebugEnterAlt(2);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:891:9: '.' ( INT )+
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:928:9: '.' ( INT )+
     			{
-    			DebugLocation(891, 9);
+    			DebugLocation(928, 9);
     			Match('.'); 
-    			DebugLocation(891, 13);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:891:13: ( INT )+
+    			DebugLocation(928, 13);
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:928:13: ( INT )+
     			int cnt4=0;
     			try { DebugEnterSubRule(4);
     			while (true)
@@ -2174,9 +2225,9 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     				{
     				case 1:
     					DebugEnterAlt(1);
-    					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:891:13: INT
+    					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:928:13: INT
     					{
-    					DebugLocation(891, 13);
+    					DebugLocation(928, 13);
     					mINT(); 
 
     					}
@@ -2207,8 +2258,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("DOUBLE", 50);
-    		LeaveRule("DOUBLE", 50);
+    		TraceOut("DOUBLE", 51);
+    		LeaveRule("DOUBLE", 51);
     		LeaveRule_DOUBLE();
         }
     }
@@ -2224,13 +2275,13 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mCOMMENT()
     {
     	EnterRule_COMMENT();
-    	EnterRule("COMMENT", 51);
-    	TraceIn("COMMENT", 51);
+    	EnterRule("COMMENT", 52);
+    	TraceIn("COMMENT", 52);
     		try
     		{
     		int _type = COMMENT;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:895:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' | '/*' ( options {greedy=false; } : . )* '*/' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:932:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' | '/*' ( options {greedy=false; } : . )* '*/' )
     		int alt9=2;
     		try { DebugEnterDecision(9, decisionCanBacktrack[9]);
     		int LA9_0 = input.LA(1);
@@ -2265,13 +2316,13 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     		{
     		case 1:
     			DebugEnterAlt(1);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:895:9: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:932:9: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
     			{
-    			DebugLocation(895, 9);
+    			DebugLocation(932, 9);
     			Match("//"); 
 
-    			DebugLocation(895, 14);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:895:14: (~ ( '\\n' | '\\r' ) )*
+    			DebugLocation(932, 14);
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:932:14: (~ ( '\\n' | '\\r' ) )*
     			try { DebugEnterSubRule(6);
     			while (true)
     			{
@@ -2292,7 +2343,7 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     					DebugEnterAlt(1);
     					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:
     					{
-    					DebugLocation(895, 14);
+    					DebugLocation(932, 14);
     					input.Consume();
 
 
@@ -2309,8 +2360,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
 
     			} finally { DebugExitSubRule(6); }
 
-    			DebugLocation(895, 28);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:895:28: ( '\\r' )?
+    			DebugLocation(932, 28);
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:932:28: ( '\\r' )?
     			int alt7=2;
     			try { DebugEnterSubRule(7);
     			try { DebugEnterDecision(7, decisionCanBacktrack[7]);
@@ -2325,9 +2376,9 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     			{
     			case 1:
     				DebugEnterAlt(1);
-    				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:895:28: '\\r'
+    				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:932:28: '\\r'
     				{
-    				DebugLocation(895, 28);
+    				DebugLocation(932, 28);
     				Match('\r'); 
 
     				}
@@ -2336,22 +2387,22 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     			}
     			} finally { DebugExitSubRule(7); }
 
-    			DebugLocation(895, 34);
+    			DebugLocation(932, 34);
     			Match('\n'); 
-    			DebugLocation(895, 39);
+    			DebugLocation(932, 39);
     			_channel=Hidden;
 
     			}
     			break;
     		case 2:
     			DebugEnterAlt(2);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:896:9: '/*' ( options {greedy=false; } : . )* '*/'
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:933:9: '/*' ( options {greedy=false; } : . )* '*/'
     			{
-    			DebugLocation(896, 9);
+    			DebugLocation(933, 9);
     			Match("/*"); 
 
-    			DebugLocation(896, 14);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:896:14: ( options {greedy=false; } : . )*
+    			DebugLocation(933, 14);
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:933:14: ( options {greedy=false; } : . )*
     			try { DebugEnterSubRule(8);
     			while (true)
     			{
@@ -2385,9 +2436,9 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     				{
     				case 1:
     					DebugEnterAlt(1);
-    					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:896:42: .
+    					// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:933:42: .
     					{
-    					DebugLocation(896, 42);
+    					DebugLocation(933, 42);
     					MatchAny(); 
 
     					}
@@ -2403,10 +2454,10 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
 
     			} finally { DebugExitSubRule(8); }
 
-    			DebugLocation(896, 47);
+    			DebugLocation(933, 47);
     			Match("*/"); 
 
-    			DebugLocation(896, 52);
+    			DebugLocation(933, 52);
     			_channel=Hidden;
 
     			}
@@ -2418,8 +2469,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("COMMENT", 51);
-    		LeaveRule("COMMENT", 51);
+    		TraceOut("COMMENT", 52);
+    		LeaveRule("COMMENT", 52);
     		LeaveRule_COMMENT();
         }
     }
@@ -2435,17 +2486,17 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mWS()
     {
     	EnterRule_WS();
-    	EnterRule("WS", 52);
-    	TraceIn("WS", 52);
+    	EnterRule("WS", 53);
+    	TraceIn("WS", 53);
     		try
     		{
     		int _type = WS;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:899:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:936:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:899:9: ( ' ' | '\\t' | '\\r' | '\\n' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:936:9: ( ' ' | '\\t' | '\\r' | '\\n' )
     		{
-    		DebugLocation(899, 9);
+    		DebugLocation(936, 9);
     		if ((input.LA(1)>='\t' && input.LA(1)<='\n')||input.LA(1)=='\r'||input.LA(1)==' ')
     		{
     			input.Consume();
@@ -2458,7 +2509,7 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     			throw mse;
     		}
 
-    		DebugLocation(903, 11);
+    		DebugLocation(940, 11);
     		_channel=Hidden;
 
     		}
@@ -2468,8 +2519,8 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("WS", 52);
-    		LeaveRule("WS", 52);
+    		TraceOut("WS", 53);
+    		LeaveRule("WS", 53);
     		LeaveRule_WS();
         }
     }
@@ -2485,20 +2536,20 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     private void mCHAR()
     {
     	EnterRule_CHAR();
-    	EnterRule("CHAR", 53);
-    	TraceIn("CHAR", 53);
+    	EnterRule("CHAR", 54);
+    	TraceIn("CHAR", 54);
     		try
     		{
     		int _type = CHAR;
     		int _channel = DefaultTokenChannel;
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:906:5: ( '\\'' ( ESC_SEQ |~ ( '\\'' | '\\\\' ) ) '\\'' )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:943:5: ( '\\'' ( ESC_SEQ |~ ( '\\'' | '\\\\' ) ) '\\'' )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:906:8: '\\'' ( ESC_SEQ |~ ( '\\'' | '\\\\' ) ) '\\''
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:943:8: '\\'' ( ESC_SEQ |~ ( '\\'' | '\\\\' ) ) '\\''
     		{
-    		DebugLocation(906, 8);
+    		DebugLocation(943, 8);
     		Match('\''); 
-    		DebugLocation(906, 13);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:906:13: ( ESC_SEQ |~ ( '\\'' | '\\\\' ) )
+    		DebugLocation(943, 13);
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:943:13: ( ESC_SEQ |~ ( '\\'' | '\\\\' ) )
     		int alt10=2;
     		try { DebugEnterSubRule(10);
     		try { DebugEnterDecision(10, decisionCanBacktrack[10]);
@@ -2523,18 +2574,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     		{
     		case 1:
     			DebugEnterAlt(1);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:906:15: ESC_SEQ
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:943:15: ESC_SEQ
     			{
-    			DebugLocation(906, 15);
+    			DebugLocation(943, 15);
     			mESC_SEQ(); 
 
     			}
     			break;
     		case 2:
     			DebugEnterAlt(2);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:906:25: ~ ( '\\'' | '\\\\' )
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:943:25: ~ ( '\\'' | '\\\\' )
     			{
-    			DebugLocation(906, 25);
+    			DebugLocation(943, 25);
     			input.Consume();
 
 
@@ -2544,7 +2595,7 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     		}
     		} finally { DebugExitSubRule(10); }
 
-    		DebugLocation(906, 40);
+    		DebugLocation(943, 40);
     		Match('\''); 
 
     		}
@@ -2554,129 +2605,12 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	}
     	finally
     	{
-    		TraceOut("CHAR", 53);
-    		LeaveRule("CHAR", 53);
+    		TraceOut("CHAR", 54);
+    		LeaveRule("CHAR", 54);
     		LeaveRule_CHAR();
         }
     }
     // $ANTLR end "CHAR"
-
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void EnterRule_EXPONENT() {}
-    [Conditional("ANTLR_TRACE")]
-    protected virtual void LeaveRule_EXPONENT() {}
-
-    // $ANTLR start "EXPONENT"
-    [GrammarRule("EXPONENT")]
-    private void mEXPONENT()
-    {
-    	EnterRule_EXPONENT();
-    	EnterRule("EXPONENT", 54);
-    	TraceIn("EXPONENT", 54);
-    		try
-    		{
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:911:10: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-    		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:911:12: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
-    		{
-    		DebugLocation(911, 12);
-    		if (input.LA(1)=='E'||input.LA(1)=='e')
-    		{
-    			input.Consume();
-    		}
-    		else
-    		{
-    			MismatchedSetException mse = new MismatchedSetException(null,input);
-    			DebugRecognitionException(mse);
-    			Recover(mse);
-    			throw mse;
-    		}
-
-    		DebugLocation(911, 22);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:911:22: ( '+' | '-' )?
-    		int alt11=2;
-    		try { DebugEnterSubRule(11);
-    		try { DebugEnterDecision(11, decisionCanBacktrack[11]);
-    		int LA11_0 = input.LA(1);
-
-    		if ((LA11_0=='+'||LA11_0=='-'))
-    		{
-    			alt11 = 1;
-    		}
-    		} finally { DebugExitDecision(11); }
-    		switch (alt11)
-    		{
-    		case 1:
-    			DebugEnterAlt(1);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:
-    			{
-    			DebugLocation(911, 22);
-    			input.Consume();
-
-
-    			}
-    			break;
-
-    		}
-    		} finally { DebugExitSubRule(11); }
-
-    		DebugLocation(911, 33);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:911:33: ( '0' .. '9' )+
-    		int cnt12=0;
-    		try { DebugEnterSubRule(12);
-    		while (true)
-    		{
-    			int alt12=2;
-    			try { DebugEnterDecision(12, decisionCanBacktrack[12]);
-    			int LA12_0 = input.LA(1);
-
-    			if (((LA12_0>='0' && LA12_0<='9')))
-    			{
-    				alt12 = 1;
-    			}
-
-
-    			} finally { DebugExitDecision(12); }
-    			switch (alt12)
-    			{
-    			case 1:
-    				DebugEnterAlt(1);
-    				// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:
-    				{
-    				DebugLocation(911, 33);
-    				input.Consume();
-
-
-    				}
-    				break;
-
-    			default:
-    				if (cnt12 >= 1)
-    					goto loop12;
-
-    				EarlyExitException eee12 = new EarlyExitException( 12, input );
-    				DebugRecognitionException(eee12);
-    				throw eee12;
-    			}
-    			cnt12++;
-    		}
-    		loop12:
-    			;
-
-    		} finally { DebugExitSubRule(12); }
-
-
-    		}
-
-    	}
-    	finally
-    	{
-    		TraceOut("EXPONENT", 54);
-    		LeaveRule("EXPONENT", 54);
-    		LeaveRule_EXPONENT();
-        }
-    }
-    // $ANTLR end "EXPONENT"
 
     [Conditional("ANTLR_TRACE")]
     protected virtual void EnterRule_HEX_DIGIT() {}
@@ -2692,11 +2626,11 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	TraceIn("HEX_DIGIT", 55);
     		try
     		{
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:914:11: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:948:11: ( ( '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' ) )
     		DebugEnterAlt(1);
     		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:
     		{
-    		DebugLocation(914, 11);
+    		DebugLocation(948, 11);
     		if ((input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f'))
     		{
     			input.Consume();
@@ -2736,12 +2670,12 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	TraceIn("ESC_SEQ", 56);
     		try
     		{
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:919:5: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' ) | UNICODE_ESC | OCTAL_ESC )
-    		int alt13=3;
-    		try { DebugEnterDecision(13, decisionCanBacktrack[13]);
-    		int LA13_0 = input.LA(1);
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:953:5: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' ) | UNICODE_ESC | OCTAL_ESC )
+    		int alt11=3;
+    		try { DebugEnterDecision(11, decisionCanBacktrack[11]);
+    		int LA11_0 = input.LA(1);
 
-    		if ((LA13_0=='\\'))
+    		if ((LA11_0=='\\'))
     		{
     			switch (input.LA(2))
     			{
@@ -2754,12 +2688,12 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     			case 'r':
     			case 't':
     				{
-    				alt13 = 1;
+    				alt11 = 1;
     				}
     				break;
     			case 'u':
     				{
-    				alt13 = 2;
+    				alt11 = 2;
     				}
     				break;
     			case '0':
@@ -2771,12 +2705,12 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     			case '6':
     			case '7':
     				{
-    				alt13 = 3;
+    				alt11 = 3;
     				}
     				break;
     			default:
     				{
-    					NoViableAltException nvae = new NoViableAltException("", 13, 1, input);
+    					NoViableAltException nvae = new NoViableAltException("", 11, 1, input);
     					DebugRecognitionException(nvae);
     					throw nvae;
     				}
@@ -2785,20 +2719,20 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     		}
     		else
     		{
-    			NoViableAltException nvae = new NoViableAltException("", 13, 0, input);
+    			NoViableAltException nvae = new NoViableAltException("", 11, 0, input);
     			DebugRecognitionException(nvae);
     			throw nvae;
     		}
-    		} finally { DebugExitDecision(13); }
-    		switch (alt13)
+    		} finally { DebugExitDecision(11); }
+    		switch (alt11)
     		{
     		case 1:
     			DebugEnterAlt(1);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:919:9: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' )
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:953:9: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\\\"' | '\\'' | '\\\\' )
     			{
-    			DebugLocation(919, 9);
+    			DebugLocation(953, 9);
     			Match('\\'); 
-    			DebugLocation(919, 14);
+    			DebugLocation(953, 14);
     			input.Consume();
 
 
@@ -2806,18 +2740,18 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     			break;
     		case 2:
     			DebugEnterAlt(2);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:920:9: UNICODE_ESC
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:954:9: UNICODE_ESC
     			{
-    			DebugLocation(920, 9);
+    			DebugLocation(954, 9);
     			mUNICODE_ESC(); 
 
     			}
     			break;
     		case 3:
     			DebugEnterAlt(3);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:921:9: OCTAL_ESC
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:955:9: OCTAL_ESC
     			{
-    			DebugLocation(921, 9);
+    			DebugLocation(955, 9);
     			mOCTAL_ESC(); 
 
     			}
@@ -2848,79 +2782,79 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	TraceIn("OCTAL_ESC", 57);
     		try
     		{
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:926:5: ( '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) )
-    		int alt14=3;
-    		try { DebugEnterDecision(14, decisionCanBacktrack[14]);
-    		int LA14_0 = input.LA(1);
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:960:5: ( '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) ( '0' .. '7' ) | '\\\\' ( '0' .. '7' ) )
+    		int alt12=3;
+    		try { DebugEnterDecision(12, decisionCanBacktrack[12]);
+    		int LA12_0 = input.LA(1);
 
-    		if ((LA14_0=='\\'))
+    		if ((LA12_0=='\\'))
     		{
-    			int LA14_1 = input.LA(2);
+    			int LA12_1 = input.LA(2);
 
-    			if (((LA14_1>='0' && LA14_1<='3')))
+    			if (((LA12_1>='0' && LA12_1<='3')))
     			{
-    				int LA14_2 = input.LA(3);
+    				int LA12_2 = input.LA(3);
 
-    				if (((LA14_2>='0' && LA14_2<='7')))
+    				if (((LA12_2>='0' && LA12_2<='7')))
     				{
-    					int LA14_4 = input.LA(4);
+    					int LA12_4 = input.LA(4);
 
-    					if (((LA14_4>='0' && LA14_4<='7')))
+    					if (((LA12_4>='0' && LA12_4<='7')))
     					{
-    						alt14 = 1;
+    						alt12 = 1;
     					}
     					else
     					{
-    						alt14 = 2;
+    						alt12 = 2;
     					}
     				}
     				else
     				{
-    					alt14 = 3;
+    					alt12 = 3;
     				}
     			}
-    			else if (((LA14_1>='4' && LA14_1<='7')))
+    			else if (((LA12_1>='4' && LA12_1<='7')))
     			{
-    				int LA14_3 = input.LA(3);
+    				int LA12_3 = input.LA(3);
 
-    				if (((LA14_3>='0' && LA14_3<='7')))
+    				if (((LA12_3>='0' && LA12_3<='7')))
     				{
-    					alt14 = 2;
+    					alt12 = 2;
     				}
     				else
     				{
-    					alt14 = 3;
+    					alt12 = 3;
     				}
     			}
     			else
     			{
-    				NoViableAltException nvae = new NoViableAltException("", 14, 1, input);
+    				NoViableAltException nvae = new NoViableAltException("", 12, 1, input);
     				DebugRecognitionException(nvae);
     				throw nvae;
     			}
     		}
     		else
     		{
-    			NoViableAltException nvae = new NoViableAltException("", 14, 0, input);
+    			NoViableAltException nvae = new NoViableAltException("", 12, 0, input);
     			DebugRecognitionException(nvae);
     			throw nvae;
     		}
-    		} finally { DebugExitDecision(14); }
-    		switch (alt14)
+    		} finally { DebugExitDecision(12); }
+    		switch (alt12)
     		{
     		case 1:
     			DebugEnterAlt(1);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:926:9: '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' )
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:960:9: '\\\\' ( '0' .. '3' ) ( '0' .. '7' ) ( '0' .. '7' )
     			{
-    			DebugLocation(926, 9);
+    			DebugLocation(960, 9);
     			Match('\\'); 
-    			DebugLocation(926, 14);
+    			DebugLocation(960, 14);
     			input.Consume();
 
-    			DebugLocation(926, 25);
+    			DebugLocation(960, 25);
     			input.Consume();
 
-    			DebugLocation(926, 36);
+    			DebugLocation(960, 36);
     			input.Consume();
 
 
@@ -2928,14 +2862,14 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     			break;
     		case 2:
     			DebugEnterAlt(2);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:927:9: '\\\\' ( '0' .. '7' ) ( '0' .. '7' )
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:961:9: '\\\\' ( '0' .. '7' ) ( '0' .. '7' )
     			{
-    			DebugLocation(927, 9);
+    			DebugLocation(961, 9);
     			Match('\\'); 
-    			DebugLocation(927, 14);
+    			DebugLocation(961, 14);
     			input.Consume();
 
-    			DebugLocation(927, 25);
+    			DebugLocation(961, 25);
     			input.Consume();
 
 
@@ -2943,11 +2877,11 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     			break;
     		case 3:
     			DebugEnterAlt(3);
-    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:928:9: '\\\\' ( '0' .. '7' )
+    			// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:962:9: '\\\\' ( '0' .. '7' )
     			{
-    			DebugLocation(928, 9);
+    			DebugLocation(962, 9);
     			Match('\\'); 
-    			DebugLocation(928, 14);
+    			DebugLocation(962, 14);
     			input.Consume();
 
 
@@ -2979,21 +2913,21 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
     	TraceIn("UNICODE_ESC", 58);
     		try
     		{
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:933:5: ( '\\\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT )
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:967:5: ( '\\\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT )
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:933:9: '\\\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:967:9: '\\\\' 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
     		{
-    		DebugLocation(933, 9);
+    		DebugLocation(967, 9);
     		Match('\\'); 
-    		DebugLocation(933, 14);
+    		DebugLocation(967, 14);
     		Match('u'); 
-    		DebugLocation(933, 18);
+    		DebugLocation(967, 18);
     		mHEX_DIGIT(); 
-    		DebugLocation(933, 28);
+    		DebugLocation(967, 28);
     		mHEX_DIGIT(); 
-    		DebugLocation(933, 38);
+    		DebugLocation(967, 38);
     		mHEX_DIGIT(); 
-    		DebugLocation(933, 48);
+    		DebugLocation(967, 48);
     		mHEX_DIGIT(); 
 
     		}
@@ -3010,494 +2944,503 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
 
     public override void mTokens()
     {
-    	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:8: ( T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | BOOL | VOID | ID | INT | DOUBLE | COMMENT | WS | CHAR )
-    	int alt15=53;
-    	try { DebugEnterDecision(15, decisionCanBacktrack[15]);
+    	// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:8: ( T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | BOOL | VOID | ID | INT | DOUBLE | COMMENT | WS | CHAR )
+    	int alt13=54;
+    	try { DebugEnterDecision(13, decisionCanBacktrack[13]);
     	try
     	{
-    		alt15 = dfa15.Predict(input);
+    		alt13 = dfa13.Predict(input);
     	}
     	catch (NoViableAltException nvae)
     	{
     		DebugRecognitionException(nvae);
     		throw;
     	}
-    	} finally { DebugExitDecision(15); }
-    	switch (alt15)
+    	} finally { DebugExitDecision(13); }
+    	switch (alt13)
     	{
     	case 1:
     		DebugEnterAlt(1);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:10: T__17
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:10: T__16
     		{
     		DebugLocation(1, 10);
-    		mT__17(); 
+    		mT__16(); 
 
     		}
     		break;
     	case 2:
     		DebugEnterAlt(2);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:16: T__18
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:16: T__17
     		{
     		DebugLocation(1, 16);
-    		mT__18(); 
+    		mT__17(); 
 
     		}
     		break;
     	case 3:
     		DebugEnterAlt(3);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:22: T__19
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:22: T__18
     		{
     		DebugLocation(1, 22);
-    		mT__19(); 
+    		mT__18(); 
 
     		}
     		break;
     	case 4:
     		DebugEnterAlt(4);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:28: T__20
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:28: T__19
     		{
     		DebugLocation(1, 28);
-    		mT__20(); 
+    		mT__19(); 
 
     		}
     		break;
     	case 5:
     		DebugEnterAlt(5);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:34: T__21
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:34: T__20
     		{
     		DebugLocation(1, 34);
-    		mT__21(); 
+    		mT__20(); 
 
     		}
     		break;
     	case 6:
     		DebugEnterAlt(6);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:40: T__22
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:40: T__21
     		{
     		DebugLocation(1, 40);
-    		mT__22(); 
+    		mT__21(); 
 
     		}
     		break;
     	case 7:
     		DebugEnterAlt(7);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:46: T__23
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:46: T__22
     		{
     		DebugLocation(1, 46);
-    		mT__23(); 
+    		mT__22(); 
 
     		}
     		break;
     	case 8:
     		DebugEnterAlt(8);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:52: T__24
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:52: T__23
     		{
     		DebugLocation(1, 52);
-    		mT__24(); 
+    		mT__23(); 
 
     		}
     		break;
     	case 9:
     		DebugEnterAlt(9);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:58: T__25
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:58: T__24
     		{
     		DebugLocation(1, 58);
-    		mT__25(); 
+    		mT__24(); 
 
     		}
     		break;
     	case 10:
     		DebugEnterAlt(10);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:64: T__26
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:64: T__25
     		{
     		DebugLocation(1, 64);
-    		mT__26(); 
+    		mT__25(); 
 
     		}
     		break;
     	case 11:
     		DebugEnterAlt(11);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:70: T__27
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:70: T__26
     		{
     		DebugLocation(1, 70);
-    		mT__27(); 
+    		mT__26(); 
 
     		}
     		break;
     	case 12:
     		DebugEnterAlt(12);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:76: T__28
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:76: T__27
     		{
     		DebugLocation(1, 76);
-    		mT__28(); 
+    		mT__27(); 
 
     		}
     		break;
     	case 13:
     		DebugEnterAlt(13);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:82: T__29
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:82: T__28
     		{
     		DebugLocation(1, 82);
-    		mT__29(); 
+    		mT__28(); 
 
     		}
     		break;
     	case 14:
     		DebugEnterAlt(14);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:88: T__30
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:88: T__29
     		{
     		DebugLocation(1, 88);
-    		mT__30(); 
+    		mT__29(); 
 
     		}
     		break;
     	case 15:
     		DebugEnterAlt(15);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:94: T__31
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:94: T__30
     		{
     		DebugLocation(1, 94);
-    		mT__31(); 
+    		mT__30(); 
 
     		}
     		break;
     	case 16:
     		DebugEnterAlt(16);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:100: T__32
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:100: T__31
     		{
     		DebugLocation(1, 100);
-    		mT__32(); 
+    		mT__31(); 
 
     		}
     		break;
     	case 17:
     		DebugEnterAlt(17);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:106: T__33
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:106: T__32
     		{
     		DebugLocation(1, 106);
-    		mT__33(); 
+    		mT__32(); 
 
     		}
     		break;
     	case 18:
     		DebugEnterAlt(18);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:112: T__34
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:112: T__33
     		{
     		DebugLocation(1, 112);
-    		mT__34(); 
+    		mT__33(); 
 
     		}
     		break;
     	case 19:
     		DebugEnterAlt(19);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:118: T__35
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:118: T__34
     		{
     		DebugLocation(1, 118);
-    		mT__35(); 
+    		mT__34(); 
 
     		}
     		break;
     	case 20:
     		DebugEnterAlt(20);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:124: T__36
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:124: T__35
     		{
     		DebugLocation(1, 124);
-    		mT__36(); 
+    		mT__35(); 
 
     		}
     		break;
     	case 21:
     		DebugEnterAlt(21);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:130: T__37
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:130: T__36
     		{
     		DebugLocation(1, 130);
-    		mT__37(); 
+    		mT__36(); 
 
     		}
     		break;
     	case 22:
     		DebugEnterAlt(22);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:136: T__38
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:136: T__37
     		{
     		DebugLocation(1, 136);
-    		mT__38(); 
+    		mT__37(); 
 
     		}
     		break;
     	case 23:
     		DebugEnterAlt(23);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:142: T__39
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:142: T__38
     		{
     		DebugLocation(1, 142);
-    		mT__39(); 
+    		mT__38(); 
 
     		}
     		break;
     	case 24:
     		DebugEnterAlt(24);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:148: T__40
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:148: T__39
     		{
     		DebugLocation(1, 148);
-    		mT__40(); 
+    		mT__39(); 
 
     		}
     		break;
     	case 25:
     		DebugEnterAlt(25);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:154: T__41
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:154: T__40
     		{
     		DebugLocation(1, 154);
-    		mT__41(); 
+    		mT__40(); 
 
     		}
     		break;
     	case 26:
     		DebugEnterAlt(26);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:160: T__42
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:160: T__41
     		{
     		DebugLocation(1, 160);
-    		mT__42(); 
+    		mT__41(); 
 
     		}
     		break;
     	case 27:
     		DebugEnterAlt(27);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:166: T__43
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:166: T__42
     		{
     		DebugLocation(1, 166);
-    		mT__43(); 
+    		mT__42(); 
 
     		}
     		break;
     	case 28:
     		DebugEnterAlt(28);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:172: T__44
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:172: T__43
     		{
     		DebugLocation(1, 172);
-    		mT__44(); 
+    		mT__43(); 
 
     		}
     		break;
     	case 29:
     		DebugEnterAlt(29);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:178: T__45
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:178: T__44
     		{
     		DebugLocation(1, 178);
-    		mT__45(); 
+    		mT__44(); 
 
     		}
     		break;
     	case 30:
     		DebugEnterAlt(30);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:184: T__46
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:184: T__45
     		{
     		DebugLocation(1, 184);
-    		mT__46(); 
+    		mT__45(); 
 
     		}
     		break;
     	case 31:
     		DebugEnterAlt(31);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:190: T__47
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:190: T__46
     		{
     		DebugLocation(1, 190);
-    		mT__47(); 
+    		mT__46(); 
 
     		}
     		break;
     	case 32:
     		DebugEnterAlt(32);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:196: T__48
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:196: T__47
     		{
     		DebugLocation(1, 196);
-    		mT__48(); 
+    		mT__47(); 
 
     		}
     		break;
     	case 33:
     		DebugEnterAlt(33);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:202: T__49
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:202: T__48
     		{
     		DebugLocation(1, 202);
-    		mT__49(); 
+    		mT__48(); 
 
     		}
     		break;
     	case 34:
     		DebugEnterAlt(34);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:208: T__50
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:208: T__49
     		{
     		DebugLocation(1, 208);
-    		mT__50(); 
+    		mT__49(); 
 
     		}
     		break;
     	case 35:
     		DebugEnterAlt(35);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:214: T__51
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:214: T__50
     		{
     		DebugLocation(1, 214);
-    		mT__51(); 
+    		mT__50(); 
 
     		}
     		break;
     	case 36:
     		DebugEnterAlt(36);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:220: T__52
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:220: T__51
     		{
     		DebugLocation(1, 220);
-    		mT__52(); 
+    		mT__51(); 
 
     		}
     		break;
     	case 37:
     		DebugEnterAlt(37);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:226: T__53
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:226: T__52
     		{
     		DebugLocation(1, 226);
-    		mT__53(); 
+    		mT__52(); 
 
     		}
     		break;
     	case 38:
     		DebugEnterAlt(38);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:232: T__54
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:232: T__53
     		{
     		DebugLocation(1, 232);
-    		mT__54(); 
+    		mT__53(); 
 
     		}
     		break;
     	case 39:
     		DebugEnterAlt(39);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:238: T__55
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:238: T__54
     		{
     		DebugLocation(1, 238);
-    		mT__55(); 
+    		mT__54(); 
 
     		}
     		break;
     	case 40:
     		DebugEnterAlt(40);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:244: T__56
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:244: T__55
     		{
     		DebugLocation(1, 244);
-    		mT__56(); 
+    		mT__55(); 
 
     		}
     		break;
     	case 41:
     		DebugEnterAlt(41);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:250: T__57
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:250: T__56
     		{
     		DebugLocation(1, 250);
-    		mT__57(); 
+    		mT__56(); 
 
     		}
     		break;
     	case 42:
     		DebugEnterAlt(42);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:256: T__58
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:256: T__57
     		{
     		DebugLocation(1, 256);
-    		mT__58(); 
+    		mT__57(); 
 
     		}
     		break;
     	case 43:
     		DebugEnterAlt(43);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:262: T__59
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:262: T__58
     		{
     		DebugLocation(1, 262);
-    		mT__59(); 
+    		mT__58(); 
 
     		}
     		break;
     	case 44:
     		DebugEnterAlt(44);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:268: T__60
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:268: T__59
     		{
     		DebugLocation(1, 268);
-    		mT__60(); 
+    		mT__59(); 
 
     		}
     		break;
     	case 45:
     		DebugEnterAlt(45);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:274: T__61
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:274: T__60
     		{
     		DebugLocation(1, 274);
-    		mT__61(); 
+    		mT__60(); 
 
     		}
     		break;
     	case 46:
     		DebugEnterAlt(46);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:280: BOOL
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:280: T__61
     		{
     		DebugLocation(1, 280);
-    		mBOOL(); 
+    		mT__61(); 
 
     		}
     		break;
     	case 47:
     		DebugEnterAlt(47);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:285: VOID
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:286: BOOL
     		{
-    		DebugLocation(1, 285);
-    		mVOID(); 
+    		DebugLocation(1, 286);
+    		mBOOL(); 
 
     		}
     		break;
     	case 48:
     		DebugEnterAlt(48);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:290: ID
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:291: VOID
     		{
-    		DebugLocation(1, 290);
-    		mID(); 
+    		DebugLocation(1, 291);
+    		mVOID(); 
 
     		}
     		break;
     	case 49:
     		DebugEnterAlt(49);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:293: INT
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:296: ID
     		{
-    		DebugLocation(1, 293);
-    		mINT(); 
+    		DebugLocation(1, 296);
+    		mID(); 
 
     		}
     		break;
     	case 50:
     		DebugEnterAlt(50);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:297: DOUBLE
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:299: INT
     		{
-    		DebugLocation(1, 297);
-    		mDOUBLE(); 
+    		DebugLocation(1, 299);
+    		mINT(); 
 
     		}
     		break;
     	case 51:
     		DebugEnterAlt(51);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:304: COMMENT
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:303: DOUBLE
     		{
-    		DebugLocation(1, 304);
-    		mCOMMENT(); 
+    		DebugLocation(1, 303);
+    		mDOUBLE(); 
 
     		}
     		break;
     	case 52:
     		DebugEnterAlt(52);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:312: WS
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:310: COMMENT
     		{
-    		DebugLocation(1, 312);
-    		mWS(); 
+    		DebugLocation(1, 310);
+    		mCOMMENT(); 
 
     		}
     		break;
     	case 53:
     		DebugEnterAlt(53);
-    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:315: CHAR
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:318: WS
     		{
-    		DebugLocation(1, 315);
+    		DebugLocation(1, 318);
+    		mWS(); 
+
+    		}
+    		break;
+    	case 54:
+    		DebugEnterAlt(54);
+    		// C:\\dev\\reptile\\reptile\\repositorio\\codigo\\Reptile.g:1:321: CHAR
+    		{
+    		DebugLocation(1, 321);
     		mCHAR(); 
 
     		}
@@ -3509,76 +3452,77 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
 
 
 	#region DFA
-	DFA15 dfa15;
+	DFA13 dfa13;
 
 	protected override void InitDFAs()
 	{
 		base.InitDFAs();
-		dfa15 = new DFA15(this);
+		dfa13 = new DFA13(this);
 	}
 
-	private class DFA15 : DFA
+	private class DFA13 : DFA
 	{
-		private const string DFA15_eotS =
+		private const string DFA13_eotS =
 			"\x8\xFFFF\x1\x29\x1\x2C\x2\xFFFF\x1\x2E\x1\x30\x1\x32\x4\x25\x2\xFFFF"+
 			"\xD\x25\x2\xFFFF\x1\x25\x1\xFFFF\x1\x49\xC\xFFFF\xA\x25\x1\x54\x3\x25"+
-			"\x1\x58\x7\x25\x1\xFFFF\x4\x25\x1\x65\x5\x25\x1\xFFFF\x1\x6B\x1\x25\x1"+
-			"\x6D\x1\xFFFF\xB\x25\x1\x79\x1\xFFFF\x1\x7A\x2\x25\x1\x7D\x1\x25\x1\xFFFF"+
-			"\x1\x25\x1\xFFFF\x3\x25\x1\x85\x1\x86\x1\x87\x1\x25\x1\x89\x3\x25\x2"+
-			"\xFFFF\x1\x8D\x1\x25\x1\xFFFF\x2\x25\x1\x92\x4\x25\x3\xFFFF\x1\x97\x1"+
-			"\xFFFF\x3\x25\x1\xFFFF\x1\x9B\x3\x25\x1\xFFFF\x3\x25\x1\xA2\x1\xFFFF"+
-			"\x3\x25\x1\xFFFF\x1\xA6\x1\xA7\x3\x25\x1\xAB\x1\xFFFF\x3\x25\x2\xFFFF"+
-			"\x1\x25\x1\xB0\x1\x25\x1\xFFFF\x2\x25\x1\xB4\x1\xB5\x1\xFFFF\x1\x25\x1"+
-			"\xB7\x1\x25\x2\xFFFF\x1\xB9\x1\xFFFF\x1\x25\x1\xFFFF\x1\xBB\x1\xFFFF";
-		private const string DFA15_eofS =
-			"\xBC\xFFFF";
-		private const string DFA15_minS =
+			"\x1\x58\x7\x25\x1\xFFFF\x4\x25\x1\x66\x5\x25\x1\xFFFF\x1\x6C\x1\x25\x1"+
+			"\x6E\x1\xFFFF\xC\x25\x1\x7B\x1\xFFFF\x1\x7C\x2\x25\x1\x7F\x1\x25\x1\xFFFF"+
+			"\x1\x25\x1\xFFFF\x4\x25\x1\x88\x1\x89\x1\x8A\x1\x25\x1\x8C\x3\x25\x2"+
+			"\xFFFF\x1\x90\x1\x25\x1\xFFFF\x2\x25\x1\x95\x5\x25\x3\xFFFF\x1\x9B\x1"+
+			"\xFFFF\x3\x25\x1\xFFFF\x1\x9F\x3\x25\x1\xFFFF\x4\x25\x1\xA7\x1\xFFFF"+
+			"\x3\x25\x1\xFFFF\x1\xAB\x1\xAC\x1\x25\x1\xAE\x2\x25\x1\xB1\x1\xFFFF\x3"+
+			"\x25\x2\xFFFF\x1\x25\x1\xFFFF\x1\xB6\x1\x25\x1\xFFFF\x2\x25\x1\xBA\x1"+
+			"\xBB\x1\xFFFF\x1\x25\x1\xBD\x1\x25\x2\xFFFF\x1\xBF\x1\xFFFF\x1\x25\x1"+
+			"\xFFFF\x1\xC1\x1\xFFFF";
+		private const string DFA13_eofS =
+			"\xC2\xFFFF";
+		private const string DFA13_minS =
 			"\x1\x9\x7\xFFFF\x1\x30\x1\x2A\x2\xFFFF\x3\x3D\x1\x68\x1\x6F\x1\x6E\x1"+
 			"\x61\x2\xFFFF\x1\x6E\x1\x68\x1\x6F\x1\x6C\x1\x66\x2\x65\x2\x72\x1\x65"+
 			"\x1\x68\x1\x61\x1\x68\x2\xFFFF\x1\x6F\x1\xFFFF\x1\x2E\xC\xFFFF\x1\x61"+
 			"\x1\x75\x1\x74\x1\x69\x1\x64\x2\x61\x1\x75\x1\x73\x1\x74\x1\x30\x2\x74"+
 			"\x1\x77\x1\x30\x1\x69\x1\x61\x1\x69\x1\x72\x2\x69\x1\x6F\x1\xFFFF\x1"+
 			"\x72\x1\x62\x1\x56\x1\x6E\x1\x30\x1\x72\x1\x73\x1\x62\x2\x65\x1\xFFFF"+
-			"\x1\x30\x1\x68\x1\x30\x1\xFFFF\x1\x6E\x1\x64\x1\x75\x2\x73\x1\x64\x2"+
-			"\x6C\x1\x56\x1\x6C\x1\x65\x1\x30\x1\xFFFF\x1\x30\x1\x73\x1\x6C\x1\x30"+
-			"\x1\x6E\x1\xFFFF\x1\x6F\x1\xFFFF\x1\x74\x1\x63\x1\x72\x3\x30\x1\x65\x1"+
-			"\x30\x2\x65\x1\x63\x2\xFFFF\x1\x30\x1\x65\x1\xFFFF\x2\x64\x1\x30\x1\x68"+
-			"\x1\x6F\x2\x6E\x3\xFFFF\x1\x30\x1\xFFFF\x1\x63\x1\x56\x1\x74\x1\xFFFF"+
-			"\x1\x30\x2\x73\x1\x69\x1\xFFFF\x1\x61\x1\x75\x1\x74\x1\x30\x1\xFFFF\x1"+
-			"\x74\x1\x65\x1\x6F\x1\xFFFF\x2\x30\x1\x6E\x1\x72\x1\x62\x1\x30\x1\xFFFF"+
-			"\x1\x6F\x1\x63\x1\x72\x2\xFFFF\x1\x65\x1\x30\x1\x6C\x1\xFFFF\x1\x72\x1"+
-			"\x74\x2\x30\x1\xFFFF\x1\x65\x1\x30\x1\x6F\x2\xFFFF\x1\x30\x1\xFFFF\x1"+
-			"\x72\x1\xFFFF\x1\x30\x1\xFFFF";
-		private const string DFA15_maxS =
+			"\x1\x30\x1\x68\x1\x30\x1\xFFFF\x1\x6E\x1\x67\x1\x64\x1\x75\x2\x73\x1"+
+			"\x64\x2\x6C\x1\x56\x1\x6C\x1\x65\x1\x30\x1\xFFFF\x1\x30\x1\x73\x1\x6C"+
+			"\x1\x30\x1\x6E\x1\xFFFF\x1\x6F\x1\xFFFF\x1\x74\x1\x72\x1\x63\x1\x72\x3"+
+			"\x30\x1\x65\x1\x30\x2\x65\x1\x63\x2\xFFFF\x1\x30\x1\x65\x1\xFFFF\x2\x64"+
+			"\x1\x30\x1\x61\x1\x68\x1\x6F\x2\x6E\x3\xFFFF\x1\x30\x1\xFFFF\x1\x63\x1"+
+			"\x56\x1\x74\x1\xFFFF\x1\x30\x2\x73\x1\x69\x1\xFFFF\x1\x6D\x1\x61\x1\x75"+
+			"\x1\x74\x1\x30\x1\xFFFF\x1\x74\x1\x65\x1\x6F\x1\xFFFF\x2\x30\x1\x6E\x1"+
+			"\x30\x1\x72\x1\x62\x1\x30\x1\xFFFF\x1\x6F\x1\x63\x1\x72\x2\xFFFF\x1\x65"+
+			"\x1\xFFFF\x1\x30\x1\x6C\x1\xFFFF\x1\x72\x1\x74\x2\x30\x1\xFFFF\x1\x65"+
+			"\x1\x30\x1\x6F\x2\xFFFF\x1\x30\x1\xFFFF\x1\x72\x1\xFFFF\x1\x30\x1\xFFFF";
+		private const string DFA13_maxS =
 			"\x1\x7D\x7\xFFFF\x1\x39\x1\x2F\x2\xFFFF\x3\x3D\x1\x68\x1\x6F\x1\x6E\x1"+
 			"\x61\x2\xFFFF\x1\x6E\x1\x6C\x1\x6F\x1\x78\x1\x6E\x2\x65\x2\x72\x1\x65"+
 			"\x1\x68\x1\x6F\x1\x68\x2\xFFFF\x1\x6F\x1\xFFFF\x1\x39\xC\xFFFF\x1\x61"+
 			"\x1\x75\x1\x74\x1\x69\x1\x64\x2\x61\x1\x75\x1\x73\x1\x74\x1\x7A\x2\x74"+
-			"\x1\x77\x1\x7A\x1\x69\x1\x74\x1\x69\x1\x72\x2\x69\x1\x6F\x1\xFFFF\x1"+
+			"\x1\x77\x1\x7A\x1\x6F\x1\x74\x1\x69\x1\x72\x2\x69\x1\x6F\x1\xFFFF\x1"+
 			"\x72\x1\x62\x1\x56\x1\x6E\x1\x7A\x1\x72\x1\x73\x1\x62\x2\x65\x1\xFFFF"+
-			"\x1\x7A\x1\x68\x1\x7A\x1\xFFFF\x1\x6E\x1\x64\x1\x75\x2\x73\x1\x64\x2"+
-			"\x6C\x1\x56\x1\x6C\x1\x65\x1\x7A\x1\xFFFF\x1\x7A\x1\x73\x1\x6C\x1\x7A"+
-			"\x1\x6E\x1\xFFFF\x1\x6F\x1\xFFFF\x1\x74\x1\x69\x1\x72\x3\x7A\x1\x65\x1"+
-			"\x7A\x2\x65\x1\x63\x2\xFFFF\x1\x7A\x1\x65\x1\xFFFF\x2\x64\x1\x7A\x1\x68"+
-			"\x1\x6F\x2\x6E\x3\xFFFF\x1\x7A\x1\xFFFF\x1\x63\x1\x56\x1\x74\x1\xFFFF"+
-			"\x1\x7A\x2\x73\x1\x69\x1\xFFFF\x1\x61\x1\x75\x1\x74\x1\x7A\x1\xFFFF\x1"+
-			"\x74\x1\x65\x1\x6F\x1\xFFFF\x2\x7A\x1\x6E\x1\x72\x1\x62\x1\x7A\x1\xFFFF"+
-			"\x1\x6F\x1\x63\x1\x72\x2\xFFFF\x1\x65\x1\x7A\x1\x6C\x1\xFFFF\x1\x72\x1"+
-			"\x74\x2\x7A\x1\xFFFF\x1\x65\x1\x7A\x1\x6F\x2\xFFFF\x1\x7A\x1\xFFFF\x1"+
-			"\x72\x1\xFFFF\x1\x7A\x1\xFFFF";
-		private const string DFA15_acceptS =
+			"\x1\x7A\x1\x68\x1\x7A\x1\xFFFF\x1\x6E\x1\x67\x1\x64\x1\x75\x2\x73\x1"+
+			"\x64\x2\x6C\x1\x56\x1\x6C\x1\x65\x1\x7A\x1\xFFFF\x1\x7A\x1\x73\x1\x6C"+
+			"\x1\x7A\x1\x6E\x1\xFFFF\x1\x6F\x1\xFFFF\x1\x74\x1\x72\x1\x69\x1\x72\x3"+
+			"\x7A\x1\x65\x1\x7A\x2\x65\x1\x63\x2\xFFFF\x1\x7A\x1\x65\x1\xFFFF\x2\x64"+
+			"\x1\x7A\x1\x61\x1\x68\x1\x6F\x2\x6E\x3\xFFFF\x1\x7A\x1\xFFFF\x1\x63\x1"+
+			"\x56\x1\x74\x1\xFFFF\x1\x7A\x2\x73\x1\x69\x1\xFFFF\x1\x6D\x1\x61\x1\x75"+
+			"\x1\x74\x1\x7A\x1\xFFFF\x1\x74\x1\x65\x1\x6F\x1\xFFFF\x2\x7A\x1\x6E\x1"+
+			"\x7A\x1\x72\x1\x62\x1\x7A\x1\xFFFF\x1\x6F\x1\x63\x1\x72\x2\xFFFF\x1\x65"+
+			"\x1\xFFFF\x1\x7A\x1\x6C\x1\xFFFF\x1\x72\x1\x74\x2\x7A\x1\xFFFF\x1\x65"+
+			"\x1\x7A\x1\x6F\x2\xFFFF\x1\x7A\x1\xFFFF\x1\x72\x1\xFFFF\x1\x7A\x1\xFFFF";
+		private const string DFA13_acceptS =
 			"\x1\xFFFF\x1\x1\x1\x2\x1\x3\x1\x4\x1\x5\x1\x6\x1\x7\x2\xFFFF\x1\xA\x1"+
-			"\xB\x7\xFFFF\x1\x16\x1\x17\xD\xFFFF\x1\x2C\x1\x2D\x1\xFFFF\x1\x30\x1"+
-			"\xFFFF\x1\x34\x1\x35\x1\x8\x1\x32\x1\x33\x1\x9\x1\xD\x1\xC\x1\xF\x1\xE"+
-			"\x1\x11\x1\x10\x16\xFFFF\x1\x31\xA\xFFFF\x1\x1E\x3\xFFFF\x1\x22\xC\xFFFF"+
-			"\x1\x18\x5\xFFFF\x1\x1F\x1\xFFFF\x1\x21\xB\xFFFF\x1\x15\x1\x19\x2\xFFFF"+
-			"\x1\x1C\x7\xFFFF\x1\x29\x1\x2A\x1\x2F\x1\xFFFF\x1\x2E\x3\xFFFF\x1\x1A"+
-			"\x4\xFFFF\x1\x23\x4\xFFFF\x1\x2B\x3\xFFFF\x1\x1B\x6\xFFFF\x1\x28\x3\xFFFF"+
-			"\x1\x1D\x1\x20\x3\xFFFF\x1\x27\x4\xFFFF\x1\x25\x3\xFFFF\x1\x14\x1\x24"+
-			"\x1\xFFFF\x1\x12\x1\xFFFF\x1\x26\x1\xFFFF\x1\x13";
-		private const string DFA15_specialS =
-			"\xBC\xFFFF}>";
-		private static readonly string[] DFA15_transitionS =
+			"\xB\x7\xFFFF\x1\x16\x1\x17\xD\xFFFF\x1\x2D\x1\x2E\x1\xFFFF\x1\x31\x1"+
+			"\xFFFF\x1\x35\x1\x36\x1\x8\x1\x33\x1\x34\x1\x9\x1\xD\x1\xC\x1\xF\x1\xE"+
+			"\x1\x11\x1\x10\x16\xFFFF\x1\x32\xA\xFFFF\x1\x1E\x3\xFFFF\x1\x22\xD\xFFFF"+
+			"\x1\x18\x5\xFFFF\x1\x1F\x1\xFFFF\x1\x21\xC\xFFFF\x1\x15\x1\x19\x2\xFFFF"+
+			"\x1\x1C\x8\xFFFF\x1\x2A\x1\x2B\x1\x30\x1\xFFFF\x1\x2F\x3\xFFFF\x1\x1A"+
+			"\x4\xFFFF\x1\x23\x5\xFFFF\x1\x2C\x3\xFFFF\x1\x1B\x7\xFFFF\x1\x29\x3\xFFFF"+
+			"\x1\x1D\x1\x20\x1\xFFFF\x1\x25\x2\xFFFF\x1\x28\x4\xFFFF\x1\x26\x3\xFFFF"+
+			"\x1\x14\x1\x24\x1\xFFFF\x1\x12\x1\xFFFF\x1\x27\x1\xFFFF\x1\x13";
+		private const string DFA13_specialS =
+			"\xC2\xFFFF}>";
+		private static readonly string[] DFA13_transitionS =
 			{
 				"\x2\x27\x2\xFFFF\x1\x27\x12\xFFFF\x1\x27\x1\x1\x5\xFFFF\x1\x28\x1\x2"+
 				"\x1\x3\x1\x4\x1\x5\x1\x6\x1\x7\x1\x8\x1\x9\xA\x26\x1\xA\x1\xB\x1\xC"+
@@ -3652,30 +3596,29 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
 				"\x1\x56",
 				"\x1\x57",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
-				"\x1\x59",
-				"\x1\x5A\x12\xFFFF\x1\x5B",
-				"\x1\x5C",
+				"\x1\x59\x5\xFFFF\x1\x5A",
+				"\x1\x5B\x12\xFFFF\x1\x5C",
 				"\x1\x5D",
 				"\x1\x5E",
 				"\x1\x5F",
 				"\x1\x60",
-				"",
 				"\x1\x61",
+				"",
 				"\x1\x62",
 				"\x1\x63",
 				"\x1\x64",
+				"\x1\x65",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
-				"\x1\x66",
 				"\x1\x67",
 				"\x1\x68",
 				"\x1\x69",
 				"\x1\x6A",
+				"\x1\x6B",
 				"",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
-				"\x1\x6C",
+				"\x1\x6D",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				"",
-				"\x1\x6E",
 				"\x1\x6F",
 				"\x1\x70",
 				"\x1\x71",
@@ -3686,129 +3629,136 @@ public partial class ReptileLexer : Antlr.Runtime.Lexer
 				"\x1\x76",
 				"\x1\x77",
 				"\x1\x78",
+				"\x1\x79",
+				"\x1\x7A",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				"",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
-				"\x1\x7B",
-				"\x1\x7C",
-				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
+				"\x1\x7D",
 				"\x1\x7E",
-				"",
-				"\x1\x7F",
-				"",
+				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				"\x1\x80",
-				"\x1\x81\x1\x82\x4\xFFFF\x1\x83",
-				"\x1\x84",
+				"",
+				"\x1\x81",
+				"",
+				"\x1\x82",
+				"\x1\x83",
+				"\x1\x84\x1\x85\x4\xFFFF\x1\x86",
+				"\x1\x87",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
-				"\x1\x88",
-				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
-				"\x1\x8A",
 				"\x1\x8B",
-				"\x1\x8C",
-				"",
-				"",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
+				"\x1\x8D",
 				"\x1\x8E",
-				"",
 				"\x1\x8F",
-				"\x1\x90",
-				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\xB\x25\x1\x91\xE"+
-				"\x25",
-				"\x1\x93",
-				"\x1\x94",
-				"\x1\x95",
-				"\x1\x96",
-				"",
 				"",
 				"",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
+				"\x1\x91",
 				"",
+				"\x1\x92",
+				"\x1\x93",
+				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\xB\x25\x1\x94\xE"+
+				"\x25",
+				"\x1\x96",
+				"\x1\x97",
 				"\x1\x98",
 				"\x1\x99",
 				"\x1\x9A",
 				"",
+				"",
+				"",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
+				"",
 				"\x1\x9C",
 				"\x1\x9D",
 				"\x1\x9E",
 				"",
-				"\x1\x9F",
+				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				"\x1\xA0",
 				"\x1\xA1",
-				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
+				"\x1\xA2",
 				"",
 				"\x1\xA3",
 				"\x1\xA4",
 				"\x1\xA5",
+				"\x1\xA6",
+				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				"",
-				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
-				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				"\x1\xA8",
 				"\x1\xA9",
 				"\x1\xAA",
-				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				"",
-				"\x1\xAC",
+				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
+				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				"\x1\xAD",
-				"\x1\xAE",
-				"",
-				"",
-				"\x1\xAF",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
-				"\x1\xB1",
+				"\x1\xAF",
+				"\x1\xB0",
+				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				"",
 				"\x1\xB2",
 				"\x1\xB3",
-				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
-				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
+				"\x1\xB4",
 				"",
-				"\x1\xB6",
+				"",
+				"\x1\xB5",
+				"",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
+				"\x1\xB7",
+				"",
 				"\x1\xB8",
+				"\x1\xB9",
+				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
+				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
+				"",
+				"\x1\xBC",
+				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
+				"\x1\xBE",
 				"",
 				"",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				"",
-				"\x1\xBA",
+				"\x1\xC0",
 				"",
 				"\xA\x25\x7\xFFFF\x1A\x25\x4\xFFFF\x1\x25\x1\xFFFF\x1A\x25",
 				""
 			};
 
-		private static readonly short[] DFA15_eot = DFA.UnpackEncodedString(DFA15_eotS);
-		private static readonly short[] DFA15_eof = DFA.UnpackEncodedString(DFA15_eofS);
-		private static readonly char[] DFA15_min = DFA.UnpackEncodedStringToUnsignedChars(DFA15_minS);
-		private static readonly char[] DFA15_max = DFA.UnpackEncodedStringToUnsignedChars(DFA15_maxS);
-		private static readonly short[] DFA15_accept = DFA.UnpackEncodedString(DFA15_acceptS);
-		private static readonly short[] DFA15_special = DFA.UnpackEncodedString(DFA15_specialS);
-		private static readonly short[][] DFA15_transition;
+		private static readonly short[] DFA13_eot = DFA.UnpackEncodedString(DFA13_eotS);
+		private static readonly short[] DFA13_eof = DFA.UnpackEncodedString(DFA13_eofS);
+		private static readonly char[] DFA13_min = DFA.UnpackEncodedStringToUnsignedChars(DFA13_minS);
+		private static readonly char[] DFA13_max = DFA.UnpackEncodedStringToUnsignedChars(DFA13_maxS);
+		private static readonly short[] DFA13_accept = DFA.UnpackEncodedString(DFA13_acceptS);
+		private static readonly short[] DFA13_special = DFA.UnpackEncodedString(DFA13_specialS);
+		private static readonly short[][] DFA13_transition;
 
-		static DFA15()
+		static DFA13()
 		{
-			int numStates = DFA15_transitionS.Length;
-			DFA15_transition = new short[numStates][];
+			int numStates = DFA13_transitionS.Length;
+			DFA13_transition = new short[numStates][];
 			for ( int i=0; i < numStates; i++ )
 			{
-				DFA15_transition[i] = DFA.UnpackEncodedString(DFA15_transitionS[i]);
+				DFA13_transition[i] = DFA.UnpackEncodedString(DFA13_transitionS[i]);
 			}
 		}
 
-		public DFA15( BaseRecognizer recognizer )
+		public DFA13( BaseRecognizer recognizer )
 		{
 			this.recognizer = recognizer;
-			this.decisionNumber = 15;
-			this.eot = DFA15_eot;
-			this.eof = DFA15_eof;
-			this.min = DFA15_min;
-			this.max = DFA15_max;
-			this.accept = DFA15_accept;
-			this.special = DFA15_special;
-			this.transition = DFA15_transition;
+			this.decisionNumber = 13;
+			this.eot = DFA13_eot;
+			this.eof = DFA13_eof;
+			this.min = DFA13_min;
+			this.max = DFA13_max;
+			this.accept = DFA13_accept;
+			this.special = DFA13_special;
+			this.transition = DFA13_transition;
 		}
 
-		public override string Description { get { return "1:1: Tokens : ( T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | BOOL | VOID | ID | INT | DOUBLE | COMMENT | WS | CHAR );"; } }
+		public override string Description { get { return "1:1: Tokens : ( T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | T__33 | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | T__47 | T__48 | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | BOOL | VOID | ID | INT | DOUBLE | COMMENT | WS | CHAR );"; } }
 
 		public override void Error(NoViableAltException nvae)
 		{

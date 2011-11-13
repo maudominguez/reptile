@@ -14,3 +14,11 @@ Dentro de un método, si dentro de una expresión aparece una variable, ésta se bu
 
 Los arreglos se consideran objetos.
 
+
+TODOs
+cambiar lo de las rutas de los archivos en el compilador y en la maquina virtual
+checar lo de las constantes char con '\n' y ' '
+checar lo de los arreglos
+checar lo del manejo de errores de sintaxis y lexico
+
+

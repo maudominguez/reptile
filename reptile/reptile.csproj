@@ -63,6 +63,7 @@
     <Compile Include="repositorio\codigo\ReptileParser.cs" />
     <Compile Include="repositorio\codigo\Scope.cs" />
     <Compile Include="repositorio\codigo\ScopeWithMethods.cs" />
+    <Compile Include="repositorio\codigo\SemanticException.cs" />
     <Compile Include="repositorio\codigo\SymbolTable.cs" />
     <Compile Include="repositorio\codigo\VariableSymbol.cs" />
   </ItemGroup>

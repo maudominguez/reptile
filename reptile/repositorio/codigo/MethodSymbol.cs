@@ -6,7 +6,7 @@ using System.Text;
 public class MethodSymbol : Scope
 {
     public ScopeWithMethods enclosingScope; //puede ser el scope global o una clase
-    public ClassSymbol returnType; 
+    public ClassSymbol returnType;
     public int firstQuadruple;  //first quadruple of this method
     private static string this_param_name = "#this";
 
@@ -31,7 +31,7 @@ public class MethodSymbol : Scope
 
     //includes the implicit this parameter added by the compiler
     //so at least it will always be one or more
-    public int countParameters() 
+    public int countParameters()
     {
         return parametros.Count;
     }
@@ -53,7 +53,8 @@ public class MethodSymbol : Scope
         localVariables.AddLast(variableSymbol);
     }
 
-    public IEnumerator<VariableSymbol> getParamIterator() {
+    public IEnumerator<VariableSymbol> getParamIterator()
+    {
         return parametros.GetEnumerator();
     }
 
@@ -133,10 +134,11 @@ public class MethodSymbol : Scope
         return res.ToString();
     }
 
-    public bool containsParameter(string variableName) {
-        foreach(VariableSymbol varSymbol in parametros)
+    public bool containsParameter(string variableName)
+    {
+        foreach (VariableSymbol varSymbol in parametros)
         {
-            if(variableName.Equals(varSymbol.name))
+            if (variableName.Equals(varSymbol.name))
             {
                 return true;
             }

@@ -26,10 +26,20 @@ namespace reptile
                         parser.program();
                         Console.WriteLine("Apropiado.\n");
                     }
-                    catch (Exception e)
+                    catch (SemanticException e)
                     {
                         Console.WriteLine(e.ToString());
                         Console.WriteLine("No apropiado.\n");
+                    }
+                    catch(RecognitionException ex) {
+                        StringBuilder errorMsg = new StringBuilder("ERROR DE LEXICO O SINTAXIS: ");
+                        errorMsg.Append("\nlinea: " + ex.Line);
+                        //errorMsg.Append("\nposicion: " + ex.CharPositionInLine);
+                        errorMsg.Append("\nNo apropiado.");
+                        Console.WriteLine(errorMsg);
+                    }
+                    catch(Exception e) {
+                        Console.WriteLine("ERROR ENCONTRADO: " + e.ToString());
                     }
                 }
                 catch (Exception fnfe)
@@ -39,8 +49,6 @@ namespace reptile
                 }
             } while (!archivoEncontrado);
 
-
-            Console.WriteLine("end...\n");
             Console.In.ReadLine();
         }
     }

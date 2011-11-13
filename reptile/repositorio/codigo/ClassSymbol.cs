@@ -17,9 +17,9 @@ public class ClassSymbol : ScopeWithMethods
         variables = new Dictionary<string, VariableSymbol>();
         this.memory = new Memory(START_ADDRESS, MAX_ADDRESS);
         this.superClass = superClass;
-        if(superClass != null)
+        if (superClass != null)
         {
-            for (int i = 1; i <= superClass.countVariables(); i++ )
+            for (int i = 1; i <= superClass.countVariables(); i++)
             {
                 this.memory.nextAddress();
             }
@@ -75,7 +75,7 @@ public class ClassSymbol : ScopeWithMethods
 
     public int countVariables()
     {
-        if(superClass == null) 
+        if (superClass == null)
         {
             return variables.Count;
         }
@@ -84,7 +84,7 @@ public class ClassSymbol : ScopeWithMethods
 
     public bool isVectorType()
     {
-        return name.Equals(SymbolTable.charVectorName) || name.Equals(SymbolTable.doubleVectorName) 
+        return name.Equals(SymbolTable.charVectorName) || name.Equals(SymbolTable.doubleVectorName)
                 || name.Equals(SymbolTable.integerVectorName);
     }
 
@@ -96,9 +96,9 @@ public class ClassSymbol : ScopeWithMethods
     public override MethodSymbol getMethodSymbol(string methodName)
     {
         MethodSymbol methodSymbol;
-        if(!methods.TryGetValue(methodName, out methodSymbol))
+        if (!methods.TryGetValue(methodName, out methodSymbol))
         {
-            if(superClass != null)
+            if (superClass != null)
             {
                 methodSymbol = superClass.getMethodSymbol(methodName);
             }
@@ -109,9 +109,9 @@ public class ClassSymbol : ScopeWithMethods
     public override VariableSymbol getVariableSymbol(string variableName)
     {
         VariableSymbol variableSymbol;
-        if(!variables.TryGetValue(variableName, out variableSymbol))
+        if (!variables.TryGetValue(variableName, out variableSymbol))
         {
-            if(superClass != null)
+            if (superClass != null)
             {
                 variableSymbol = superClass.getVariableSymbol(variableName);
             }
@@ -121,11 +121,11 @@ public class ClassSymbol : ScopeWithMethods
 
     public bool isChildOf(ClassSymbol sup)
     {
-        if(name == sup.name)
+        if (name == sup.name)
         {
             return true;
         }
-        if(superClass == null)
+        if (superClass == null)
         {
             return false;
         }

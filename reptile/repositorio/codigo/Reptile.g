@@ -26,8 +26,21 @@ tokens
 
 public override void ReportError(RecognitionException e)
 {
+	//System.Console.WriteLine("PLACE: En ReportError");
+	//DisplayRecognitionError(this.TokenNames, e);	//ADDED
 	throw e;
 }
+
+/*
+public override string GetErrorMessage(RecognitionException e, string[] tokenNames) {	//ADDED
+	System.Console.WriteLine("EN GETERRORMESSAGE1");
+	System.Console.WriteLine("La base me regresa " + base.GetErrorMessage(e, tokenNames));
+	System.Console.WriteLine("Y la linea es " + Line);
+	System.Console.WriteLine("Y la posicion del caracter es " + CharPositionInLine);
+	System.Console.WriteLine("En el caracter " + GetCharErrorDisplay(e.Character));
+	return "EN GETERRORMESSAGE LEXER";
+}
+*/
 }
 
 @members {
@@ -38,6 +51,7 @@ QuadruplesList quadruplesList = new QuadruplesList();
 Stack<Quadruple> pSaltos = new Stack<Quadruple>();
 string mainClassName = "Main";
 string mainMethodName = "main";
+string nameProgram;
 
 Scope actualScope;
 ClassSymbol mainClass;
@@ -46,13 +60,28 @@ LinkedList<string> operadoresRelacionales = new LinkedList<string>(new string[] 
 LinkedList<string> masMenosOr = new LinkedList<string>(new string[] {"+", "-", "or"});
 LinkedList<string> porEntreAnd = new LinkedList<string>(new string[] {"*", "/", "and"});
 
+public override void ReportError(RecognitionException e)
+{
+	//System.Console.WriteLine("PLACE: En ReportError PARSER");
+	//DisplayRecognitionError(this.TokenNames, e);	//ADDED
+	throw e;
+}
+
+/*
+public override string GetErrorMessage(RecognitionException e, string[] tokenNames) {	//ADDED
+	return "EN GETERRORMESSAGE PARSER";
+}
+*/
+
 protected override object RecoverFromMismatchedToken(IIntStream input, int ttype, BitSet follow)
 {
+	//Console.WriteLine("PLACE: En RecoverFromMismatchedToken");
       throw new MismatchedTokenException(ttype, input);
 }
 
 public override object RecoverFromMismatchedSet(IIntStream input, RecognitionException e, BitSet follow)
 {
+	//Console.WriteLine("PLACE: En RecoverFromMismatchedSet");
         throw e;
 }
 
@@ -121,7 +150,8 @@ bool verifyVariableCanBeAccessed(string variable) {
 }
 
 void generateVariableNotFoundError(string variable) {
-		Exception e = new Exception("No se encontro la variable " + variable);
+		MethodSymbol m = (MethodSymbol)actualScope;
+		Exception e = new Exception(m.fullyQualifiedName() + ": No se encontro la variable " + variable);
 		manageException(e);
 }
 
@@ -175,7 +205,8 @@ void verifyMethodDefinedInClassSymbol(ClassSymbol type, string method) {
 }
 
 void generateInstanceVariableNotFoundError(string scope, string variable) {
-	Exception e = new Exception("No se encontro la variable de instancia " + variable + " en " + scope);
+	MethodSymbol m = (MethodSymbol)actualScope;
+	Exception e = new Exception(m.fullyQualifiedName() + ": No se encontro la variable de instancia " + variable + " en " + scope);
 	manageException(e);
 }
 
@@ -204,7 +235,8 @@ void verifyIsVector(string var) {
 }
 
 void generateIsNotVectorError(string variable) {
-	Exception e = new Exception("La variable " + variable + " no es de ninguna clase Vector y por tanto no tiene definido el operador [] .");
+	MethodSymbol m = (MethodSymbol)actualScope;
+	Exception e = new Exception(m.fullyQualifiedName() + ": La variable " + variable + " no es de ninguna clase Vector y por tanto no tiene definido el operador [] .");
 	manageException(e);
 }
 
@@ -240,7 +272,8 @@ public void aplicaOperadorPendienteQueSea(LinkedList<string> operadoresBuscados)
 				pOperadores.Pop();
 				VariableSymbol right = pOperandos.Pop();
 				VariableSymbol left = pOperandos.Pop();
-				manageException(new Exception("Operador \"" + operador + "\" no es valido para " + 
+				MethodSymbol m = (MethodSymbol)actualScope;
+				manageException(new SemanticException(m.fullyQualifiedName() +": operador \"" + operador + "\" no es valido para " + 
 					left.type.name + " " + left.name + ", " + right.type.name + " " + right.name));
 			}
 		}
@@ -308,25 +341,22 @@ public void verifyMainMethodDefinedInMainClass() {
 }
 
 public static void manageException(Exception e) {
-	Console.WriteLine(e.ToString());
-	throw new RecognitionException("Se encontro Error semantico\n");
+	throw new SemanticException("ERROR SEMANTICO: " + e.ToString() + "\n");
 }
 }
 
-public program	:	{createDirectories(); defineMainClass();} classDecl* {actualScope = mainClass;} classMain;
+public program	:	{createDirectories(); defineMainClass();} programName classDecl* {actualScope = mainClass;} classMain;
+
+programName
+	:	'program' ID ';' {nameProgram = $ID.text;};
 
 classMain
 	:	'class' 'Main' '{' varDecl* methodDeclaration* {quadruplesList.addHALT();} '}' 
 		{
 		verifyMainMethodDefinedInMainClass();
-		
 		directory.printDirectory(); directory.printTypesDirectory(); printQuadruplesList();
-		
-		
-		string outputFile = "code.txt";
+		string outputFile = nameProgram + ".re";
 		System.IO.File.WriteAllText(@outputFile, directory.formattedSymbolTable() + quadruplesList.countQuadruples() + "\n" + quadruplesList.ToString());
-
-
 		};
 
 classDecl
@@ -471,7 +501,6 @@ scope {
 			quadruplesList.addPUTVECTORELEM(right.address.ToString(), $assignment::par2.address.ToString(), $assignment::par1.address.ToString());			
 		}
 		}
-		
 		';'
 	;
 	
@@ -531,7 +560,8 @@ scope {
 		{
 		
 		if($statement::inExpression && $invoke::invokedMethod.returnsVoid()) {
-			string msg = "Llamada a metodo void " + $invoke::invokedMethod.fullyQualifiedName() + ". No es valido llamar a un metodo void"
+			MethodSymbol m = (MethodSymbol)actualScope;
+			string msg = "En " + m.fullyQualifiedName() + ": Llamada a metodo void " + $invoke::invokedMethod.fullyQualifiedName() + ". No es valido llamar a un metodo void"
 									+ " como parte de una expresion.";
 			manageException(new Exception(msg));
 		}
@@ -558,13 +588,15 @@ actualParameters
 		(expression 
 		{
 		if(!paramIterator.MoveNext()) {
-			string msg = "Parametros formales de mas en llamada a " + $invoke::invokedMethod.fullyQualifiedName();
+			MethodSymbol m = (MethodSymbol)actualScope;
+			string msg = "En " + m.fullyQualifiedName() + ": Parametros formales de mas en llamada a " + $invoke::invokedMethod.fullyQualifiedName();
 			manageException(new Exception(msg));
 		}
 		formalParam = paramIterator.Current;
 		actualParam = pOperandos.Pop();
 		if(!directory.validAssignment(formalParam.type, actualParam.type)) {
-			string msg = "El tipo del argumento " + actualParam.name + " no es asignable al tipo del parametro formal " 
+			MethodSymbol m = (MethodSymbol)actualScope;
+			string msg = "En " + m.fullyQualifiedName() + ": El tipo del argumento " + actualParam.name + " no es asignable al tipo del parametro formal " 
 					+ formalParam.name + " en la llamada a " + $invoke::invokedMethod.fullyQualifiedName();
 			manageException(new Exception(msg));
 		}
@@ -574,13 +606,15 @@ actualParameters
 		(',' expression 
 		{
 		if(!paramIterator.MoveNext()) {
-			string msg = "Parametros formales de mas en llamada a " + $invoke::invokedMethod.fullyQualifiedName();
+			MethodSymbol m = (MethodSymbol)actualScope;
+			string msg = "En " + m.fullyQualifiedName() + ": Parametros formales de mas en llamada a " + $invoke::invokedMethod.fullyQualifiedName();
 			manageException(new Exception(msg));
 		}
 		formalParam = paramIterator.Current;
 		actualParam = pOperandos.Pop();
 		if(!directory.validAssignment(formalParam.type, actualParam.type)) {
-			string msg = "El tipo del argumento " + actualParam.name + " no es asignable al tipo del parametro formal " 
+			MethodSymbol m = (MethodSymbol)actualScope;
+			string msg = "En " + m.fullyQualifiedName() + ": El tipo del argumento " + actualParam.name + " no es asignable al tipo del parametro formal " 
 					+ formalParam.name + " en la llamada a " + $invoke::invokedMethod.fullyQualifiedName();
 			manageException(new Exception(msg));
 		}
@@ -591,7 +625,8 @@ actualParameters
 		{pOperadores.Pop();}
 		{
 		if(paramIterator.MoveNext()) { 
-			string msg = "Faltan argumentos en la llamada a " + $invoke::invokedMethod.fullyQualifiedName();
+			MethodSymbol m = (MethodSymbol)actualScope;
+			string msg = "En " + m.fullyQualifiedName() + ": Faltan argumentos en la llamada a " + $invoke::invokedMethod.fullyQualifiedName();
 			manageException(new Exception(msg));
 		}
 		
@@ -836,7 +871,9 @@ factor
 			verifyIsVector($ID.text);
 			VariableSymbol index = pOperandos.Pop();
 			if(!index.type.name.Equals("int")) {
-				manageException(new Exception("El subindice del Vector " + $ID.text + " debe ser de tipo int."));
+				MethodSymbol m = (MethodSymbol)actualScope;
+				manageException(new Exception("En " + m.fullyQualifiedName() + ": El subindice del Vector " + $ID.text 
+							+ " debe ser de tipo int."));
 			}
 			else {
 				VariableSymbol arr = getVariable($ID.text);
@@ -905,9 +942,6 @@ WS  :   ( ' '
 
 CHAR:  '\'' ( ESC_SEQ | ~('\''|'\\') ) '\''
     ;
-
-fragment
-EXPONENT : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
 
 fragment
 HEX_DIGIT : ('0'..'9'|'a'..'f'|'A'..'F') ;

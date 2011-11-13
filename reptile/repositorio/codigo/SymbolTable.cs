@@ -17,9 +17,10 @@ public class SymbolTable
 
     public static bool isPrimitiveType(string type)
     {
-        if(type.Equals(integerName) || type.Equals(charName) || type.Equals(doubleName)
-            || type.Equals(boolName)) {
-                return true;
+        if (type.Equals(integerName) || type.Equals(charName) || type.Equals(doubleName)
+            || type.Equals(boolName))
+        {
+            return true;
         }
         return false;
     }
@@ -28,21 +29,21 @@ public class SymbolTable
     {
         directory = new Dictionary<string, ScopeWithMethods>();
         ClassSymbol integers = new ClassSymbol(integerName, null);
-	    directory.Add(integers.name, integers);
+        directory.Add(integers.name, integers);
         ClassSymbol chars = new ClassSymbol(charName, null);
-	    directory.Add(chars.name, chars);
+        directory.Add(chars.name, chars);
         ClassSymbol doubles = new ClassSymbol(doubleName, null);
-	    directory.Add(doubles.name, doubles);
+        directory.Add(doubles.name, doubles);
         ClassSymbol bools = new ClassSymbol(boolName, null);
         directory.Add(bools.name, bools);
         ClassSymbol integerVector = new ClassSymbol(integerVectorName, null);
-	    directory.Add(integerVector.name, integerVector);
+        directory.Add(integerVector.name, integerVector);
         ClassSymbol charVector = new ClassSymbol(charVectorName, null);
         directory.Add(charVector.name, charVector);
         ClassSymbol doubleVector = new ClassSymbol(doubleVectorName, null);
         directory.Add(doubleVector.name, doubleVector);
         ClassSymbol tipoVoid = new ClassSymbol(voidName, null);
-	    directory.Add(tipoVoid.name, tipoVoid);
+        directory.Add(tipoVoid.name, tipoVoid);
     }
 
     public string formattedSymbolTable()
@@ -59,12 +60,13 @@ public class SymbolTable
             res.Append(classSymbol.name + "\n");
             res.Append(classSymbol.countVariables() + "\n");
 
-            if(classSymbol.countVariables() > 0) {
+            if (classSymbol.countVariables() > 0)
+            {
                 res.Append(classSymbol.getInstVarsTypesFormatted());
                 res.Append("\n");
             }
             res.Append(classSymbol.getMethodSymbols().Count + "\n");
-            
+
 
             foreach (KeyValuePair<string, MethodSymbol> element in classSymbol.getMethodSymbols())
             {
@@ -80,7 +82,7 @@ public class SymbolTable
                 {
                     res.Append(registerOfFirstLocal + "\n");   //register of the first local
                 }
-                    foreach(VariableSymbol localVar in methodSymbol.getLocalVariablesList())
+                foreach (VariableSymbol localVar in methodSymbol.getLocalVariablesList())
                 {
                     if (isPrimitiveType(localVar.type.name))
                     {
@@ -100,21 +102,21 @@ public class SymbolTable
     public ClassSymbol resultType(ClassSymbol left, ClassSymbol right, string op)
     {
         ClassSymbol resultType = findType(voidName);
-        if(left.name.Equals(voidName) || right.name.Equals(voidName)) 
+        if (left.name.Equals(voidName) || right.name.Equals(voidName))
         {
             return resultType;
         }
 
-        if(isAndOrOperator(op)) //and, or
+        if (isAndOrOperator(op)) //and, or
         {
-            if(left.name.Equals(boolName) && right.name.Equals(boolName))
+            if (left.name.Equals(boolName) && right.name.Equals(boolName))
             {
                 resultType = findType(boolName);
             }
         }
-        else if(isEqOrDifOperator(op))  // ==, !=
+        else if (isEqOrDifOperator(op))  // ==, !=
         {
-            if(SymbolTable.isPrimitiveType(left.name) || SymbolTable.isPrimitiveType(right.name))
+            if (SymbolTable.isPrimitiveType(left.name) || SymbolTable.isPrimitiveType(right.name))
             {
                 if (validAssignment(left, right) || validAssignment(right, left))
                 {
@@ -142,18 +144,19 @@ public class SymbolTable
         }
         else if (isRelationalOperator(op))  // >, >=, <, <=
         {
-            if(isIntOrDouble(left) && isIntOrDouble(right))
+            if (isIntOrDouble(left) && isIntOrDouble(right))
             {
                 resultType = findType(boolName);
             }
         }
-        else {
+        else
+        {
             ReptileParser.manageException(new Exception("Operador desconocido: " + op));
         }
 
         return resultType;
     }
-   
+
     public bool validAssignment(ClassSymbol left, ClassSymbol right)
     {
         //not allowed to assign a void to anything nor to assign anything to a void
@@ -161,7 +164,7 @@ public class SymbolTable
         {
             return false;
         }
-        if(left.name.Equals(doubleName))
+        if (left.name.Equals(doubleName))
         {
             return right.name.Equals(doubleName) || right.name.Equals(integerName);
         }
@@ -219,7 +222,8 @@ public class SymbolTable
         Console.WriteLine("Types Directory:");
         foreach (KeyValuePair<String, ScopeWithMethods> entry in directory)
         {
-            if(entry.Value is ClassSymbol) {
+            if (entry.Value is ClassSymbol)
+            {
                 ClassSymbol clase = (ClassSymbol)entry.Value;
                 Console.Write(entry.Key + " -> " + clase.name);
                 if (clase.superClass != null)

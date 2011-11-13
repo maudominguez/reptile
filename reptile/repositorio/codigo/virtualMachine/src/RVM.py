@@ -1,5 +1,6 @@
 
 import RVM
+import sys
 from ClassSymbol import *
 from MethodSymbol import *
 from Frame import *
@@ -210,11 +211,7 @@ class RVM (object):
                 registers[offset(op1)] = registers[offset(op2)].fields[op3]
             else:
                 print("Cuadruplo no reconocido: " + quadruple.opCode)
-                
-
-
             quadruple = self.code[self.ip]
-
 
     def loadQuadruplesFromFile(self, inFile):
         nQuadruples = int(inFile.readline())
@@ -285,7 +282,8 @@ class RVM (object):
             print(self.methodsDirectory[key])
 
     def loadCodeFile(self):
-        inFile = open ("../../../../bin/Debug/code.txt", "r")
+        toOpen = "../../../../bin/Debug/" + sys.argv[1] #TODO quitar la primera parte de la ruta
+        inFile = open (toOpen, "r")
         self.loadDirectoriesFromFile(inFile)
         self.loadQuadruplesFromFile(inFile)
         inFile.close()
