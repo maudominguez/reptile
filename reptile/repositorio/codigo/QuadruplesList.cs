@@ -148,6 +148,21 @@ class QuadruplesList
         quadruplesList.AddLast(new Quadruple("PRINT", varToPrint));
     }
 
+    public void addREADINT(string tempVar)
+    {
+        quadruplesList.AddLast(new Quadruple("READINT", tempVar));
+    }
+
+    public void addREADCHAR(string tempVar)
+    {
+        quadruplesList.AddLast(new Quadruple("READCHAR", tempVar));
+    }
+
+    public void addREADDOUBLE(string tempVar)
+    {
+        quadruplesList.AddLast(new Quadruple("READDOUBLE", tempVar));
+    }
+
     public void addHALT()
     {
         quadruplesList.AddLast(new Quadruple("HALT"));

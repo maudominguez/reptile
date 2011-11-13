@@ -412,7 +412,6 @@ scope {
 		|	if_inst
 		|	while_inst
 		|	return_inst
-		|	read
 		|	print
 		| ';'
 		);
@@ -657,7 +656,28 @@ scope {
 		}
 		;
 
-while_inst	:	'while' '(' expression ')' '{' someStatements '}';
+while_inst
+scope {
+	int start;
+}
+:			{$while_inst::start = quadruplesList.nextNumberOfQuadruple();}
+			'while' '(' expression ')' 
+			{
+			VariableSymbol condition = pOperandos.Pop();
+			if(!condition.type.name.Equals(SymbolTable.boolName)) {
+				string msg = "En metodo " + ((MethodSymbol)actualScope).fullyQualifiedName() +  " condicion en while debe ser un valor bool.";
+				manageException(new Exception(msg));
+			}
+			quadruplesList.addGOTOFALSE(condition.address.ToString(), "-");
+			pSaltos.Push(quadruplesList.getLastQuadruple());
+			}
+			'{' someStatements '}'
+			{
+			quadruplesList.addGOTO($while_inst::start.ToString());
+			Quadruple start = pSaltos.Pop();
+			start.operando2 = quadruplesList.nextNumberOfQuadruple().ToString();
+			}
+			;
 
 return_inst
 @init {
@@ -705,8 +725,31 @@ return_inst
 		';'
 		;
 
-read	:	'read' '(' designator ')' ';';
-
+read	:	
+		{
+		VariableSymbol temp = null;
+		}
+		(
+		'readint'
+		{
+		temp = getNewTemporalVarOfType(SymbolTable.integerName);
+		quadruplesList.addREADINT(temp.address.ToString());
+		}
+		|'readchar'
+		{
+		temp = getNewTemporalVarOfType(SymbolTable.charName);
+		quadruplesList.addREADCHAR(temp.address.ToString());
+		}
+		|'readdouble'
+		{
+		temp = getNewTemporalVarOfType(SymbolTable.doubleName);
+		quadruplesList.addREADDOUBLE(temp.address.ToString());
+		}
+		
+		) 
+		'(' ')' {pOperandos.Push(temp);}
+		;
+		
 print
 scope {
 	bool printline;
@@ -764,7 +807,9 @@ term	:	factor {aplicaOperadorPendienteQueSea(porEntreAnd);}
 		)*;
 
 factor
-	:	invoke
+	:	
+		read
+		| invoke
 		| v = ID 
 			{
 			VariableSymbol varSymbol = getVariable($v.text);

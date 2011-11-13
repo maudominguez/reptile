@@ -1,5 +1,6 @@
 
 import RVM
+import sys
 from ClassSymbol import *
 from MethodSymbol import *
 from Frame import *
@@ -107,6 +108,28 @@ class RVM (object):
                 print(str(registers[offset(op1)]), end = "")
             elif(quadruple.opCode == "PRINTLINE"):
                 print()
+            elif(quadruple.opCode == "READINT"):
+                op1 = int(quadruple.op1)
+                read = input()
+                try:
+                    tmp = int(read)
+                except ValueError:
+                    exit("ERROR Inesperado: Se leyo una literal no valida en readint(): " + read)
+                registers[offset(op1)] = tmp
+            elif(quadruple.opCode == "READDOUBLE"):
+                op1 = int(quadruple.op1)
+                read = input()
+                try:
+                    tmp = float(read)
+                except ValueError:
+                    exit("ERROR Inesperado: Se leyo una literal no valida en readdouble(): " + read)
+                registers[offset(op1)] = tmp
+            elif(quadruple.opCode == "READCHAR"):
+                op1 = int(quadruple.op1)
+                read = input()
+                if(len(read) > 1):
+                    exit("ERROR Inesperado: Se leyo mas de un caracter en readchar(): " + read)
+                registers[offset(op1)] = read
             elif(quadruple.opCode == "GOTOFALSE"):
                 op1 = int(quadruple.op1)
                 op2 = int(quadruple.op2)
@@ -284,6 +307,7 @@ def offset(address):
 
 def main():
     #print("w = " + chr(ord("\n")))
+
     virtualMachine = RVM()
         
     virtualMachine.loadCodeFile()
