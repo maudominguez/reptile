@@ -484,7 +484,8 @@ scope {
 		{
 		VariableSymbol right = pOperandos.Pop();
 		if(!directory.validAssignment($assignment::leftType, right.type)) {
-			manageException(new Exception("No se puede asignar " + right.name + " a " + $assignment::par2.name + " porque el tipo " + 
+			MethodSymbol m = (MethodSymbol)actualScope;
+			manageException(new Exception("En " + m.fullyQualifiedName() + ": No se puede asignar " + right.name + " a " + $assignment::par2.name + " porque el tipo " + 
 						right.type.name + " no es asignable al tipo " + $assignment::leftType.name));
 		}
 		if($assignment::caso == 0) {	//ID = right

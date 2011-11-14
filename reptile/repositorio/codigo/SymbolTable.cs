@@ -44,6 +44,7 @@ public class SymbolTable
         directory.Add(doubleVector.name, doubleVector);
         ClassSymbol tipoVoid = new ClassSymbol(voidName, null);
         directory.Add(tipoVoid.name, tipoVoid);
+
     }
 
     public string formattedSymbolTable()
