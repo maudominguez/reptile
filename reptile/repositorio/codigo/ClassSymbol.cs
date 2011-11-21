@@ -82,11 +82,13 @@ public class ClassSymbol : ScopeWithMethods
         return superClass.countVariables() + variables.Count;
     }
 
+    /*
     public bool isVectorType()
     {
         return name.Equals(SymbolTable.charVectorName) || name.Equals(SymbolTable.doubleVectorName)
                 || name.Equals(SymbolTable.integerVectorName);
     }
+     */
 
     public bool isVoidType()
     {

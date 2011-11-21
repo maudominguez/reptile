@@ -15,4 +15,3 @@ class Quadruple (object):
             res += " " + self.op3
         return res
 
-        

@@ -26,6 +26,21 @@ class QuadruplesList
         return quadruplesList.ElementAt(quadruplesList.Count - 1);
     }
 
+    public void addGETARRAYELEM(string toDerefAddress, string dereferencedTemp)
+    {
+        quadruplesList.AddLast(new Quadruple("GETARRAYELEM", toDerefAddress, dereferencedTemp));
+    }
+
+    public void addPUTARRAYELEM(string toDeref, string value)
+    {
+        quadruplesList.AddLast(new Quadruple("PUTARRAYELEM", toDeref, value));
+    }
+
+    public void addVERIFYARRAYACCESS(string indexAddress, string max)
+    {
+        quadruplesList.AddLast(new Quadruple("VERIFYARRAYACCESS", indexAddress, max));
+    }
+
     public void addICONST(string intConstant, string tempAddress)
     {
         quadruplesList.AddLast(new Quadruple("ICONST", intConstant, tempAddress));

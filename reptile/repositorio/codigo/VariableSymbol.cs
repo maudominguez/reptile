@@ -13,12 +13,11 @@ public class VariableSymbol
     {
         this.name = name;
         this.type = type;
-
     }
 
     public override string ToString()
     {
         return type.name + " " + name + " address: " + address;
-
     }
 }
+

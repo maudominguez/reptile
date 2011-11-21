@@ -49,6 +49,7 @@ Stack<string> pOperadores = new Stack<string>();
 Stack<VariableSymbol> pOperandos = new Stack<VariableSymbol>();
 QuadruplesList quadruplesList = new QuadruplesList();
 Stack<Quadruple> pSaltos = new Stack<Quadruple>();
+Stack<ArrayVariableSymbol> pDimensionadas = new Stack<ArrayVariableSymbol>();
 string mainClassName = "Main";
 string mainMethodName = "main";
 string nameProgram;
@@ -225,6 +226,7 @@ VariableSymbol getInstanceVariable(string var) {
 	return clase.getVariableSymbol(var);
 }
 
+/*
 void verifyIsVector(string var) {
 	if(verifyVariableCanBeAccessed(var)) {
 		VariableSymbol arr = actualScope.getVariableSymbol(var);
@@ -233,12 +235,14 @@ void verifyIsVector(string var) {
 		}
 	}
 }
-
+*/
+/*
 void generateIsNotVectorError(string variable) {
 	MethodSymbol m = (MethodSymbol)actualScope;
 	Exception e = new Exception(m.fullyQualifiedName() + ": La variable " + variable + " no es de ninguna clase Vector y por tanto no tiene definido el operador [] .");
 	manageException(e);
 }
+*/
 
 public bool tiposSonCompatiblesEnOperacion() {
 	VariableSymbol right = pOperandos.Pop();
@@ -304,6 +308,7 @@ public VariableSymbol getNewTemporalVarOfType(string type) {
 	return temp;
 }
 
+/*
 public string typeOfVector(string type) {
 	if(type.Equals(SymbolTable.integerVectorName)) {
 		return SymbolTable.integerName;
@@ -319,6 +324,7 @@ public string typeOfVector(string type) {
 		return "";
 	}
 }
+*/
 
 public void printQuadruplesList() {
 	Console.WriteLine(quadruplesList.ToStringWithQuadrupleNumbers());
@@ -371,23 +377,40 @@ varDecl
 @init {
 	ClassSymbol clase;
 }
-    :   (t = primitiveType | t = referenceType) {clase = directory.findType($t.tipo);} ID 
+    :   (
+    	(t = primitiveType | t = referenceType) {clase = directory.findType($t.tipo);} ID 
     	{registerVariableInScope($ID.text, clase);} 
+    	| arrayVarDeclaration)
     	';' ;
     
 primitiveType returns[string tipo]:	t = ('int'|'char' | 'double') {$tipo = $t.text;};
 
-referenceType returns[string tipo]:	
-				(vectorType {$tipo = $vectorType.t;}
-				| ID	{$tipo = $ID.text;}	
-				)
-				;
-				
-vectorType returns[string t]:
-				'CharVector' {$t = SymbolTable.charVectorName;}
-				| 'IntVector' {$t = SymbolTable.integerVectorName;}
-				| 'DoubleVector' {$t = SymbolTable.doubleVectorName;}
-				;
+referenceType returns[string tipo]:	ID	{$tipo = $ID.text;}	;
+
+arrayVarDeclaration
+	:	 'array' '<' pt = primitiveType '>' '[' INT ']' ID
+		{
+		ClassSymbol arrayClassSymbol = SymbolTable.arrayClassSymbol;
+		ClassSymbol parameterizedType = directory.findType($pt.tipo);
+		int size = int.Parse($INT.text);
+		if(size <= 0) {
+			MethodSymbol m = (MethodSymbol)actualScope;
+			string msg = "En " + m.fullyQualifiedName() + ": Toda dimension del array " + $ID.text + " debe ser mayor o igual a 1.";
+			manageException(new Exception(msg));
+		}
+		string variableName = $ID.text;
+		
+		ArrayVariableSymbol variable = new ArrayVariableSymbol(variableName, parameterizedType);
+		variable.addDimension(size);
+		if(actualScope is MethodSymbol) {
+			((MethodSymbol)actualScope).defineLocalVariable(variable.name, variable);
+		}
+		else {
+			actualScope.defineVariable(variable.name, variable);
+		}
+		}
+		
+	;
 
 voidType returns[string tipo]:	t = 'void' {$tipo = $t.text;};
 
@@ -464,22 +487,6 @@ scope {
 			quadruplesList.addOBJECT(temp.address.ToString(), tipo.name);
 			
 			}
-		| 'new' vectorType '[' {pOperadores.Push("[");} INT ']' {pOperadores.Pop();}	
-			{
-			VariableSymbol temp = getNewTemporalVarOfType($vectorType.t);
-			pOperandos.Push(temp);
-			if($vectorType.t.Equals(SymbolTable.integerVectorName)) {
-				quadruplesList.addINTVECTOR(temp.address.ToString(), $INT.text);
-			}
-			else if($vectorType.t.Equals(SymbolTable.charVectorName)) {
-				quadruplesList.addCHARVECTOR(temp.address.ToString(), $INT.text);
-			}
-			else if($vectorType.t.Equals(SymbolTable.doubleVectorName)) {
-				quadruplesList.addDOUBLEVECTOR(temp.address.ToString(), $INT.text);
-			}
-			
-			
-			}
 		)
 		{
 		VariableSymbol right = pOperandos.Pop();
@@ -489,17 +496,17 @@ scope {
 						right.type.name + " no es asignable al tipo " + $assignment::leftType.name));
 		}
 		if($assignment::caso == 0) {	//ID = right
-				quadruplesList.addASSIGNMENT(right.address.ToString(), $assignment::par2.address.ToString());
+			quadruplesList.addASSIGNMENT(right.address.ToString(), $assignment::par2.address.ToString());
 		}
 		else if($assignment::caso == 1) {	//ID.ID = right
-				quadruplesList.addPUTFIELD(right.address.ToString(), $assignment::par1.address.ToString(), $assignment::par2.address.ToString());
+			quadruplesList.addPUTFIELD(right.address.ToString(), $assignment::par1.address.ToString(), $assignment::par2.address.ToString());
 		}
 		else if($assignment::caso == 2) {	//this.ID = bla
 			MethodSymbol method = (MethodSymbol)actualScope;
 			quadruplesList.addPUTFIELD(right.address.ToString(), method.getThisParameterAddress(), $assignment::par2.address.ToString());	
 		}
-		else if($assignment::caso == 3) {	//ID[expression] = bla
-			quadruplesList.addPUTVECTORELEM(right.address.ToString(), $assignment::par2.address.ToString(), $assignment::par1.address.ToString());			
+		else if($assignment::caso == 3) {
+			quadruplesList.addPUTARRAYELEM($assignment::par2.address.ToString(), right.address.ToString());
 		}
 		}
 		';'
@@ -514,7 +521,12 @@ designator
 			$assignment::par2 = getVariable($ID.text);
 			
 			$assignment::leftType = $assignment::par2.type;
-			} 
+			}
+		(
+		{pOperandos.Push(getVariable($ID.text));} /*because it is needed by the array access rule*/
+		arrayAccess	//all the necesary for the assignment is set in the array acess rule
+		)?
+			
 		| obj = ID  '.' var = ID 
 			{
 			$assignment::caso = 1;
@@ -532,6 +544,8 @@ designator
 			
 			$assignment::leftType = $assignment::par2.type;
 			}    //this.variable
+	
+			/*
 		| (ID '[' {pOperadores.Push("[");} expression ']' {pOperadores.Pop();})	//vector[exp]
 			{
 			$assignment::caso = 3;
@@ -548,7 +562,67 @@ designator
 			string tipo = typeOfVector($assignment::par2.type.name);
 			$assignment::leftType = directory.findType(tipo);
 			}
+			*/
 	;
+	
+arrayAccess
+	:	(
+		'['
+		{
+		bool inExpression = $statement::inExpression; //save the value here because it will be modified in the expression for the index
+		VariableSymbol variable = pOperandos.Pop();
+		MethodSymbol m = (MethodSymbol)actualScope;
+		if(!(variable is ArrayVariableSymbol)) {
+			string msg = "En " + m.fullyQualifiedName() + ": La variable " + variable.name
+							+ " no es un array y por tanto no tiene definido el operador [] .";
+			manageException(new Exception(msg));
+		}
+		ArrayVariableSymbol array = (ArrayVariableSymbol)variable;
+		pDimensionadas.Push(((ArrayVariableSymbol)array));
+		pOperadores.Push("[");
+		}
+		
+		expression 
+		
+		{
+		VariableSymbol index = pOperandos.Peek();
+		if(!index.type.name.Equals(SymbolTable.integerName)) {
+			manageException(new Exception("En " + m.fullyQualifiedName() + ": El subindice del array " + array.name
+							+ " debe ser de tipo int. Se encontro tipo " + index.type.name));
+		}
+		//Here we are just checking for the dimension 0 because we are handling only vectors
+		quadruplesList.addVERIFYARRAYACCESS(index.address.ToString(), array.getDimension(0).ToString());
+		}
+		
+		']' {pOperadores.Pop();}
+		{
+		index = pOperandos.Pop();
+		VariableSymbol arr = pDimensionadas.Pop();
+		
+		//get a constant with the base address
+		VariableSymbol baseConst = getNewTemporalVarOfType(SymbolTable.integerName);
+		quadruplesList.addICONST(arr.address.ToString(), baseConst.address.ToString());
+		
+		//get the address to deref
+		VariableSymbol toDeref = getNewTemporalVarOfType(SymbolTable.integerName);
+		quadruplesList.addEXPRESSION_OPER("+", index.address.ToString(), baseConst.address.ToString(), toDeref.address.ToString());
+		
+		
+		if(inExpression) {
+			//getting the value of an array element
+			VariableSymbol dereferencedTemp = getNewTemporalVarOfType(array.parameterizedType.name);
+			quadruplesList.addGETARRAYELEM(toDeref.address.ToString(), dereferencedTemp.address.ToString());
+			pOperandos.Push(dereferencedTemp);
+		}
+		else {
+			//this is an assigment of an array element
+			$assignment::caso = 3;
+			$assignment::par2 = toDeref;
+			$assignment::leftType = array.parameterizedType;
+			//Console.WriteLine("bla = " + $assignment::leftType.name);
+		}
+		}
+		);
 
 invoke
 scope {
@@ -846,27 +920,31 @@ factor
 	:	
 		read
 		| invoke
-		| v = ID 
-			{
-			VariableSymbol varSymbol = getVariable($v.text);
-			pOperandos.Push(varSymbol);
-			}
-		| obj = ID '.' var = ID 
-			{
-			VariableSymbol objeto = getVariable($obj.text);
-			VariableSymbol field = getField($obj.text, $var.text);
-			VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
-			pOperandos.Push(temp);
-			quadruplesList.addGETFIELD(temp.address.ToString(), objeto.address.ToString(), field.address.ToString());
-			}
-		| 'this' '.' var = ID 
-			{
-			VariableSymbol field = getInstanceVariable($var.text);
-			VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
-			pOperandos.Push(temp);
-			MethodSymbol method = (MethodSymbol)actualScope;
-			quadruplesList.addGETFIELD(temp.address.ToString(), method.getThisParameterAddress(), field.address.ToString());
-			}
+		| v = ID
+		{
+		VariableSymbol varSymbol = getVariable($v.text);
+		pOperandos.Push(varSymbol);
+		}
+		arrayAccess?
+		| obj = ID '.' var = ID
+		{
+		VariableSymbol objeto = getVariable($obj.text);
+		VariableSymbol field = getField($obj.text, $var.text);
+		VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
+		pOperandos.Push(temp);
+		quadruplesList.addGETFIELD(temp.address.ToString(), objeto.address.ToString(), field.address.ToString());
+		}
+		
+		| 'this' '.' var = ID
+		{
+		VariableSymbol field = getInstanceVariable($var.text);
+		VariableSymbol temp = getNewTemporalVarOfType(field.type.name);
+		pOperandos.Push(temp);
+		MethodSymbol method = (MethodSymbol)actualScope;
+		quadruplesList.addGETFIELD(temp.address.ToString(), method.getThisParameterAddress(), field.address.ToString());
+		}	
+			
+			/*
 		| ID '[' {pOperadores.Push("[");} expression ']' {pOperadores.Pop();} 
 			{
 			verifyIsVector($ID.text);
@@ -884,6 +962,7 @@ factor
 				quadruplesList.addGETVECTORELEM(temp.address.ToString(), arr.address.ToString(), index.address.ToString());
 			}
 			}
+			*/
 		| INT	
 		{
 		try {
@@ -922,11 +1001,10 @@ VOID	:	'void';
 ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*
     ;
     
-INT 	:	('0'..'9')+;
+INT 	:	('-')? ('0'..'9')+;
 
 DOUBLE
-    :   INT '.' INT*
-    |   '.' INT+
+    :   ('-' | '+')?((INT '.' INT*) |   ('.' INT+))
     ;
 
 COMMENT

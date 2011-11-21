@@ -10,9 +10,9 @@ public class SymbolTable
     public static string charName = "char";
     public static string doubleName = "double";
     public static string boolName = "bool";
-    public static string integerVectorName = "IntVector";
-    public static string charVectorName = "CharVector";
-    public static string doubleVectorName = "DoubleVector";
+
+    public static string arrayName = "array";
+    public static ClassSymbol arrayClassSymbol = new ClassSymbol(arrayName, null);
     public static string voidName = "void";
 
     public static bool isPrimitiveType(string type)
@@ -36,12 +36,10 @@ public class SymbolTable
         directory.Add(doubles.name, doubles);
         ClassSymbol bools = new ClassSymbol(boolName, null);
         directory.Add(bools.name, bools);
-        ClassSymbol integerVector = new ClassSymbol(integerVectorName, null);
-        directory.Add(integerVector.name, integerVector);
-        ClassSymbol charVector = new ClassSymbol(charVectorName, null);
-        directory.Add(charVector.name, charVector);
-        ClassSymbol doubleVector = new ClassSymbol(doubleVectorName, null);
-        directory.Add(doubleVector.name, doubleVector);
+
+
+        directory.Add(arrayClassSymbol.name, arrayClassSymbol);
+
         ClassSymbol tipoVoid = new ClassSymbol(voidName, null);
         directory.Add(tipoVoid.name, tipoVoid);
 
@@ -68,7 +66,6 @@ public class SymbolTable
             }
             res.Append(classSymbol.getMethodSymbols().Count + "\n");
 
-
             foreach (KeyValuePair<string, MethodSymbol> element in classSymbol.getMethodSymbols())
             {
                 MethodSymbol methodSymbol = element.Value;
@@ -89,6 +86,15 @@ public class SymbolTable
                     {
                         res.Append(localVar.type.name);
                     }
+                    else if(localVar is ArrayVariableSymbol) 
+                    {
+                        ArrayVariableSymbol localArray = (ArrayVariableSymbol)localVar;
+                        res.Append(localArray.type.name);
+                        res.Append(" ");
+                        res.Append(localArray.parameterizedType.name);
+                        res.Append(" ");
+                        res.Append(localArray.getTotalNumberOfSlots());
+                    }
                     else
                     {
                         res.Append("ref");
@@ -103,7 +109,14 @@ public class SymbolTable
     public ClassSymbol resultType(ClassSymbol left, ClassSymbol right, string op)
     {
         ClassSymbol resultType = findType(voidName);
+        //no operator works with void type
         if (left.name.Equals(voidName) || right.name.Equals(voidName))
+        {
+            return resultType;
+        }
+
+        //no operator works with arrays
+        if (left.name.Equals(arrayName) || right.name.Equals(arrayName)) 
         {
             return resultType;
         }
@@ -165,6 +178,13 @@ public class SymbolTable
         {
             return false;
         }
+        //not allowed to assign an array to anything nor to to assign anything to an array
+        if (left.name.Equals(arrayName) || right.name.Equals(arrayName))
+        {
+            return false;
+        }
+        
+
         if (left.name.Equals(doubleName))
         {
             return right.name.Equals(doubleName) || right.name.Equals(integerName);

@@ -22,3 +22,10 @@ checar lo de los arreglos
 checar lo del manejo de errores de sintaxis y lexico
 
 https://github.com/antlr/antlr/blob/master/runtime/CSharp3/Sources/Antlr3.Runtime/FailedPredicateException.cs
+
+
+polimorfismo
+herencia
+llamadas a metodos en parametros actuales
+puede tener objetos como valor de retorno
+

@@ -11,6 +11,25 @@ class Frame (object):
     def initializeVars(self):
         types = self.methodSymbol.localVarsTypesList
         registerOfTheFirstLocal = self.methodSymbol.registerOfTheFirstLocal
+
+        idxToInitialize = registerOfTheFirstLocal
+        for i in range(len(types)):
+            line = types[i].split()
+            if(line[0] == "array"):
+                parameterizedType = line[1]
+                size = int(line[2])
+                defaultValue = defaultValues(parameterizedType)
+                for arrIdx in range(size):
+                    self.registers[idxToInitialize] = defaultValue
+                    idxToInitialize += 1
+
+            else:
+                self.registers[idxToInitialize] = defaultValues(line[0])
+                idxToInitialize += 1
+
+
+        """
         for i in range(len(types)):
             idxToInitialize = registerOfTheFirstLocal + i
             self.registers[idxToInitialize] = defaultValues(types[i])
+        """

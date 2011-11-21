@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="repositorio\codigo\ArrayVariableSymbol.cs" />
     <Compile Include="repositorio\codigo\ClassSymbol.cs" />
     <Compile Include="repositorio\codigo\GlobalScope.cs" />
     <Compile Include="repositorio\codigo\Memory.cs" />

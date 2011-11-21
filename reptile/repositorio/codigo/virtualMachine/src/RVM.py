@@ -192,7 +192,6 @@ class RVM (object):
             elif(quadruple.opCode == "SHOULD_RETURN_SOMETHING_ERROR"):
                 op1 = quadruple.op1
                 exit("ERROR Inesperado: Metodo " + op1 + " no regreso nada...")
-                #TODO throw exception
             elif(quadruple.opCode == "OBJECT"):
                 op1 = int(quadruple.op1)
                 op2 = quadruple.op2.strip()
@@ -209,6 +208,19 @@ class RVM (object):
                 op2 = int(quadruple.op2)
                 op3 = int(quadruple.op3)
                 registers[offset(op1)] = registers[offset(op2)].fields[op3]
+            elif(quadruple.opCode == "VERIFYARRAYACCESS"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                if(registers[offset(op1)] < 0 or registers[offset(op1)] >= op2):
+                    exit("ERROR Inesperado: Indice " + str(registers[offset(op1)]) + " fuera de rango en acceso a elemento de arreglo.")
+            elif(quadruple.opCode == "GETARRAYELEM"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                registers[offset(op2)] = registers[offset(registers[offset(op1)])]
+            elif(quadruple.opCode == "PUTARRAYELEM"):
+                op1 = int(quadruple.op1)
+                op2 = int(quadruple.op2)
+                registers[offset(registers[offset(op1)])] = registers[offset(op2)]
             else:
                 print("Cuadruplo no reconocido: " + quadruple.opCode)
             quadruple = self.code[self.ip]

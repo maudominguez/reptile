@@ -23,7 +23,21 @@ public class Memory
         {
             throw new Exception("Ha excedido el numero maximo de variables que puede declarar ");
         }
-        return count++;
+        int nextAddress = count;
+        count++;
+        return nextAddress;
+    }
+
+    public int nextArrayAddress(int length)
+    {
+        int firstSlotOfArrayAddress = count;
+        int lastSlotOfArrayAddress = count + length - 1;
+        if (lastSlotOfArrayAddress >= limit)
+        {
+            throw new Exception("Ha excedido el numero maximo de variables que puede declarar ");
+        }
+        count = lastSlotOfArrayAddress + 1;
+        return firstSlotOfArrayAddress;
     }
 
     public int countVariables()

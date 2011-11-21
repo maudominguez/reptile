@@ -16,12 +16,26 @@ public abstract class Scope
         verifyVariableIsNotDefined(variableName);
         try
         {
-            variableSymbol.address = memory.nextAddress();
+            variableSymbol.address = calculateAddress(variableSymbol);
         }
         catch(Exception e) {
             ReptileParser.manageException(e);
         }
         variables.Add(variableName, variableSymbol);
+    }
+
+    private int calculateAddress(VariableSymbol variableSymbol)
+    {
+        if (variableSymbol is ArrayVariableSymbol)
+        {
+            ArrayVariableSymbol arrayVarSymbol = (ArrayVariableSymbol)variableSymbol;
+            int totalSlots = arrayVarSymbol.getTotalNumberOfSlots();
+            return memory.nextArrayAddress(totalSlots);
+        }
+        else
+        {
+            return memory.nextAddress();
+        }
     }
 
     public String variablesToString()
